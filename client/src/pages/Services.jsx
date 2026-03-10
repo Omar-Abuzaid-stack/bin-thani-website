@@ -82,14 +82,14 @@ const Services = () => {
                                     transition={{ duration: 0.6, delay: index * 0.1 }}
                                 >
                                     {service.title === 'Investment Advisory' ? (
-                                        <Link to={service.link}>
+                                        <Link to={service.link} style={{display:'block',height:'400px'}}>
                                             <div
                                                 style={{
                                                     backgroundImage: "url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800')",
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
                                                     backgroundRepeat: 'no-repeat',
-                                                    height: '100%',
+                                                    height: '400px',
                                                     width: '100%',
                                                     position: 'relative'
                                                 }}
