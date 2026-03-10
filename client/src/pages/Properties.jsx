@@ -5,7 +5,12 @@ import { Search, MapPin, Bed, Bath, Square, Filter, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import './Properties.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use VITE_API_URL if set, otherwise use Netlify functions path
+const getApiUrl = (endpoint) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
+  return `/.netlify/functions/${endpoint}`;
+};
 
 const Properties = () => {
     const [properties, setProperties] = useState([]);
@@ -33,7 +38,7 @@ const Properties = () => {
             Object.entries(filters).forEach(([key, value]) => {
                 if (value) params.append(key, value);
             });
-            const res = await axios.get(`${API_URL}/api/properties?${params}`);
+            const res = await axios.get(getApiUrl('properties') + `?${params}`);
             setProperties(res.data);
         } catch (err) {
             console.error('Error fetching properties:', err);

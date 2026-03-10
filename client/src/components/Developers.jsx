@@ -3,7 +3,12 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Developers.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use VITE_API_URL if set, otherwise use Netlify functions path
+const getApiUrl = (endpoint) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
+  return `/.netlify/functions/${endpoint}`;
+};
 
 const Developers = ({ onDeveloperClick }) => {
     const [developers, setDevelopers] = useState([]);
@@ -16,7 +21,7 @@ const Developers = ({ onDeveloperClick }) => {
 
     const fetchDevelopers = async () => {
         try {
-            const res = await axios.get(`${API_URL}/api/developers`);
+            const res = await axios.get(getApiUrl('developers'));
             setDevelopers(res.data);
         } catch (err) {
             console.error('Error fetching developers:', err);

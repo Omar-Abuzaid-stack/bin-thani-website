@@ -5,7 +5,12 @@ import { ArrowLeft, Bed, Bath, Square, Car, Calendar, MapPin, Phone, Mail, Send,
 import { useLanguage } from '../context/LanguageContext';
 import './PropertyDetail.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use VITE_API_URL if set, otherwise use Netlify functions path
+const getApiUrl = (endpoint) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
+  return `/.netlify/functions/${endpoint}`;
+};
 
 const PropertyDetail = () => {
     const { id } = useParams();
@@ -31,7 +36,7 @@ const PropertyDetail = () => {
 
     const fetchProperty = async () => {
         try {
-            const res = await axios.get(`${API_URL}/api/properties/${id}`);
+            const res = await axios.get(getApiUrl('property') + `/${id}`);
             setProperty(res.data);
             setMortgage(prev => ({ ...prev, price: res.data.price_numeric || 0 }));
         } catch (err) {
@@ -58,7 +63,7 @@ const PropertyDetail = () => {
     const handleEnquirySubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${API_URL}/api/leads`, {
+            await axios.post(getApiUrl('leads'), {
                 name: enquiryForm.name,
                 email: enquiryForm.email,
                 phone: enquiryForm.phone,

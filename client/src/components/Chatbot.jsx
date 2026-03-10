@@ -4,7 +4,13 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Chatbot.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use VITE_API_URL if set, otherwise use local or Netlify functions path
+const getApiUrl = (endpoint) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
+  // Local dev or Netlify - use relative path
+  return `/.netlify/functions/${endpoint}`;
+};
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +44,7 @@ const Chatbot = () => {
         setUserMessageCount(prev => prev + 1);
 
         try {
-            const res = await axios.post(`${API_URL}/api/chat`, { messages: newMessages, sessionId });
+            const res = await axios.post(getApiUrl('chat'), { messages: newMessages, sessionId });
             setMessages([...newMessages, res.data]);
 
             // Show lead form after 2 messages
@@ -56,7 +62,7 @@ const Chatbot = () => {
     const handleLeadSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${API_URL}/api/leads`, leadInfo);
+            await axios.post(getApiUrl('leads'), leadInfo);
             setMessages([...messages, { role: 'assistant', content: `Thank you ${leadInfo.name}! I've saved your details and one of our agents will contact you shortly.` }]);
             setShowLeadForm(false);
         } catch (err) {

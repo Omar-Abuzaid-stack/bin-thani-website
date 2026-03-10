@@ -7,7 +7,12 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import './Home.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use VITE_API_URL if set, otherwise use Netlify functions path
+const getApiUrl = (endpoint) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
+  return `/.netlify/functions/${endpoint}`;
+};
 
 const heroImages = [
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80',
@@ -26,7 +31,7 @@ const Home = () => {
     useEffect(() => {
         const fetchFeatured = async () => {
             try {
-                const res = await axios.get(`${API_URL}/api/properties/featured`);
+                const res = await axios.get(getApiUrl('featured'));
                 setFeaturedProperties(res.data);
             } catch (err) {
                 console.error('Error fetching featured properties:', err);
