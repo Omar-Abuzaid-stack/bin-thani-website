@@ -5,108 +5,63 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 
-// Expert system prompt with comprehensive Bin Thani Real Estate knowledge
-const SYSTEM_PROMPT = `You are the official AI assistant for Bin Thani Real Estate, a luxury real estate agency based in Sharjah, United Arab Emirates.
+// Layla's system prompt - professional real estate agent persona
+const SYSTEM_PROMPT = `You are Layla, a professional luxury real estate agent at Bin Thani Real Estate in Sharjah, UAE. You have 10 years of experience in UAE property market. You are warm, knowledgeable and professional.
 
-ABOUT BIN THANI REAL ESTATE:
-- Established: Over 15 years of experience in UAE real estate
-- Location: Sharjah, United Arab Emirates  
-- Specializations: Buying, selling, renting, and off-plan properties
-- Services: Property sales, rentals, investment advisory, property management, mortgage assistance
-- Contact: info@binthanirealestate.ae | +971 55 662 6912
-- Website: binthani.netlify.app
+Never reveal you are an AI. You are Layla from Bin Thani Real Estate.
 
-SHARJAH REAL ESTATE MARKET:
-- More affordable than Dubai while still offering excellent ROI
-- Popular areas: Aljada, Al Mamsha, Maryam Island, Tilal City, Al Nahda, Al Khan, Muwaileh
-- Freehold zones available for foreigners
-- Rental yields: 6-9% annually (higher than Dubai)
-- No property tax in UAE
+You know everything about:
+- Bin Thani Real Estate: founded by Eissa bin Rashid bin Thani, located in Muwaila Sharjah
+- Key areas: Aljada, Al Mamsha, Maryam Island, Tilal City, Al Nahda, Muwaila
+- Sharjah developers: Arada, Alef Group, Eagle Hills, Sharjah Waterfront City, Sobha Realty
+- UAE property laws: foreigners buy in freehold zones, 4% DLD fee, no property tax
+- Off-plan: flexible payment plans, post-handover options available
+- Prices: apartments from AED 400K, villas from AED 1.2M in Sharjah
+- Contact: info@binthanirealestate.ae, +971 55 662 6912, +971 55 761 1400
 
-UAE PROPERTY LAWS:
-- Foreigners can buy in designated freehold zones
-- DLD (Dubai Land Department) transfer fee: 4% of property value
-- No property tax in UAE
-- Golden Visa available for property investors (AED 2M+)
-- Off-plan purchases protected by RERA escrow accounts
-
-OFF-PLAN BENEFITS:
-- Flexible payment plans (post-handover, construction-linked)
-- Lower entry price than completed properties
-- High capital appreciation potential
-- Choice of units and views
-
-MORTGAGE INFORMATION:
-- UAE residents: Up to 80% LTV (Loan-to-Value)
-- Non-residents: Up to 50% LTV
-- Maximum term: 25 years
-- Interest rates: Starting from 4-5% (variable)
-- Required documents: Passport, visa, salary certificate, bank statements
-
-PREMIER SHARJAH DEVELOPERS:
-- Arada (Aljada, Theicket, Furnipol)
-- Alef Group (Alef Al Mamsha)
-- Eagle Hills (Maryam Island)
-- Sharjah Waterfront City
-- Sobha Realty
-- Reportage Properties
-- Bloom Living
-- RAK Properties
-
-CONVERSATION STYLE:
-- Be warm, professional, and human-like
-- Use the user's language (Arabic or English)
-- Ask one question at a time
-- After understanding their needs, provide 2-3 specific property recommendations
-- Be knowledgeable - answer questions about UAE real estate confidently
-- End conversations: "Thank you [name]! A Bin Thani specialist will contact you within 24 hours at [phone]. Visit binthani.netlify.app to explore our listings."
-
-YOUR GOALS:
-1. Greet warmly in the user's language
-2. Ask: "What are you looking for? (Buy / Rent / Invest)"
+Conversation flow:
+1. Greet warmly and introduce yourself as Layla
+2. Ask: are you looking to Buy, Rent or Invest?
 3. Ask about budget and preferred area
-4. Give personalized property recommendations
-5. Answer any real estate questions with expert knowledge
-6. After 3 messages, collect: name, phone, email
-7. Always end with the closing message above`;
+4. Recommend 2-3 specific properties or areas
+5. After 3 messages ask for name and phone number
+6. End with: "Thank you! I will personally follow up with you within 24 hours"
+
+Always detect the language — respond in Khaleeji Arabic if they write Arabic, professional English if they write English. Never mix languages.`;
 
 // Fallback responses when Mistral API is unavailable
 const FALLBACK_RESPONSES = {
-    initial: `مرحباً بك في بن ثاني للعقارات! 🏠\n\nأنا هنا لمساعدتك في إيجاد العقار المثالي في الشارقة والإمارات.\n\nما الذي تبحث عنه؟ (شراء / إيجار / استثمار)`,
+    initial_ar: `مرحباً! أنا لَيلى من بن ثاني للعقارات في الشارقة 🇦🇪\n\nأهلاً وسهلاً! كيف يمكنني مساعدتك اليوم؟\n\nهل تبحث عن شراء، إيجار، أو استثمار عقاري؟`,
     
-    initial_en: `Welcome to Bin Thani Real Estate! 🏠\n\nI'm here to help you find your dream property in Sharjah and across the UAE.\n\nWhat are you looking for? (Buy / Rent / Invest)`,
+    initial_en: `Hello! I'm Layla from Bin Thani Real Estate in Sharjah 🏠\n\nWelcome! How can I help you today?\n\nAre you looking to Buy, Rent, or Invest in property?`,
     
-    buy_en: `Excellent choice! We have amazing properties for sale in Sharjah's best locations.\n\nWhich area interests you? (Aljada, Al Mamsha, Maryam Island, Tilal City, or other)`,
+    buy_en: `Wonderful! We have amazing properties available for sale in Sharjah's best locations.\n\nWhich area interests you? Aljada, Al Mamsha, Maryam Island, Tilal City, or maybe Muwaila?`,
     
-    buy_ar: `خيار ممتاز! لدينا عقارات مميزة للبيع في أفضل مواقع الشارقة.\n\nما المنطقة التي تهمك؟ (الجداف، المامشة، جزيرة مريم، تيلال سيتي، أو غيرها)`,
+    buy_ar: `ممتاز! لدينا عقارات مميزة للبيع في أفضل مواقع الشارقة.\n\nما المنطقة التي تهمك؟ الجداف، المامشة، جزيرة مريم، تيلال سيتي، أو مويلحة؟`,
     
     rent_en: `Great! We have premium rental properties across Sharjah and Dubai.\n\nWhich area would you prefer?`,
     
     rent_ar: `ممتاز! لدينا عقارات إيجارية مميزة في الشارقة ودبي.\n\nما المنطقة التي تفضلها؟`,
     
-    invest_en: `Wonderful! UAE real estate offers excellent investment opportunities with 6-9% rental yields.\n\nWhat is your budget range for investment?`,
+    invest_en: `Excellent choice! UAE real estate offers excellent investment opportunities with 6-9% rental yields.\n\nWhat is your budget range for investment?`,
     
-    invest_ar: `ممتاز! العقارات في الإمارات توفر عوائد استثمارية ممتازة (6-9%).\n\nما نطاق ميزانيتك للاستثمار؟`,
+    invest_ar: `خيار ممتاز! العقارات في الإمارات توفر عوائد استثمارية ممتازة (6-9%).\n\nما نطاق ميزانيتك للاستثمار؟`,
     
-    budget_en: `Thank you! Now, may I have your full name?`,
+    name_en: `Thank you! May I have your full name please?`,
     
-    budget_ar: `شكراً لك! ما اسمك الكامل من فضلك؟`,
+    name_ar: `شكراً لك! ما اسمك الكامل من فضلك؟`,
     
-    name_en: `Perfect! What is your best contact number?`,
+    phone_en: `Perfect! And what is your best contact number?`,
     
-    name_ar: `ممتاز! ما رقم هاتفك للتواصل؟`,
+    phone_ar: `ممتاز! ما رقم هاتفك للتواصل؟`,
     
-    phone_en: `Almost done! And what is your email address?`,
+    closing_en: `Thank you! I will personally follow up with you within 24 hours.\n\nLooking forward to helping you find your dream property! 🏠`,
     
-    phone_ar: `almost done! ما بريدك الإلكتروني من فضلك؟`,
-    
-    email_thanks_en: `Thank you! 🎉\n\nOne of our specialists from Bin Thani Real Estate will contact you within 24 hours.\n\nIn the meantime, visit binthani.netlify.app to explore our exclusive listings.`,
-    
-    email_thanks_ar: `شكراً لك! 🎉\n\nسيتواصل معك أحد متخصصي بن ثاني للعقارات خلال 24 ساعة.\n\nفي الأثناء، قم بزيارة binthani.netlify.app لاستعراض عقاراتنا الحصرية.`
+    closing_ar: `شكراً لك! أتابع معك شخصياً خلال 24 ساعة.\n\nأتطلع لمساعدتك في إيجاد عقارك المثالي! 🏠`
 };
 
-const ARABIC_TRIGGERS = ['مرحبا', 'اهلا', 'شكرا', 'ابحث', 'شراء', 'ايجار', 'استثمار', 'شقة', 'فلة', 'عقار', 'الامارات', 'الشارقة'];
-const ENGLISH_TRIGGERS = ['hello', 'hi', 'thanks', 'buy', 'rent', 'invest', 'property', 'apartment', 'villa', 'dubai', 'sharjah', 'uae'];
+const ARABIC_TRIGGERS = ['مرحبا', 'اهلا', 'شكرا', 'ابحث', 'شراء', 'ايجار', 'استثمار', 'شقة', 'فلة', 'عقار', 'الامارات', 'الشارقة', 'سلام', 'اخ'];
+const ENGLISH_TRIGGERS = ['hello', 'hi', 'thanks', 'buy', 'rent', 'invest', 'property', 'apartment', 'villa', 'dubai', 'sharjah', 'uae', 'good'];
 
 async function supabaseCall(endpoint, method = 'GET', body = null) {
     const options = {
@@ -133,26 +88,26 @@ function detectLanguage(message) {
     return arabicScore > englishScore ? 'ar' : 'en';
 }
 
-function getFallbackResponse(message, lang) {
+function getFallbackResponse(message, lang, messageCount) {
     const msg = message.toLowerCase();
     
-    if (msg.includes('buy') || msg.includes('purchase') || msg.includes('شراء') || msg.includes('شراء')) {
+    if (messageCount === 0) {
+        return lang === 'ar' ? FALLBACK_RESPONSES.initial_ar : FALLBACK_RESPONSES.initial_en;
+    }
+    
+    if (msg.includes('buy') || msg.includes('purchase') || msg.includes('شراء')) {
         return lang === 'ar' ? FALLBACK_RESPONSES.buy_ar : FALLBACK_RESPONSES.buy_en;
-    } else if (msg.includes('rent') || msg.includes('ايجار') || msg.includes('تأجير')) {
+    } else if (msg.includes('rent') || msg.includes('ايجار')) {
         return lang === 'ar' ? FALLBACK_RESPONSES.rent_ar : FALLBACK_RESPONSES.rent_en;
     } else if (msg.includes('invest') || msg.includes('استثمار')) {
         return lang === 'ar' ? FALLBACK_RESPONSES.invest_ar : FALLBACK_RESPONSES.invest_en;
-    } else if (msg.includes('budget') || msg.includes('price') || msg.includes('aed') || msg.includes('ميزانية') || msg.includes('سعر')) {
-        return lang === 'ar' ? FALLBACK_RESPONSES.budget_ar : FALLBACK_RESPONSES.budget_en;
-    } else if (msg.includes('name') || msg.length > 4) {
+    } else if (messageCount >= 2 && (msg.includes('name') || msg.length > 3)) {
         return lang === 'ar' ? FALLBACK_RESPONSES.name_ar : FALLBACK_RESPONSES.name_en;
-    } else if (msg.includes('phone') || msg.includes('+971') || msg.includes('tel') || msg.includes('هاتف') || msg.includes('جوال')) {
-        return lang === 'ar' ? FALLBACK_RESPONSES.phone_ar : FALLBACK_RESPONSES.phone_en;
-    } else if (msg.includes('email') || msg.includes('@') || msg.includes('بريد')) {
-        return lang === 'ar' ? FALLBACK_RESPONSES.email_thanks_ar : FALLBACK_RESPONSES.email_thanks_en;
+    } else if (messageCount >= 3 && (msg.includes('phone') || msg.includes('+971') || msg.includes('هاتف') || /^\+?[\d\s]{7,}$/.test(msg))) {
+        return lang === 'ar' ? FALLBACK_RESPONSES.closing_ar : FALLBACK_RESPONSES.closing_en;
     }
     
-    return lang === 'ar' ? FALLBACK_RESPONSES.initial : FALLBACK_RESPONSES.initial_en;
+    return lang === 'ar' ? FALLBACK_RESPONSES.initial_ar : FALLBACK_RESPONSES.initial_en;
 }
 
 exports.handler = async (event, context) => {
@@ -177,6 +132,7 @@ exports.handler = async (event, context) => {
     try {
         const { messages, sessionId } = JSON.parse(event.body);
         const lastMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+        const messageCount = messages.filter(m => m.role === 'user').length;
         
         // Detect language from user message
         const lang = detectLanguage(lastMessage);
@@ -186,25 +142,30 @@ exports.handler = async (event, context) => {
         // Try Mistral API first
         if (MISTRAL_API_KEY) {
             try {
-                const mistralResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                // Build conversation messages
+                const conversationMessages = [
+                    { role: 'system', content: SYSTEM_PROMPT },
+                    ...messages
+                ];
+
+                const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${MISTRAL_API_KEY}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${MISTRAL_API_KEY}`
                     },
                     body: JSON.stringify({
                         model: 'mistral-large-latest',
-                        messages: [
-                            { role: 'system', content: SYSTEM_PROMPT },
-                            ...messages
-                        ]
+                        messages: conversationMessages,
+                        temperature: 0.7,
+                        max_tokens: 500
                     })
                 });
 
-                if (mistralResponse.ok) {
-                    const mistralData = await mistralResponse.json();
-                    if (mistralData.choices && mistralData.choices[0]) {
-                        botResponse = { content: mistralData.choices[0].message.content };
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.choices && data.choices[0]) {
+                        botResponse = { content: data.choices[0].message.content };
                     }
                 }
             } catch (mistralErr) {
@@ -214,7 +175,7 @@ exports.handler = async (event, context) => {
 
         // Fallback to simple response if Mistral fails
         if (!botResponse) {
-            botResponse = { content: getFallbackResponse(lastMessage, lang) };
+            botResponse = { content: getFallbackResponse(lastMessage, lang, messageCount) };
         }
         
         // Store chat message in database
