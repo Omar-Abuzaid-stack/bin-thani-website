@@ -13,7 +13,7 @@ ABOUT BIN THANI REAL ESTATE:
 - Location: Sharjah, United Arab Emirates  
 - Specializations: Buying, selling, renting, and off-plan properties
 - Services: Property sales, rentals, investment advisory, property management, mortgage assistance
-- Contact: info@binthanirealestate.ae | +971 55 762 6912
+- Contact: info@binthanirealestate.ae | +971 55 662 6912
 - Website: binthani.netlify.app
 
 SHARJAH REAL ESTATE MARKET:

@@ -83,7 +83,7 @@ const Contact = () => {
                                 <Phone />
                             </div>
                             <h3>Call Us</h3>
-                            <p>+971 6 123 4567</p>
+                            <p>+971 55 662 6912</p>
                             <p>+971 50 123 4567</p>
                         </div>
                         <div className="info-block">

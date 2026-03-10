@@ -42,16 +42,16 @@ const About = () => {
                             <div className="founder-image">
                                 <img 
                                     src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" 
-                                    alt="Mohammed Bin Thani - Founder & CEO" 
+                                    alt="Eissa bin Rashid bin Thani - Founder & CEO" 
                                 />
                             </div>
                             <div className="founder-info">
                                 <span className="founder-label">Founder & CEO</span>
-                                <h2 className="founder-name">Mohammed Bin Thani</h2>
+                                <h2 className="founder-name">Eissa bin Rashid bin Thani</h2>
                                 <div className="founder-bio">
                                     <p>
                                         With over two decades of experience in the UAE real estate market, 
-                                        Mohammed Bin Thani has established Bin Thani Real Estate as one of 
+                                        Eissa bin Rashid bin Thani has established Bin Thani Real Estate as one of 
                                         Sharjah's most trusted and respected property consultancies.
                                     </p>
                                     <p>
@@ -68,8 +68,11 @@ const About = () => {
                                     </p>
                                 </div>
                                 <div className="founder-contact">
-                                    <a href="tel:+971557626912">
-                                        <Phone size={16} /> +971 55 762 6912
+                                    <a href="tel:+971556626912">
+                                        <Phone size={16} /> +971 55 662 6912
+                                    </a>
+                                    <a href="tel:+971557611400">
+                                        <Phone size={16} /> +971 55 761 1400
                                     </a>
                                     <a href="mailto:info@binthanirealestate.ae">
                                         <Mail size={16} /> info@binthanirealestate.ae

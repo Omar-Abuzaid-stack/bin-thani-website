@@ -85,9 +85,10 @@ export const Footer = () => {
                 </div>
                 <div className="footer-contact">
                     <h4>{t('contactUs')}</h4>
-                    <p><Phone size={16} /> +971 55 762 6912</p>
+                    <p><Phone size={16} /> +971 55 662 6912</p>
+                    <p><Phone size={16} /> +971 55 761 1400</p>
                     <p><Mail size={16} /> info@binthanirealestate.ae</p>
-                    <p>Sharjah, United Arab Emirates</p>
+                    <p>Muwaila, Sharjah, United Arab Emirates</p>
                 </div>
                 <div className="footer-newsletter">
                     <h4>{t('newsletter')}</h4>
