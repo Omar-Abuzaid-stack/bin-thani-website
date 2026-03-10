@@ -8,37 +8,37 @@ const servicesData = [
     {
         title: 'Buy Property',
         description: 'Find your dream home from our curated selection of luxury properties across UAE',
-        image: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800')",
+        image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800',
         link: '/properties?type=Buy'
     },
     {
         title: 'Rent Property',
         description: 'Premium rental options for short-term and long-term leases',
-        image: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800')",
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
         link: '/properties?type=Rent'
     },
     {
         title: 'Investment Advisory',
         description: 'Expert guidance on high-yield investment opportunities in UAE real estate',
-        image: "url('https://images.unsplash.com/photo-1582407947304-fd86f28f5dde?w=800')",
+        image: 'https://images.unsplash.com/photo-1582407947304-fd86f28f5dde?w=800',
         link: '/contact'
     },
     {
         title: 'Off-Plan Projects',
         description: 'Access to the latest off-plan developments with attractive payment plans',
-        image: "url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800')",
+        image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800',
         link: '/properties?status=Off-Plan'
     },
     {
         title: 'Property Management',
         description: 'Full-service property management for investors and landlords',
-        image: "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800')",
+        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
         link: '/contact'
     },
     {
         title: 'Mortgage Advisory',
         description: 'Professional assistance with financing options and mortgage approvals',
-        image: "url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800')",
+        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800',
         link: '/contact'
     }
 ];
