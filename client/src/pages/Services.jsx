@@ -82,7 +82,16 @@ const Services = () => {
                                     transition={{ duration: 0.6, delay: index * 0.1 }}
                                 >
                                     <Link to={service.link}>
-                                        <div className="service-card-bg" style={{backgroundImage: `url(${service.image})`}}></div>
+                                        <div 
+                                            className="service-card-bg" 
+                                            style={{
+                                                backgroundImage: service.title === 'Investment Advisory' 
+                                                    ? "url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800')"
+                                                    : `url(${service.image})`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center'
+                                            }}
+                                        ></div>
                                         <div className="service-card-overlay">
                                             <div className="service-card-content">
                                                 <h3>{service.title}</h3>
