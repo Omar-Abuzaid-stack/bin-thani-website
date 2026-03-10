@@ -5,6 +5,8 @@ import { Search, MapPin, Bed, Bath, Square, Filter, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import './Properties.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const Properties = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -31,7 +33,7 @@ const Properties = () => {
             Object.entries(filters).forEach(([key, value]) => {
                 if (value) params.append(key, value);
             });
-            const res = await axios.get(`http://localhost:5001/api/properties?${params}`);
+            const res = await axios.get(`${API_URL}/api/properties?${params}`);
             setProperties(res.data);
         } catch (err) {
             console.error('Error fetching properties:', err);

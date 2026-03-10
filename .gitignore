@@ -35,3 +35,7 @@ logs/
 
 # Supabase
 credentials.json
+
+# Client env
+client/.env
+

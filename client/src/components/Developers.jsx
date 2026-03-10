@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Developers.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const Developers = ({ onDeveloperClick }) => {
     const [developers, setDevelopers] = useState([]);
     const [isPaused, setIsPaused] = useState(false);
@@ -14,7 +16,7 @@ const Developers = ({ onDeveloperClick }) => {
 
     const fetchDevelopers = async () => {
         try {
-            const res = await axios.get('http://localhost:5001/api/developers');
+            const res = await axios.get(`${API_URL}/api/developers`);
             setDevelopers(res.data);
         } catch (err) {
             console.error('Error fetching developers:', err);

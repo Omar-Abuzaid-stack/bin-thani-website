@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Chatbot.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useLanguage();
@@ -36,7 +38,7 @@ const Chatbot = () => {
         setUserMessageCount(prev => prev + 1);
 
         try {
-            const res = await axios.post('http://localhost:5001/api/chat', { messages: newMessages, sessionId });
+            const res = await axios.post(`${API_URL}/api/chat`, { messages: newMessages, sessionId });
             setMessages([...newMessages, res.data]);
 
             // Show lead form after 2 messages
@@ -54,7 +56,7 @@ const Chatbot = () => {
     const handleLeadSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5001/api/leads', leadInfo);
+            await axios.post(`${API_URL}/api/leads`, leadInfo);
             setMessages([...messages, { role: 'assistant', content: `Thank you ${leadInfo.name}! I've saved your details and one of our agents will contact you shortly.` }]);
             setShowLeadForm(false);
         } catch (err) {

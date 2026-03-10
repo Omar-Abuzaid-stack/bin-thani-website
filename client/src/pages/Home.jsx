@@ -7,6 +7,8 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import './Home.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const heroImages = [
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80',
     'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80',
@@ -24,7 +26,7 @@ const Home = () => {
     useEffect(() => {
         const fetchFeatured = async () => {
             try {
-                const res = await axios.get('http://localhost:5001/api/properties/featured');
+                const res = await axios.get(`${API_URL}/api/properties/featured`);
                 setFeaturedProperties(res.data);
             } catch (err) {
                 console.error('Error fetching featured properties:', err);
