@@ -690,8 +690,8 @@ section {
 
 .carousel-track {
     display: flex;
-    gap: 25px;
-    animation: scroll 30s linear infinite;
+    gap: 20px;
+    animation: scroll 35s linear infinite;
     width: max-content;
 }
 
@@ -704,51 +704,56 @@ section {
     }
 }
 
+.carousel-container:hover .carousel-track {
+    animation-play-state: running;
+}
+}
+
 .developer-card {
     flex-shrink: 0;
-    width: 200px;
-    height: 150px;
-    padding: 20px 15px;
-    background: #111111;
+    width: 220px;
+    height: 120px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
     text-align: center;
     transition: all 0.4s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .developer-card:hover {
-    border-color: var(--gold);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 40px rgba(184, 150, 12, 0.15);
+    border: 1px solid #C9A84C;
+    transform: scale(1.03);
+    box-shadow: 0 8px 30px rgba(184, 150, 12, 0.2);
 }
 
-.developer-card:hover .developer-logo {
-    box-shadow: 0 0 30px rgba(184, 150, 12, 0.3);
+.developer-logo-img {
+    max-height: 50px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.developer-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #C9A84C;
+    margin-bottom: 8px;
 }
 
 .developer-projects {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: #A8A8A8;
-    margin-top: 8px;
+    margin: 0;
     line-height: 1.4;
-}
-
-.developer-logo {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 15px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
-    border: 1px solid rgba(184, 150, 12, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.4s ease;
 }
 
 .developer-card h4 {
