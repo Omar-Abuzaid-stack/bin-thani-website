@@ -206,7 +206,9 @@ const Services = () => {
                     height: 100%;
                     background-size: cover;
                     background-position: center;
+                    background-color: #1a1a1a;
                     transition: transform 0.8s ease;
+                    z-index: 1;
                 }
                 
                 .service-card-full:hover .service-card-bg {
