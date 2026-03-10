@@ -318,6 +318,42 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* DEVELOPERS CAROUSEL - Sharjah Based */}
+            <section className="developers-carousel-section">
+                <motion.div 
+                    className="section-header"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                >
+                    <span className="section-label">Trusted Partners</span>
+                    <h2 className="section-title">Our Developer Partners</h2>
+                    <div className="section-line"></div>
+                </motion.div>
+                
+                <div className="carousel-container">
+                    <div className="carousel-track">
+                        {/* Duplicate for infinite scroll */}
+                        {['Arada', 'Alef Group', 'Eagle Hills', 'Sharjah Waterfront City', 'Sobha Realty', 'Reportage Properties', 'Bloom Living', 'RAK Properties'].map((dev, i) => (
+                            <div key={`dev1-${i}`} className="developer-card">
+                                <div className="developer-logo">
+                                    <span>{dev.charAt(0)}</span>
+                                </div>
+                                <h4>{dev}</h4>
+                            </div>
+                        ))}
+                        {['Arada', 'Alef Group', 'Eagle Hills', 'Sharjah Waterfront City', 'Sobha Realty', 'Reportage Properties', 'Bloom Living', 'RAK Properties'].map((dev, i) => (
+                            <div key={`dev2-${i}`} className="developer-card">
+                                <div className="developer-logo">
+                                    <span>{dev.charAt(0)}</span>
+                                </div>
+                                <h4>{dev}</h4>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

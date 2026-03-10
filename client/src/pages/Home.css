@@ -643,3 +643,114 @@ section {
         flex-direction: column;
     }
 }
+
+/* ========================================
+   DEVELOPERS CAROUSEL - Infinite Scroll
+   ======================================== */
+.developers-carousel-section {
+    padding: 100px 0;
+    background: #0a0a0a;
+    overflow: hidden;
+}
+
+.developers-carousel-section .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.developers-carousel-section .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 15px;
+}
+
+.developers-carousel-section .section-title {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--text-white);
+}
+
+.developers-carousel-section .section-line {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 20px auto 0;
+}
+
+.carousel-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 25px;
+    animation: scroll 30s linear infinite;
+    width: max-content;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.developer-card {
+    flex-shrink: 0;
+    width: 200px;
+    padding: 35px 25px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.developer-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(184, 150, 12, 0.15);
+}
+
+.developer-card:hover .developer-logo {
+    border-color: var(--gold);
+    box-shadow: 0 0 30px rgba(184, 150, 12, 0.3);
+}
+
+.developer-logo {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    border: 1px solid rgba(184, 150, 12, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+}
+
+.developer-logo span {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--gold);
+}
+
+.developer-card h4 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-white);
+    margin: 0;
+}

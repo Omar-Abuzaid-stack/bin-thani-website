@@ -4,29 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin } from 'lucide-react';
 
-const teamMembers = [
-    {
-        name: 'Ahmed Al Thani',
-        position: 'Managing Director',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'
-    },
-    {
-        name: 'Sarah Johnson',
-        position: 'Head of Sales',
-        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80'
-    },
-    {
-        name: 'Mohammed Rashid',
-        position: 'Investment Consultant',
-        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80'
-    },
-    {
-        name: 'Fatima Al Mahdi',
-        position: 'Property Manager',
-        image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80'
-    }
-];
-
 const About = () => {
     return (
         <>
@@ -36,7 +13,7 @@ const About = () => {
             </Helmet>
             
             <div className="about-page">
-                {/* Hero Section */}
+                {/* Hero Section - Luxury Sharjah Skyline */}
                 <section className="page-hero">
                     <div className="page-hero-bg" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80)'}}></div>
                     <div className="page-hero-overlay"></div>
@@ -52,41 +29,54 @@ const About = () => {
                     </div>
                 </section>
 
-                {/* Story Section */}
-                <section className="about-story">
+                {/* Founder Section */}
+                <section className="founder-section">
                     <div className="container">
-                        <div className="story-grid">
-                            <motion.div 
-                                className="story-content"
-                                initial={{ opacity: 0, x: -50 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.8 }}
-                            >
-                                <span className="section-label">Our Story</span>
-                                <h2>A Legacy of Excellence</h2>
-                                <p>
-                                    Bin Thani Real Estate has been a trusted name in the UAE's luxury property market 
-                                    for over a decade. Founded in Sharjah, we have expanded our expertise to serve 
-                                    clients across Dubai, Abu Dhabi, and the Northern Emirates.
-                                </p>
-                                <p>
-                                    Our commitment to excellence and personalized service has helped thousands of 
-                                    clients find their dream properties. Whether you're looking for a luxury villa, 
-                                    a premium apartment, or a sound investment opportunity, our team of experts 
-                                    is here to guide you every step of the way.
-                                </p>
-                            </motion.div>
-                            <motion.div 
-                                className="story-image"
-                                initial={{ opacity: 0, x: 50 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.8 }}
-                            >
-                                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Luxury Property" />
-                            </motion.div>
-                        </div>
+                        <motion.div 
+                            className="founder-card"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <div className="founder-image">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" 
+                                    alt="Mohammed Bin Thani - Founder & CEO" 
+                                />
+                            </div>
+                            <div className="founder-info">
+                                <span className="founder-label">Founder & CEO</span>
+                                <h2 className="founder-name">Mohammed Bin Thani</h2>
+                                <div className="founder-bio">
+                                    <p>
+                                        With over two decades of experience in the UAE real estate market, 
+                                        Mohammed Bin Thani has established Bin Thani Real Estate as one of 
+                                        Sharjah's most trusted and respected property consultancies.
+                                    </p>
+                                    <p>
+                                        His vision has guided the company to become a leader in luxury 
+                                        residential and commercial properties across Sharjah, Dubai, and 
+                                        the Northern Emirates. Known for his integrity, expertise, and 
+                                        commitment to client satisfaction, Mohammed has helped hundreds 
+                                        of families find their dream homes.
+                                    </p>
+                                    <p>
+                                        Under his leadership, Bin Thani Real Estate continues to set 
+                                        new standards in the industry, delivering exceptional service 
+                                        and unparalleled expertise to every client.
+                                    </p>
+                                </div>
+                                <div className="founder-contact">
+                                    <a href="tel:+971557626912">
+                                        <Phone size={16} /> +971 55 762 6912
+                                    </a>
+                                    <a href="mailto:info@binthanirealestate.ae">
+                                        <Mail size={16} /> info@binthanirealestate.ae
+                                    </a>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </section>
 
@@ -110,43 +100,6 @@ const About = () => {
                                 >
                                     <div className="stat-number">{stat.number}</div>
                                     <div className="stat-label">{stat.label}</div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* Team Section */}
-                <section className="team-section">
-                    <div className="container">
-                        <motion.div 
-                            className="section-header"
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                        >
-                            <span className="section-label">Our Team</span>
-                            <h2 className="section-title">Meet the Experts</h2>
-                            <div className="section-line"></div>
-                        </motion.div>
-                        
-                        <div className="team-grid">
-                            {teamMembers.map((member, index) => (
-                                <motion.div 
-                                    key={index}
-                                    className="team-card"
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
-                                    <div className="team-image">
-                                        <img src={member.image} alt={member.name} />
-                                    </div>
-                                    <div className="team-info">
-                                        <h3>{member.name}</h3>
-                                        <p>{member.position}</p>
-                                    </div>
                                 </motion.div>
                             ))}
                         </div>
@@ -303,26 +256,62 @@ const About = () => {
                     margin: 20px auto 0;
                 }
                 
-                /* Story */
-                .about-story {
+                /* Founder Section */
+                .founder-section {
                     background: #0a0a0a;
                 }
                 
-                .story-grid {
+                .founder-card {
                     display: grid;
-                    grid-template-columns: 1fr 1fr;
+                    grid-template-columns: 400px 1fr;
                     gap: 80px;
                     align-items: center;
+                    max-width: 1200px;
+                    margin: 0 auto;
                 }
                 
-                .story-content h2 {
-                    font-family: 'Cormorant Garamond', serif;
-                    font-size: 2.5rem;
+                .founder-image {
+                    position: relative;
+                }
+                
+                .founder-image::before {
+                    content: '';
+                    position: absolute;
+                    top: -15px;
+                    left: -15px;
+                    width: 100%;
+                    height: 100%;
+                    border: 1px solid #B8960C;
+                    z-index: 0;
+                }
+                
+                .founder-image img {
+                    position: relative;
+                    width: 100%;
+                    height: 500px;
+                    object-fit: cover;
+                    z-index: 1;
+                }
+                
+                .founder-label {
+                    font-size: 12px;
+                    font-weight: 600;
+                    letter-spacing: 3px;
+                    text-transform: uppercase;
                     color: #B8960C;
-                    margin-bottom: 25px;
+                    display: block;
+                    margin-bottom: 10px;
                 }
                 
-                .story-content p {
+                .founder-name {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 3rem;
+                    font-weight: 300;
+                    color: #fff;
+                    margin-bottom: 30px;
+                }
+                
+                .founder-bio p {
                     font-family: 'DM Sans', sans-serif;
                     font-size: 1rem;
                     color: #A8A8A8;
@@ -330,11 +319,26 @@ const About = () => {
                     margin-bottom: 20px;
                 }
                 
-                .story-image img {
-                    width: 100%;
-                    height: 400px;
-                    object-fit: cover;
-                    border-radius: 4px;
+                .founder-contact {
+                    display: flex;
+                    gap: 30px;
+                    margin-top: 30px;
+                    padding-top: 25px;
+                    border-top: 1px solid rgba(255,255,255,0.1);
+                }
+                
+                .founder-contact a {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    color: #B8960C;
+                    text-decoration: none;
+                    font-size: 0.95rem;
+                    transition: color 0.3s ease;
+                }
+                
+                .founder-contact a:hover {
+                    color: #fff;
                 }
                 
                 /* Stats */
@@ -349,6 +353,8 @@ const About = () => {
                     display: grid;
                     grid-template-columns: repeat(4, 1fr);
                     gap: 40px;
+                    max-width: 1000px;
+                    margin: 0 auto;
                 }
                 
                 .stat-item {
@@ -369,65 +375,9 @@ const About = () => {
                     color: #A8A8A8;
                 }
                 
-                /* Team */
-                .team-section {
-                    background: #080808;
-                }
-                
-                .team-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr);
-                    gap: 30px;
-                }
-                
-                .team-card {
-                    background: #111111;
-                    border: 1px solid transparent;
-                    transition: all 0.3s ease;
-                }
-                
-                .team-card:hover {
-                    border-color: #B8960C;
-                }
-                
-                .team-image {
-                    height: 280px;
-                    overflow: hidden;
-                }
-                
-                .team-image img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    transition: transform 0.5s ease;
-                }
-                
-                .team-card:hover .team-image img {
-                    transform: scale(1.05);
-                }
-                
-                .team-info {
-                    padding: 25px;
-                    text-align: center;
-                }
-                
-                .team-info h3 {
-                    font-family: 'Cormorant Garamond', serif;
-                    font-size: 1.3rem;
-                    color: #fff;
-                    margin-bottom: 8px;
-                }
-                
-                .team-info p {
-                    font-size: 0.85rem;
-                    color: #A8A8A8;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-                
                 /* Values */
                 .values-section {
-                    background: #0a0a0a;
+                    background: #080808;
                 }
                 
                 .values-grid {
@@ -549,21 +499,29 @@ const About = () => {
                     color: #080808;
                 }
                 
-                @media (max-width: 1024px) {
-                    .story-grid, .team-grid, .values-grid {
-                        grid-template-columns: repeat(2, 1fr);
+                @media (max-width: 900px) {
+                    .founder-card {
+                        grid-template-columns: 1fr;
+                        gap: 40px;
                     }
-                    .stats-grid {
+                    .founder-image {
+                        max-width: 350px;
+                        margin: 0 auto;
+                    }
+                    .stats-grid, .values-grid {
                         grid-template-columns: repeat(2, 1fr);
                     }
                 }
                 
                 @media (max-width: 600px) {
-                    .story-grid, .team-grid, .values-grid, .stats-grid {
+                    .stats-grid, .values-grid {
                         grid-template-columns: 1fr;
                     }
                     .page-title {
                         font-size: 3rem;
+                    }
+                    .founder-name {
+                        font-size: 2.2rem;
                     }
                 }
             `}</style>
