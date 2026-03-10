@@ -39,3 +39,6 @@ credentials.json
 # Client env
 client/.env
 
+
+# Local Netlify folder
+.netlify
