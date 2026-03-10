@@ -20,7 +20,7 @@ const servicesData = [
     {
         title: 'Investment Advisory',
         description: 'Expert guidance on high-yield investment opportunities in UAE real estate',
-        image: 'https://images.unsplash.com/photo-1582407947304-fd86f28f5dde?w=800',
+        image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800',
         link: '/contact'
     },
     {
