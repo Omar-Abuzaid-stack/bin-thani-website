@@ -319,7 +319,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* DEVELOPERS CAROUSEL - Sharjah Based */}
+            {/* DEVELOPERS CAROUSEL - Real Developer Partners */}
             <section className="developers-carousel-section">
                 <motion.div 
                     className="section-header"
@@ -334,21 +334,42 @@ const Home = () => {
                 
                 <div className="carousel-container">
                     <div className="carousel-track">
-                        {/* Duplicate for infinite scroll */}
-                        {['Arada', 'Alef Group', 'Eagle Hills', 'Sharjah Waterfront City', 'Sobha Realty', 'Reportage Properties', 'Bloom Living', 'RAK Properties'].map((dev, i) => (
-                            <div key={`dev1-${i}`} className="developer-card">
-                                <div className="developer-logo">
-                                    <span>{dev.charAt(0)}</span>
+                        {[
+                            { name: "Alef Group", projects: ["Al Mamsha", "Hayyan", "Palace Residences", "Olfah"], color: "#8B6914" },
+                            { name: "Arada", projects: ["Aljada", "Masaar", "Jouri Hills", "Anantara"], color: "#2D6A4F" },
+                            { name: "Shoumous", projects: ["Shoumous Residences", "Luxury Villas"], color: "#C9A84C" },
+                            { name: "Ajmal Makan", projects: ["Ajmal Makan City", "Waterfront Residences"], color: "#1A6B8A" },
+                            { name: "Tiger Group", projects: ["Tiger Sky Tower", "Fashionz", "Golf Greens"], color: "#FF6B00" },
+                            { name: "Altay Hills", projects: ["Altay Hills Villas", "Mountain Residences"], color: "#4A7C59" },
+                            { name: "Manazil", projects: ["Manazil Towers", "Luxury Apartments"], color: "#8B4513" },
+                            { name: "Maryam Island", projects: ["Maryam Gate", "Waterfront Apartments", "Island Villas"], color: "#006994" },
+                            { name: "Al Marwan", projects: ["Garden City", "Al Marwan Villas", "Luxury Residences"], color: "#B8860B" }
+                        ].map((dev, i) => (
+                            <div key={`dev1-${i}`} className="developer-card" style={{ borderColor: dev.color }}>
+                                <div className="developer-logo" style={{ borderColor: dev.color }}>
+                                    <span style={{ color: dev.color }}>{dev.name.charAt(0)}</span>
                                 </div>
-                                <h4>{dev}</h4>
+                                <h4>{dev.name}</h4>
+                                <p className="developer-projects">{dev.projects.slice(0, 2).join(", ")}</p>
                             </div>
                         ))}
-                        {['Arada', 'Alef Group', 'Eagle Hills', 'Sharjah Waterfront City', 'Sobha Realty', 'Reportage Properties', 'Bloom Living', 'RAK Properties'].map((dev, i) => (
-                            <div key={`dev2-${i}`} className="developer-card">
-                                <div className="developer-logo">
-                                    <span>{dev.charAt(0)}</span>
+                        {[
+                            { name: "Alef Group", projects: ["Al Mamsha", "Hayyan", "Palace Residences", "Olfah"], color: "#8B6914" },
+                            { name: "Arada", projects: ["Aljada", "Masaar", "Jouri Hills", "Anantara"], color: "#2D6A4F" },
+                            { name: "Shoumous", projects: ["Shoumous Residences", "Luxury Villas"], color: "#C9A84C" },
+                            { name: "Ajmal Makan", projects: ["Ajmal Makan City", "Waterfront Residences"], color: "#1A6B8A" },
+                            { name: "Tiger Group", projects: ["Tiger Sky Tower", "Fashionz", "Golf Greens"], color: "#FF6B00" },
+                            { name: "Altay Hills", projects: ["Altay Hills Villas", "Mountain Residences"], color: "#4A7C59" },
+                            { name: "Manazil", projects: ["Manazil Towers", "Luxury Apartments"], color: "#8B4513" },
+                            { name: "Maryam Island", projects: ["Maryam Gate", "Waterfront Apartments", "Island Villas"], color: "#006994" },
+                            { name: "Al Marwan", projects: ["Garden City", "Al Marwan Villas", "Luxury Residences"], color: "#B8860B" }
+                        ].map((dev, i) => (
+                            <div key={`dev2-${i}`} className="developer-card" style={{ borderColor: dev.color }}>
+                                <div className="developer-logo" style={{ borderColor: dev.color }}>
+                                    <span style={{ color: dev.color }}>{dev.name.charAt(0)}</span>
                                 </div>
-                                <h4>{dev}</h4>
+                                <h4>{dev.name}</h4>
+                                <p className="developer-projects">{dev.projects.slice(0, 2).join(", ")}</p>
                             </div>
                         ))}
                     </div>

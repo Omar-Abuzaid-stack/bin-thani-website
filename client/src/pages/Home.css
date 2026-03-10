@@ -707,13 +707,18 @@ section {
 .developer-card {
     flex-shrink: 0;
     width: 200px;
-    padding: 35px 25px;
-    background: rgba(255, 255, 255, 0.03);
+    height: 150px;
+    padding: 20px 15px;
+    background: #111111;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 12px;
     text-align: center;
     transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .developer-card:hover {
@@ -723,8 +728,14 @@ section {
 }
 
 .developer-card:hover .developer-logo {
-    border-color: var(--gold);
     box-shadow: 0 0 30px rgba(184, 150, 12, 0.3);
+}
+
+.developer-projects {
+    font-size: 0.7rem;
+    color: #A8A8A8;
+    margin-top: 8px;
+    line-height: 1.4;
 }
 
 .developer-logo {
