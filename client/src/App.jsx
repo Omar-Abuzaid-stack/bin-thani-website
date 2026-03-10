@@ -6,6 +6,9 @@ import { Navbar, Footer } from './components/Layout';
 import Home from './pages/Home';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
+import Services from './pages/Services';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import Chatbot from './components/Chatbot';
 import Developers from './components/Developers';
 import { LoadingScreen, CookieBanner } from './components/Extras';
@@ -29,6 +32,9 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/properties" element={<Properties />} />
                 <Route path="/property/:id" element={<PropertyDetail />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/developers" element={<Developers onDeveloperClick={handleDeveloperClick} />} />
               </Routes>
             </main>
