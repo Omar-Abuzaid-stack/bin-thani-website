@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Search, MapPin, Bed, Bath, Square } from 'lucide-react';
+import { 
+    ArrowRight, Search, MapPin, Bed, Bath, Square, 
+    Home as HomeIcon, Key, TrendingUp, Building 
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
+import Developers from '../components/Developers';
 import './Home.css';
 
 // Use VITE_API_URL if set, otherwise use Netlify functions path
@@ -28,25 +32,29 @@ const services = [
         title: 'Buy Property',
         description: 'Find your dream home from our curated selection of luxury properties',
         image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
-        link: '/properties?type=Buy'
+        link: '/properties?type=Buy',
+        icon: <HomeIcon size={24} />
     },
     {
         title: 'Rent Property',
         description: 'Premium rental options for short and long-term leases',
         image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
-        link: '/properties?type=Rent'
+        link: '/properties?type=Rent',
+        icon: <Key size={24} />
     },
     {
         title: 'Investment',
         description: 'High-yield investment opportunities in UAE real estate',
-        image: 'https://images.unsplash.com/photo-1582407947304-fd86f28f5dde?w=800&q=80',
-        link: '/contact'
+        image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&q=80', // Updated image from previous task
+        link: '/contact',
+        icon: <TrendingUp size={24} />
     },
     {
         title: 'Off-Plan',
         description: 'Latest off-plan developments with attractive payment plans',
         image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80',
-        link: '/properties?status=Off-Plan'
+        link: '/properties?status=Off-Plan',
+        icon: <Building size={24} />
     }
 ];
 
@@ -190,6 +198,9 @@ const Home = () => {
                             >
                                 <div className="service-bg" style={{backgroundImage: `url(${service.image})`}}></div>
                                 <div className="service-overlay">
+                                    <div className="service-icon-wrapper">
+                                        {service.icon}
+                                    </div>
                                     <h3>{service.title}</h3>
                                     <p>{service.description}</p>
                                     <Link to={service.link} className="service-link">
@@ -201,6 +212,9 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* DEVELOPERS SECTION */}
+            <Developers />
 
             {/* FEATURED PROPERTIES */}
             <section className="featured-properties">
@@ -324,65 +338,6 @@ const Home = () => {
                                 <div className="stat-number">{stat.number}</div>
                                 <div className="stat-label">{stat.label}</div>
                             </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* DEVELOPERS CAROUSEL - Real Developer Partners */}
-            <section className="developers-carousel-section">
-                <motion.div 
-                    className="section-header"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                >
-                    <span className="section-label">Trusted Partners</span>
-                    <h2 className="section-title">Our Developer Partners</h2>
-                    <div className="section-line"></div>
-                </motion.div>
-                
-                <div className="carousel-container">
-                    <div className="carousel-track">
-                        {[
-                            { name: "Alef Group", logo: "https://www.alefgroup.ae/wp-content/uploads/2022/11/alef-group-logo-white.png", website: "https://www.alefgroup.ae", projects: ["Al Mamsha", "Hayyan", "Palace Residences"] },
-                            { name: "Arada", logo: "https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/arada-logo.svg", website: "https://www.arada.com", projects: ["Aljada", "Masaar", "Jouri Hills"] },
-                            { name: "Maryam Island", logo: "https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp", website: "https://maryamisland.ae", projects: ["Maryam Gate Residences", "Rehan Residences"] },
-                            { name: "Shoumous", logo: null, website: "https://www.shoumous.com", projects: ["Shoumous Residences", "Luxury Villas"] },
-                            { name: "Ajmal Makan", logo: null, website: "https://ajmalmakan.com", projects: ["Ajmal Makan City", "Waterfront City"] },
-                            { name: "Tiger Group", logo: null, website: "https://www.tigergroup.ae", projects: ["Tiger Sky Tower", "Fashionz"] },
-                            { name: "Altay Hills", logo: null, website: "https://www.altayhills.ae", projects: ["Altay Hills Villas"] },
-                            { name: "Manazil", logo: null, website: "https://manazil-uae.com", projects: ["Manazil Towers"] },
-                            { name: "Al Marwan", logo: null, website: "https://almarwandevelopments.com", projects: ["Garden City", "Al Marwan Villas"] }
-                        ].map((dev, i) => (
-                            <a key={`dev1-${i}`} href={dev.website} target="_blank" rel="noopener noreferrer" className="developer-card">
-                                {dev.logo ? (
-                                    <img src={dev.logo} alt={dev.name} className="developer-logo-img" />
-                                ) : (
-                                    <span className="developer-name">{dev.name}</span>
-                                )}
-                                <p className="developer-projects">{dev.projects[0]}</p>
-                            </a>
-                        ))}
-                        {[
-                            { name: "Alef Group", logo: "https://www.alefgroup.ae/wp-content/uploads/2022/11/alef-group-logo-white.png", website: "https://www.alefgroup.ae", projects: ["Al Mamsha", "Hayyan", "Palace Residences"] },
-                            { name: "Arada", logo: "https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/arada-logo.svg", website: "https://www.arada.com", projects: ["Aljada", "Masaar", "Jouri Hills"] },
-                            { name: "Maryam Island", logo: "https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp", website: "https://maryamisland.ae", projects: ["Maryam Gate Residences", "Rehan Residences"] },
-                            { name: "Shoumous", logo: null, website: "https://www.shoumous.com", projects: ["Shoumous Residences", "Luxury Villas"] },
-                            { name: "Ajmal Makan", logo: null, website: "https://ajmalmakan.com", projects: ["Ajmal Makan City", "Waterfront City"] },
-                            { name: "Tiger Group", logo: null, website: "https://www.tigergroup.ae", projects: ["Tiger Sky Tower", "Fashionz"] },
-                            { name: "Altay Hills", logo: null, website: "https://www.altayhills.ae", projects: ["Altay Hills Villas"] },
-                            { name: "Manazil", logo: null, website: "https://manazil-uae.com", projects: ["Manazil Towers"] },
-                            { name: "Al Marwan", logo: null, website: "https://almarwandevelopments.com", projects: ["Garden City", "Al Marwan Villas"] }
-                        ].map((dev, i) => (
-                            <a key={`dev2-${i}`} href={dev.website} target="_blank" rel="noopener noreferrer" className="developer-card">
-                                {dev.logo ? (
-                                    <img src={dev.logo} alt={dev.name} className="developer-logo-img" />
-                                ) : (
-                                    <span className="developer-name">{dev.name}</span>
-                                )}
-                                <p className="developer-projects">{dev.projects[0]}</p>
-                            </a>
                         ))}
                     </div>
                 </div>

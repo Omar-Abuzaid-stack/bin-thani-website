@@ -1,26 +1,45 @@
-.developers-section {
-    padding: 60px 20px;
-    background: var(--primary-black);
+/* ========================================
+   DEVELOPERS CAROUSEL - Infinite Scroll
+   ======================================== */
+.developers-carousel-section {
+    padding: 100px 0;
+    background: #0a0a0a;
     overflow: hidden;
 }
 
-.developers-section h2 {
+.developers-carousel-section .section-header {
     text-align: center;
-    color: var(--text-white);
-    font-size: 2rem;
-    margin-bottom: 10px;
+    margin-bottom: 60px;
 }
 
-.section-subtitle {
-    text-align: center;
-    color: var(--silver);
-    margin-bottom: 40px;
+.developers-carousel-section .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #B8960C;
+    display: block;
+    margin-bottom: 15px;
 }
 
-.developers-carousel {
-    position: relative;
+.developers-carousel-section .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: #fff;
+}
+
+.developers-carousel-section .section-line {
+    width: 60px;
+    height: 1px;
+    background: #B8960C;
+    margin: 20px auto 0;
+}
+
+.carousel-container {
     width: 100%;
     overflow: hidden;
+    padding: 20px 0;
 }
 
 .carousel-track {
@@ -30,7 +49,7 @@
     width: max-content;
 }
 
-.carousel-track.paused {
+.carousel-track:hover {
     animation-play-state: paused;
 }
 
@@ -44,66 +63,78 @@
 }
 
 .developer-card {
-    width: 200px;
-    padding: 25px;
-    background: var(--card-dark);
-    border-radius: 15px;
-    border: 1px solid rgba(192, 192, 192, 0.05);
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
     flex-shrink: 0;
+    width: 280px;
+    height: 160px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(184, 150, 12, 0.15);
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .developer-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--silver);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    border: 1px solid #B8960C;
+    transform: translateY(-5px);
+    background: rgba(184, 150, 12, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
-.dev-logo {
-    width: 100px;
-    height: 60px;
-    margin: 0 auto 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dev-logo img {
-    max-width: 100%;
-    max-height: 100%;
+.developer-logo-img {
+    max-height: 50px;
+    width: auto;
+    max-width: 80%;
     object-fit: contain;
-    filter: grayscale(100%);
-    opacity: 0.7;
+    margin-bottom: 15px;
+}
+
+.developer-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: #B8960C;
+    margin-bottom: 12px;
+}
+
+.developer-projects-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.project-tag {
+    font-size: 10px;
+    color: #A8A8A8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
 }
 
-.developer-card:hover .dev-logo img {
-    filter: grayscale(0%);
-    opacity: 1;
-}
-
-.developer-card h4 {
-    color: var(--text-white);
-    margin-bottom: 8px;
-    font-size: 1rem;
-}
-
-.developer-card p {
-    color: var(--silver);
-    font-size: 12px;
-    margin: 0;
+.developer-card:hover .project-tag {
+    color: #fff;
+    background: rgba(184, 150, 12, 0.2);
 }
 
 @media (max-width: 768px) {
     .developer-card {
-        width: 150px;
+        width: 220px;
+        height: 140px;
         padding: 15px;
     }
     
-    .dev-logo {
-        width: 80px;
-        height: 40px;
+    .section-title {
+        font-size: 2.2rem;
     }
 }

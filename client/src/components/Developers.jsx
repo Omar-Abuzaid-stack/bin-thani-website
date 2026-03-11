@@ -1,75 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useLanguage } from '../context/LanguageContext';
+import React from 'react';
+import { motion } from 'framer-motion';
 import './Developers.css';
 
-// Use VITE_API_URL if set, otherwise use Netlify functions path
-const getApiUrl = (endpoint) => {
-  const baseUrl = import.meta.env.VITE_API_URL;
-  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
-  return `/.netlify/functions/${endpoint}`;
-};
+const developerPartners = [
+    { 
+        name: "Alef Group", 
+        logo: "https://www.alefgroup.ae/wp-content/uploads/2022/11/alef-group-logo-white.png", 
+        website: "https://www.alefgroup.ae", 
+        projects: ["Al Mamsha", "Hayyan", "Palace Residences", "Olfah", "Suroor"] 
+    },
+    { 
+        name: "Arada", 
+        logo: "https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/arada-logo.svg", 
+        website: "https://www.arada.com", 
+        projects: ["Aljada", "Masaar", "Jouri Hills", "Nasaq", "Sokoon"] 
+    },
+    { 
+        name: "Maryam Island", 
+        logo: "https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp", 
+        website: "https://maryamisland.ae", 
+        projects: ["Maryam Gate", "Rehan Residences", "Cyan Beach", "Sahab"] 
+    },
+    { 
+        name: "Shoumous", 
+        logo: null, 
+        website: "https://www.shoumous.com", 
+        projects: ["Shoumous Residences", "Luxury Villas", "Naseem Townhouses"] 
+    },
+    { 
+        name: "Ajmal Makan", 
+        logo: null, 
+        website: "https://ajmalmakan.com", 
+        projects: ["Waterfront City", "The View Island", "Blue Beach", "Aryam Villas"] 
+    },
+    { 
+        name: "Tiger Group", 
+        logo: null, 
+        website: "https://www.tigergroup.ae", 
+        projects: ["Tiger Sky Tower", "Faradis Tower", "Cloud Tower", "Guzel Tower"] 
+    },
+    { 
+        name: "Altay Hills", 
+        logo: null, 
+        website: "https://www.altayhills.ae", 
+        projects: ["Altay Hills Villas", "Green River", "Luxury Mansions"] 
+    },
+    { 
+        name: "Manazil", 
+        logo: null, 
+        website: "https://manazil-uae.com", 
+        projects: ["Manazil Towers", "Terhab Hotel", "Al Manazil Tower"] 
+    },
+    { 
+        name: "Al Marwan", 
+        logo: null, 
+        website: "https://almarwandevelopments.com", 
+        projects: ["Hawa Residence", "District 11", "Garden City", "Robot Park"] 
+    }
+];
 
 const Developers = ({ onDeveloperClick }) => {
-    const [developers, setDevelopers] = useState([]);
-    const [isPaused, setIsPaused] = useState(false);
-    const { t } = useLanguage();
-
-    useEffect(() => {
-        fetchDevelopers();
-    }, []);
-
-    const fetchDevelopers = async () => {
-        try {
-            const res = await axios.get(getApiUrl('developers'));
-            setDevelopers(res.data);
-        } catch (err) {
-            console.error('Error fetching developers:', err);
-            // Fallback developers
-            setDevelopers([
-                { id: 1, name: 'Emaar', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Emaar_Properties_Logo.svg/200px-Emaar_Properties_Logo.svg.png', description: 'World-class developer' },
-                { id: 2, name: 'Aldar', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a5/Aldar_Properties_logo.svg/200px-Aldar_Properties_logo.svg.png', description: 'Leading Abu Dhabi developer' },
-                { id: 3, name: 'Damac', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/DAMAC_Properties_Logo.svg/200px-DAMAC_Properties_Logo.svg.png', description: 'Luxury real estate' },
-                { id: 4, name: 'Sobha Realty', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Sobha_Group_Logo.svg/200px-Sobha_Group_Logo.svg.png', description: 'Premium quality' },
-                { id: 5, name: 'Binghatti', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Binghatti_Developers_Logo.svg/200px-Binghatti_Developers_Logo.svg.png', description: 'Innovative UAE developer' },
-                { id: 6, name: 'Nakheel', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Nakheel_Properties_Logo.svg/200px-Nakheel_Properties_Logo.svg.png', description: 'Iconic developments' },
-                { id: 7, name: 'Arada', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Arada_Logo.svg/200px-Arada_Logo.svg.png', description: 'Sharjah developer' },
-                { id: 8, name: 'Eagle Hills', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/Eagle_Hills_Logo.svg/200px-Eagle_Hills_Logo.svg.png', description: 'UAE real estate' }
-            ]);
-        }
-    };
-
     return (
-        <div className="developers-section">
-            <h2>{t('ourDevelopers')}</h2>
-            <p className="section-subtitle">{t('partneringBest')}</p>
+        <section className="developers-carousel-section">
+            <div className="container">
+                <motion.div 
+                    className="section-header"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                >
+                    <span className="section-label">Trusted Partners</span>
+                    <h2 className="section-title">Our Developer Partners</h2>
+                    <div className="section-line"></div>
+                </motion.div>
+            </div>
             
-            <div 
-                className="developers-carousel"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
-                <div className={`carousel-track ${isPaused ? 'paused' : ''}`}>
-                    {[...developers, ...developers].map((dev, idx) => (
-                        <div 
-                            key={`${dev.id}-${idx}`} 
+            <div className="carousel-container">
+                <div className="carousel-track">
+                    {[...developerPartners, ...developerPartners].map((dev, i) => (
+                        <a 
+                            key={`${dev.name}-${i}`} 
+                            href={dev.website} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
                             className="developer-card"
-                            onClick={() => onDeveloperClick && onDeveloperClick(dev.name)}
+                            onClick={(e) => {
+                                if (onDeveloperClick) {
+                                    e.preventDefault();
+                                    onDeveloperClick(dev.name);
+                                }
+                            }}
                         >
-                            <div className="dev-logo">
-                                <img 
-                                    src={dev.logo} 
-                                    alt={dev.name}
-                                    onError={(e) => { e.target.style.display = 'none'; }}
-                                />
+                            {dev.logo ? (
+                                <img src={dev.logo} alt={dev.name} className="developer-logo-img" />
+                            ) : (
+                                <span className="developer-name">{dev.name}</span>
+                            )}
+                            <div className="developer-projects-list">
+                                {dev.projects.slice(0, 3).map((proj, idx) => (
+                                    <span key={idx} className="project-tag">{proj}</span>
+                                ))}
                             </div>
-                            <h4>{dev.name}</h4>
-                            <p>{dev.description}</p>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 
