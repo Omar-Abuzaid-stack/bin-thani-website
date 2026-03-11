@@ -5,11 +5,13 @@ import { ArrowLeft, Bed, Bath, Square, Car, Calendar, MapPin, Phone, Mail, Send,
 import { useLanguage } from '../context/LanguageContext';
 import './PropertyDetail.css';
 
-// Use VITE_API_URL if set, otherwise use Netlify functions path
+// Use VITE_API_URL if set, otherwise use Vercel /api/ path
 const getApiUrl = (endpoint) => {
+  if (import.meta.env.PROD) {
+    return `/api/${endpoint}`;
+  }
   const baseUrl = import.meta.env.VITE_API_URL;
-  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
-  return `/.netlify/functions/${endpoint}`;
+  return baseUrl ? `${baseUrl}/api/${endpoint}` : `/api/${endpoint}`;
 };
 
 const PropertyDetail = () => {
@@ -36,7 +38,7 @@ const PropertyDetail = () => {
 
     const fetchProperty = async () => {
         try {
-            const res = await axios.get(getApiUrl('property') + `/${id}`);
+            const res = await axios.get(`/api/property?id=${id}`);
             setProperty(res.data);
             setMortgage(prev => ({ ...prev, price: res.data.price_numeric || 0 }));
         } catch (err) {

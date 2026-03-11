@@ -22,7 +22,7 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('https://binthani.netlify.app/.netlify/functions/leads', {
+      await axios.post('/api/leads', {
         ...formData,
         source: 'contact_page'
       });

@@ -10,11 +10,11 @@ import { useLanguage } from '../context/LanguageContext';
 import Developers from '../components/Developers';
 import './Home.css';
 
-// Use VITE_API_URL if set, otherwise use Netlify functions path
+// Use VITE_API_URL if set, otherwise use Vercel /api/ path
 const getApiUrl = (endpoint) => {
+  if (import.meta.env.PROD) return `/api/${endpoint}`;
   const baseUrl = import.meta.env.VITE_API_URL;
-  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
-  return `/.netlify/functions/${endpoint}`;
+  return baseUrl ? `${baseUrl}/api/${endpoint}` : `/api/${endpoint}`;
 };
 
 // 5 Luxury UAE Property Images for Hero

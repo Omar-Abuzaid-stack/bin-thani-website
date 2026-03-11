@@ -39,32 +39,26 @@ const About = () => {
                             viewport={{ once: true }}
                             transition={{ duration: 0.8 }}
                         >
-                            <div className="founder-image">
-                                <img 
-                                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" 
-                                    alt="Eissa bin Rashid bin Thani - Founder & CEO" 
-                                />
-                            </div>
                             <div className="founder-info">
-                                <span className="founder-label">Founder & CEO</span>
-                                <h2 className="founder-name">Eissa bin Rashid bin Thani</h2>
+                                <span className="founder-label silver-text">Founder & CEO</span>
+                                <h2 className="founder-name gold-text">Eissa bin Rashid bin Thani</h2>
                                 <div className="founder-bio">
                                     <p>
-                                        With over two decades of experience in the UAE real estate market, 
-                                        Eissa bin Rashid bin Thani has established Bin Thani Real Estate as one of 
-                                        Sharjah's most trusted and respected property consultancies.
+                                        Eissa bin Rashid bin Thani is the visionary Founder and CEO of Bin Thani Real Estate. 
+                                        With over two decades of profound experience in the UAE real estate sector, 
+                                        he has cultivated a reputation for excellence, integrity, and an unparalleled 
+                                        understanding of the luxury market landscape.
                                     </p>
                                     <p>
-                                        His vision has guided the company to become a leader in luxury 
-                                        residential and commercial properties across Sharjah, Dubai, and 
-                                        the Northern Emirates. Known for his integrity, expertise, and 
-                                        commitment to client satisfaction, Mohammed has helped hundreds 
-                                        of families find their dream homes.
+                                        His leadership has transformed Bin Thani Real Estate into a prestigious brand 
+                                        synonymous with trust and sophistication. Specializing in high-end residential 
+                                        and commercial developments, Eissa's strategic vision focuses on delivering 
+                                        exceptional value and bespoke experiences to a discerning global clientele.
                                     </p>
                                     <p>
-                                        Under his leadership, Bin Thani Real Estate continues to set 
-                                        new standards in the industry, delivering exceptional service 
-                                        and unparalleled expertise to every client.
+                                        Under his guidance, the firm continues to pioneer innovative real estate 
+                                        solutions across Sharjah and the Northern Emirates, consistently setting 
+                                        new benchmarks for quality and service in the industry.
                                     </p>
                                 </div>
                                 <div className="founder-contact">
@@ -77,6 +71,14 @@ const About = () => {
                                     <a href="mailto:info@binthanirealestate.ae">
                                         <Mail size={16} /> info@binthanirealestate.ae
                                     </a>
+                                </div>
+                            </div>
+                            <div className="founder-image">
+                                <div className="image-frame gold-border">
+                                    <img 
+                                        src="https://i.postimg.cc/K41JZnYF/image.png" 
+                                        alt="Eissa bin Rashid bin Thani - Founder & CEO" 
+                                    />
                                 </div>
                             </div>
                         </motion.div>
@@ -266,7 +268,7 @@ const About = () => {
                 
                 .founder-card {
                     display: grid;
-                    grid-template-columns: 400px 1fr;
+                    grid-template-columns: 1fr 400px;
                     gap: 80px;
                     align-items: center;
                     max-width: 1200px;
@@ -308,10 +310,40 @@ const About = () => {
                 
                 .founder-name {
                     font-family: 'Cormorant Garamond', serif;
-                    font-size: 3rem;
+                    font-size: 3.5rem;
                     font-weight: 300;
-                    color: #fff;
                     margin-bottom: 30px;
+                }
+
+                .gold-text {
+                    background: linear-gradient(135deg, #B8960C 0%, #F1D153 50%, #B8960C 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                .silver-text {
+                    background: linear-gradient(135deg, #A8A8A8 0%, #E8E8E8 50%, #A8A8A8 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    letter-spacing: 4px;
+                }
+
+                .gold-border {
+                    border: 2px solid #B8960C;
+                    position: relative;
+                }
+
+                .gold-border::after {
+                    content: '';
+                    position: absolute;
+                    top: -10px;
+                    left: -10px;
+                    right: -10px;
+                    bottom: -10px;
+                    border: 1px solid rgba(184, 150, 12, 0.3);
+                    z-index: -1;
                 }
                 
                 .founder-bio p {

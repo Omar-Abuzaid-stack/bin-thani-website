@@ -4,25 +4,48 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Chatbot.css';
 
-// Direct Netlify function URL - no need for VITE_API_URL
-// Use relative paths for Netlify functions
-const CHAT_API_URL = '/.netlify/functions/chat';
-const LEADS_API_URL = '/.netlify/functions/leads';
+// Direct Vercel /api/ path - no need for VITE_API_URL
+// Use relative paths for Vercel serverless functions
+const CHAT_API_URL = '/api/chat';
+const LEADS_API_URL = '/api/leads';
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useLanguage();
-    const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Marhaba! I am Layla from Bin Thani Real Estate. How can I assist you with your luxury property search in UAE today?' }
-    ]);
+    
+    // Persist states in localStorage to support long conversations
+    const [messages, setMessages] = useState(() => {
+        const saved = localStorage.getItem('chat_messages');
+        return saved ? JSON.parse(saved) : [{ role: 'assistant', content: 'Marhaba! I am Layla from Bin Thani Real Estate. How can I assist you with your luxury property search in UAE today?' }];
+    });
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [showLeadForm, setShowLeadForm] = useState(false);
+    const [showLeadForm, setShowLeadForm] = useState(() => localStorage.getItem('chat_show_lead_form') === 'true');
     const [leadInfo, setLeadInfo] = useState({ name: '', email: '', requirements: '' });
-    const [userMessageCount, setUserMessageCount] = useState(0);
-    const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    const [userMessageCount, setUserMessageCount] = useState(() => parseInt(localStorage.getItem('chat_message_count') || '0', 10));
+    
+    const [sessionId] = useState(() => {
+        const saved = localStorage.getItem('chat_session_id');
+        if (saved) return saved;
+        const newId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('chat_session_id', newId);
+        return newId;
+    });
 
     const scrollRef = useRef(null);
+
+    // Save states whenever they change
+    useEffect(() => {
+        localStorage.setItem('chat_messages', JSON.stringify(messages));
+    }, [messages]);
+
+    useEffect(() => {
+        localStorage.setItem('chat_message_count', userMessageCount.toString());
+    }, [userMessageCount]);
+
+    useEffect(() => {
+        localStorage.setItem('chat_show_lead_form', showLeadForm.toString());
+    }, [showLeadForm]);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -42,7 +65,10 @@ const Chatbot = () => {
         setUserMessageCount(prev => prev + 1);
 
         try {
-            const res = await axios.post(CHAT_API_URL, { messages: newMessages, sessionId }, { timeout: 10000 });
+            // Keep only the last 40 messages to avoid huge payloads and hitting token limits
+            const messagesToSend = newMessages.length > 40 ? newMessages.slice(-40) : newMessages;
+            
+            const res = await axios.post('/api/chat', { messages: messagesToSend, sessionId }, { timeout: 10000 });
             const assistantResponse = res.data;
             setMessages(prev => [...prev, assistantResponse]);
 

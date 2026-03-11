@@ -1,140 +1,462 @@
 /* ========================================
-   DEVELOPERS CAROUSEL - Infinite Scroll
+   DEVELOPERS SECTION - Redesign
    ======================================== */
-.developers-carousel-section {
-    padding: 100px 0;
+.developers-section {
+    padding: 60px 0;
     background: #0a0a0a;
-    overflow: hidden;
+    position: relative;
 }
 
-.developers-carousel-section .section-header {
+.dev-section-header {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 70px;
 }
 
-.developers-carousel-section .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #B8960C;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.developers-carousel-section .section-title {
+.dev-section-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 3rem;
-    font-weight: 300;
+    font-size: 2.8rem;
+    font-weight: 400;
     color: #fff;
+    margin-bottom: 10px;
 }
 
-.developers-carousel-section .section-line {
-    width: 60px;
+.dev-section-subtitle {
+    font-size: 1.1rem;
+    color: #c9a84c;
+    margin-bottom: 5px;
+    font-weight: 300;
+}
+
+.dev-section-hint {
+    font-size: 0.9rem;
+    color: #888;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.dev-section-line {
+    width: 80px;
     height: 1px;
-    background: #B8960C;
-    margin: 20px auto 0;
+    background: #c9a84c;
+    margin: 0 auto;
 }
 
-.carousel-container {
-    width: 100%;
-    overflow: hidden;
-    padding: 20px 0;
-}
-
-.carousel-track {
-    display: flex;
-    gap: 30px;
-    animation: scroll 40s linear infinite;
-    width: max-content;
-}
-
-.carousel-track:hover {
-    animation-play-state: paused;
-}
-
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-.developer-card {
-    flex-shrink: 0;
-    width: 280px;
-    height: 160px;
-    padding: 25px;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(184, 150, 12, 0.15);
-    border-radius: 12px;
-    text-align: center;
-    transition: all 0.4s ease;
+.developers-grid {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    cursor: pointer;
+    gap: 50px;
 }
 
-.developer-card:hover {
-    border: 1px solid #B8960C;
-    transform: translateY(-5px);
-    background: rgba(184, 150, 12, 0.05);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+.dev-card-glass {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(201, 168, 76, 0.1);
+    border-radius: 20px;
+    padding: 25px 30px;
+    transition: all 0.4s ease;
 }
 
-.developer-logo-img {
-    max-height: 50px;
-    width: auto;
-    max-width: 80%;
+.dev-card-glass:hover {
+    border-color: rgba(201, 168, 76, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.dev-card-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.dev-real-logo {
+    max-height: 55px;
+    max-width: 200px;
     object-fit: contain;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
-.developer-name {
+.dev-fallback-logo {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
+    font-size: 2.8rem;
+    color: #c9a84c;
+    margin-bottom: 10px;
     font-weight: 500;
-    color: #B8960C;
-    margin-bottom: 12px;
 }
 
-.developer-projects-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin-top: 5px;
+.dev-name-sub {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 8px;
+    font-family: 'Cormorant Garamond', serif;
 }
 
-.project-tag {
-    font-size: 10px;
-    color: #A8A8A8;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 2px 8px;
-    border-radius: 4px;
+.dev-tagline {
+    color: #C0C0C0;
+    font-size: 1rem;
     letter-spacing: 0.5px;
+}
+
+.dev-projects-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.dev-project-card {
+    background: #111;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
 }
 
-.developer-card:hover .project-tag {
+.dev-project-card:hover {
+    border-color: rgba(201, 168, 76, 0.3);
+    transform: translateY(-5px);
+}
+
+.dev-proj-img-wrap {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.dev-proj-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.dev-project-card:hover .dev-proj-img {
+    transform: scale(1.1);
+}
+
+.dev-proj-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 60%);
+}
+
+.dev-proj-badges {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+.badge-type {
+    background: rgba(0, 0, 0, 0.7);
     color: #fff;
-    background: rgba(184, 150, 12, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    backdrop-filter: blur(4px);
+}
+
+.badge-status {
+    background: rgba(201, 168, 76, 0.9);
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-status.under-construction {
+    background: #e67e22;
+    color: #fff;
+}
+
+.badge-status.upcoming {
+    background: #3498db;
+    color: #fff;
+}
+
+.dev-proj-content {
+    padding: 25px 20px;
+}
+
+.dev-proj-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.dev-proj-loc {
+    color: #888;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.icon {
+    color: #c9a84c;
+}
+
+.dev-proj-btn {
+    background: transparent;
+    border: none;
+    color: #c9a84c;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.dev-proj-btn:hover {
+    gap: 10px;
+    color: #fff;
+}
+
+/* Modal Styles */
+.proj-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.proj-modal-content {
+    background: #111;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 1000px;
+    overflow: hidden;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.proj-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: #fff;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.proj-modal-close:hover {
+    background: #c9a84c;
+    color: #000;
+}
+
+.proj-modal-hero {
+    position: relative;
+    height: 350px;
+}
+
+.proj-modal-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.proj-modal-hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+}
+
+.proj-modal-hero-text {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+}
+
+.proj-modal-dev {
+    color: #c9a84c;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.proj-modal-hero-text h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.proj-modal-hero-text p {
+    color: #C0C0C0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proj-modal-body {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    padding: 40px;
+}
+
+.proj-modal-section {
+    margin-bottom: 40px;
+}
+
+.proj-modal-section h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: #c9a84c;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.proj-desc {
+    color: #ccc;
+    line-height: 1.8;
+}
+
+.proj-features-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.proj-features-list li {
+    color: #ccc;
+    position: relative;
+    padding-left: 20px;
+}
+
+.proj-features-list li::before {
+    content: '•';
+    color: #c9a84c;
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+}
+
+.proj-modal-info-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.info-row .gold {
+    color: #c9a84c;
+    margin-top: 3px;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    display: block;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.badge-wrap {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-primary-full {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 15px;
+    background: #c9a84c;
+    color: #000;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-primary-full:hover {
+    background: #eacf70;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(201, 168, 76, 0.3);
+}
+
+.proj-modal-map {
+    border-radius: 12px;
+    overflow: hidden;
+    height: 250px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.proj-modal-map iframe {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 992px) {
+    .proj-modal-body {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
-    .developer-card {
-        width: 220px;
-        height: 140px;
-        padding: 15px;
+    .dev-section-title {
+        font-size: 2.5rem;
     }
-    
-    .section-title {
+    .dev-card-glass {
+        padding: 25px 20px;
+    }
+    .proj-modal-hero {
+        height: 250px;
+    }
+    .proj-modal-hero-text h2 {
         font-size: 2.2rem;
+    }
+    .proj-modal-hero-text {
+        left: 20px;
+        bottom: 20px;
+    }
+    .proj-modal-body {
+        padding: 20px;
+    }
+    .proj-features-list {
+        grid-template-columns: 1fr;
     }
 }

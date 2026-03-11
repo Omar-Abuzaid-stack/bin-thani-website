@@ -7,11 +7,11 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import './Properties.css';
 
-// Use VITE_API_URL if set, otherwise use Netlify functions path
+// Use VITE_API_URL if set, otherwise use Vercel /api/ path
 const getApiUrl = (endpoint) => {
+  if (import.meta.env.PROD) return `/api/${endpoint}`;
   const baseUrl = import.meta.env.VITE_API_URL;
-  if (baseUrl) return `${baseUrl}/.netlify/functions/${endpoint}`;
-  return `/.netlify/functions/${endpoint}`;
+  return baseUrl ? `${baseUrl}/api/${endpoint}` : `/api/${endpoint}`;
 };
 
 // Default luxury property images
