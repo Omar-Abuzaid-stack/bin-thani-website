@@ -81,30 +81,6 @@ const Services = () => {
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.6, delay: index * 0.1 }}
                                 >
-                                    {service.title === 'Investment Advisory' ? (
-                                        <Link to={service.link} style={{display:'block',height:'400px'}}>
-                                            <div
-                                                style={{
-                                                    backgroundImage: "url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800')",
-                                                    backgroundSize: 'cover',
-                                                    backgroundPosition: 'center',
-                                                    backgroundRepeat: 'no-repeat',
-                                                    height: '400px',
-                                                    width: '100%',
-                                                    position: 'relative'
-                                                }}
-                                            >
-                                                <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2))'}}/>
-                                                <div style={{position:'relative',zIndex:1,padding:'2rem',height:'100%',display:'flex',flexDirection:'column',justifyContent:'flex-end'}}>
-                                                    <h3 style={{color:'white',fontFamily:'Cormorant Garamond, serif',fontSize:'1.8rem',fontWeight:400,marginBottom:'12px'}}>Investment Advisory</h3>
-                                                    <p style={{color:'#ccc',fontFamily:'DM Sans, sans-serif',fontSize:'0.9rem',marginBottom:'20px',lineHeight:1.7}}>High-yield investment opportunities in UAE real estate</p>
-                                                    <span style={{display:'inline-flex',alignItems:'center',gap:'8px',fontFamily:'DM Sans, sans-serif',fontSize:'11px',fontWeight:600,letterSpacing:'2px',textTransform:'uppercase',color:'#B8960C'}}>
-                                                        Learn More
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ) : (
                                         <Link to={service.link}>
                                             <div 
                                                 className="service-card-bg" 
@@ -124,7 +100,6 @@ const Services = () => {
                                                 </div>
                                             </div>
                                         </Link>
-                                    )}
                                 </motion.div>
                             ))}
                         </div>

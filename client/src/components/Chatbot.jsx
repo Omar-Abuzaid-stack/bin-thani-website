@@ -5,14 +5,15 @@ import { useLanguage } from '../context/LanguageContext';
 import './Chatbot.css';
 
 // Direct Netlify function URL - no need for VITE_API_URL
-const CHAT_API_URL = 'https://binthani.netlify.app/.netlify/functions/chat';
-const LEADS_API_URL = 'https://binthani.netlify.app/.netlify/functions/leads';
+// Use relative paths for Netlify functions
+const CHAT_API_URL = '/.netlify/functions/chat';
+const LEADS_API_URL = '/.netlify/functions/leads';
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useLanguage();
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Welcome to Bin Thani Real Estate! How can I help you today?' }
+        { role: 'assistant', content: 'Marhaba! I am Layla from Bin Thani Real Estate. How can I assist you with your luxury property search in UAE today?' }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);

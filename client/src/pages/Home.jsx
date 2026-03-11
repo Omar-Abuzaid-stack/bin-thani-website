@@ -217,51 +217,61 @@ const Home = () => {
                     </motion.div>
                     
                     <div className="properties-grid">
-                        {featuredProperties.slice(0, 6).map((property, index) => (
-                            <motion.div 
-                                key={property.id}
-                                className="property-card"
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <Link to={`/property/${property.id}`}>
-                                    <div className="property-image">
-                                        <img 
-                                            src={property.images ? JSON.parse(property.images)[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'} 
-                                            alt={property.title}
-                                        />
-                                        {property.status === 'Off-Plan' && (
-                                            <span className="property-badge">Off-Plan</span>
-                                        )}
-                                    </div>
-                                    <div className="property-info">
-                                        <div className="property-price">{property.price}</div>
-                                        <h3 className="property-title">{property.title}</h3>
-                                        <div className="property-location">
-                                            <MapPin size={14} />
-                                            <span>{property.location}</span>
-                                        </div>
-                                        <div className="property-details">
-                                            {property.bedrooms > 0 && (
-                                                <span className="property-detail">
-                                                    <Bed size={14} /> {property.bedrooms} Beds
-                                                </span>
+                        {featuredProperties.slice(0, 6).map((property, index) => {
+                            let images = [];
+                            try {
+                                images = typeof property.images === 'string' ? JSON.parse(property.images) : property.images;
+                            } catch (e) {
+                                console.error('Error parsing property images:', e);
+                                images = ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'];
+                            }
+                            
+                            return (
+                                <motion.div 
+                                    key={property.id || index}
+                                    className="property-card"
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                >
+                                    <Link to={`/property/${property.id}`}>
+                                        <div className="property-image">
+                                            <img 
+                                                src={images && images.length > 0 ? images[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'} 
+                                                alt={property.title}
+                                            />
+                                            {property.status === 'Off-Plan' && (
+                                                <span className="property-badge">Off-Plan</span>
                                             )}
-                                            {property.bathrooms > 0 && (
-                                                <span className="property-detail">
-                                                    <Bath size={14} /> {property.bathrooms} Baths
-                                                </span>
-                                            )}
-                                            <span className="property-detail">
-                                                <Square size={14} /> {property.area}
-                                            </span>
                                         </div>
-                                    </div>
-                                </Link>
-                            </motion.div>
-                        ))}
+                                        <div className="property-info">
+                                            <div className="property-price">AED {property.price?.toLocaleString()}</div>
+                                            <h3 className="property-title">{property.title}</h3>
+                                            <div className="property-location">
+                                                <MapPin size={14} />
+                                                <span>{property.location}</span>
+                                            </div>
+                                            <div className="property-details">
+                                                {property.bedrooms > 0 && (
+                                                    <span className="property-detail">
+                                                        <Bed size={14} /> {property.bedrooms} Beds
+                                                    </span>
+                                                )}
+                                                {property.bathrooms > 0 && (
+                                                    <span className="property-detail">
+                                                        <Bath size={14} /> {property.bathrooms} Baths
+                                                    </span>
+                                                )}
+                                                <span className="property-detail">
+                                                    <Square size={14} /> {property.area}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                     
                     <motion.div 

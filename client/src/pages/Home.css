@@ -707,7 +707,6 @@ section {
 .carousel-container:hover .carousel-track {
     animation-play-state: running;
 }
-}
 
 .developer-card {
     flex-shrink: 0;
