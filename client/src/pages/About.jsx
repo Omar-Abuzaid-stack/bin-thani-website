@@ -76,7 +76,7 @@ const About = () => {
                             <div className="founder-image">
                                 <div className="image-frame gold-border">
                                     <img 
-                                        src="/owner.png" 
+                                        src="/BinThaniOwner.png" 
                                         alt="Eissa bin Rashid bin Thani - Founder & CEO" 
                                     />
                                 </div>
@@ -293,9 +293,23 @@ const About = () => {
                 .founder-image img {
                     position: relative;
                     width: 100%;
-                    height: 500px;
+                    height: 550px;
                     object-fit: cover;
+                    object-position: center top;
                     z-index: 1;
+                    display: block;
+                }
+                
+                @media (max-width: 900px) {
+                    .founder-image img {
+                        height: 450px;
+                    }
+                }
+                
+                @media (max-width: 600px) {
+                    .founder-image img {
+                        height: 400px;
+                    }
                 }
                 
                 .founder-label {
