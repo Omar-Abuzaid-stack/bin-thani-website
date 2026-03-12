@@ -38,11 +38,17 @@ const PropertyDetail = () => {
 
     const fetchProperty = async () => {
         try {
-            const res = await axios.get(`/api/property?id=${id}`);
-            setProperty(res.data);
-            setMortgage(prev => ({ ...prev, price: res.data.price_numeric || 0 }));
+            const res = await axios.get(`${getApiUrl('property')}?id=${id}`);
+            if (res.data && !res.data.error) {
+                setProperty(res.data);
+                setMortgage(prev => ({ ...prev, price: res.data.price_numeric || 0 }));
+                window.scrollTo(0, 0);
+            } else {
+                setProperty(null);
+            }
         } catch (err) {
             console.error('Error:', err);
+            setProperty(null);
         }
         setLoading(false);
     };

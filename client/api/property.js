@@ -79,7 +79,7 @@ export default async function handler(req, res) {
             return res.status(204).send('');
         }
 
-        const data = await supabaseCall(`properties?id.eq.${id}&select=*&limit=1`);
+        const data = await supabaseCall(`properties?id=eq.${id}&select=*&limit=1`);
         
         if (!data || data.length === 0) {
             return res.status(404).json({ error: 'Property not found' });
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
         
         // Increment views
         try {
-            await supabaseCall(`properties?id.eq.${id}`, 'PATCH', {
+            await supabaseCall(`properties?id=eq.${id}`, 'PATCH', {
                 views: (property.views || 0) + 1
             });
         } catch (e) {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Fuse from 'fuse.js';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -113,39 +114,61 @@ const Properties = () => {
         'masaar': 'مسار',
         'maryam island': 'جزيرة مريم',
         'muwaileh': 'مويلحة',
+        'muwaila': 'مويلحة',
         'tilal': 'تلال',
         'al mamsha': 'الممشى',
         'hayyan': 'حيان',
         'ready': 'جاهز',
-        'off-plan': 'على الخريطة'
+        'off-plan': 'على الخريطة',
+        'palm jumeirah': 'نخلة جميرا',
+        'jumeirah': 'جميرا',
+        'dubai marina': 'دبي مارينا',
+        'business bay': 'الخليج التجاري'
     };
 
-    // Instant frontend filtering for even faster response
-    const filteredProperties = properties.filter(p => {
-        const term = searchTerm.toLowerCase();
-        if (!term) return true;
-        
-        // Find if the term has a translation
+    // Fuse.js configuration for smart/fuzzy search
+    const fuseOptions = {
+        keys: ['title', 'location', 'description', 'developer', 'project'],
+        threshold: 0.4, // Lower score is better match (0.0 is perfect, 1.0 is no match)
+        distance: 100,
+        includeScore: true,
+        useExtendedSearch: true
+    };
+
+    // Instant smart fuzzy filtering
+    const filteredProperties = React.useMemo(() => {
+        const term = searchTerm.toLowerCase().trim();
+        if (!term) return properties;
+
+        // 1. Try Fuzzy Search first
+        const fuse = new Fuse(properties, fuseOptions);
+        const fuzzyResults = fuse.search(term).map(res => res.item);
+
+        if (fuzzyResults.length > 0) return fuzzyResults;
+
+        // 2. Fallback to Translation-aware Substring Match (for specific area names)
         let translatedTerm = '';
         for (const [en, ar] of Object.entries(areaMap)) {
-            if (term.includes(en)) translatedTerm = ar;
+            if (term.includes(en.toLowerCase())) translatedTerm = ar;
             if (term.includes(ar)) translatedTerm = en;
         }
 
-        const matches = (text) => {
-            if (!text) return false;
-            const content = text.toLowerCase();
-            return content.includes(term) || (translatedTerm && content.includes(translatedTerm));
-        };
+        return properties.filter(p => {
+            const matches = (text) => {
+                if (!text) return false;
+                const content = text.toLowerCase();
+                return content.includes(term) || (translatedTerm && content.includes(translatedTerm.toLowerCase()));
+            };
 
-        return (
-            matches(p.title) ||
-            matches(p.location) ||
-            matches(p.description) ||
-            matches(p.developer) ||
-            matches(p.project)
-        );
-    });
+            return (
+                matches(p.title) ||
+                matches(p.location) ||
+                matches(p.description) ||
+                matches(p.developer) ||
+                matches(p.project)
+            );
+        });
+    }, [properties, searchTerm]);
 
     const clearFilters = () => {
         setSearchTerm('');
