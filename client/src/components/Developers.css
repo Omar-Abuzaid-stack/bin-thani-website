@@ -18,6 +18,17 @@
     font-weight: 400;
     color: #fff;
     margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(201,168,76,0.8) 0%, rgba(255,233,155,0.1) 50%, rgba(201,168,76,0.8) 100%);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: goldShimmer 3.5s ease-in-out infinite;
+}
+
+@keyframes goldShimmer {
+    0% { background-position: -300px; }
+    100% { background-position: 300px; }
 }
 
 .dev-section-subtitle {
@@ -47,18 +58,31 @@
     gap: 50px;
 }
 
+.developers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
 .dev-card-glass {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(201, 168, 76, 0.1);
-    border-radius: 20px;
-    padding: 25px 30px;
-    transition: all 0.4s ease;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 22px;
+    padding: 30px 32px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.32);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+dev-card-glass:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.42);
 }
 
 .dev-card-glass:hover {
-    border-color: rgba(201, 168, 76, 0.4);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(201, 168, 76, 0.45);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.42);
+    transform: translateY(-5px);
 }
 
 .dev-card-header {
@@ -123,11 +147,19 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.6s ease, filter 0.4s ease;
 }
 
 .dev-project-card:hover .dev-proj-img {
     transform: scale(1.1);
+    filter: brightness(1.05);
+}
+
+.proj-modal-hero-img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    filter: brightness(0.9);
 }
 
 .dev-proj-overlay {

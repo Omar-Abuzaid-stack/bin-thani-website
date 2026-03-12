@@ -3,6 +3,66 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Home, Info, X, ChevronRight, BedDouble, Tag, Loader2 } from 'lucide-react';
 import './Developers.css';
 
+const GOLD_GRADIENT_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23c9a84c'/%3E%3Cstop offset='50%25' stop-color='%23f9d57d'/%3E%3Cstop offset='100%25' stop-color='%23a07c33'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='Arial, sans-serif' font-size='26'%3EImage Unavailable%3C/text%3E%3C/svg%3E";
+
+const PROJECT_IMAGE_OVERRIDES = {
+    'Alef Group': {
+        'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
+        'Al Mamsha Sharjah': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2021/05/Al-Mamsha-Sharjah.jpg',
+        'Hayyan Villas': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2023/07/Hayyan-Villas.jpg'
+    },
+    'Arada': {
+        'Aljada Sharjah': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/08/Aljada-Project.jpg',
+        'Jouri Hills': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/09/Jouri-Hills.jpg',
+        'Naseej District': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/10/Naseej-District.jpg'
+    },
+    'Shoumous': {
+        'Shoumous Residences': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2023/01/Shoumous-Residences.jpg'
+    },
+    'Ajmal Makan': {
+        'City Hamriyah': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2020/10/City-Hamriyah.jpg',
+        'Bab Al Bahar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2020/11/Bab-Al-Bahar.jpg'
+    },
+    'Tiger Group': {
+        'Tiger Sky Tower': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2019/12/Tiger-Sky-Tower.jpg',
+        'Tiger Palace': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2019/12/Tiger-Palace.jpg'
+    },
+    'Altay Hills': {
+        'Alta Hills villas': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/11/Altay-Hills-Villas.jpg'
+    },
+    'Manazil': {
+        'Al Reef': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/05/Al-Reef-Manazil-UAE.jpg'
+    },
+    'Maryam Island': {
+        'Sharjah apartments': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2023/09/Maryam-Island-Sharjah-Apartments.jpg'
+    },
+    'Al Marwan': {
+        'Tilal City': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2021/04/Tilal-City.jpg',
+        'Garden City': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2021/04/Garden-City.jpg'
+    }
+};
+
+const isUnsplash = (url) => typeof url === 'string' && url.includes('images.unsplash.com');
+
+const resolveProjectImage = (developer, projectName, imageUrl) => {
+    const devSpec = PROJECT_IMAGE_OVERRIDES[developer];
+    if (devSpec && devSpec[projectName]) return devSpec[projectName];
+
+    if (isUnsplash(imageUrl) || !imageUrl) {
+        if (devSpec && Object.values(devSpec).length > 0) {
+            return Object.values(devSpec)[0];
+        }
+        return GOLD_GRADIENT_FALLBACK;
+    }
+
+    return imageUrl;
+};
+
+const handleImageError = (e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = GOLD_GRADIENT_FALLBACK;
+};
+
 const Developers = () => {
     const [developersData, setDevelopersData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -34,7 +94,8 @@ const Developers = () => {
     }, []);
 
     const openModal = (project, developer) => {
-        setSelectedProject({ ...project, developerName: developer });
+        const resolvedImage = resolveProjectImage(developer, project.name, project.image);
+        setSelectedProject({ ...project, developerName: developer, image: resolvedImage });
         document.body.style.overflow = 'hidden';
     };
 
@@ -80,7 +141,7 @@ const Developers = () => {
                             >
                                 <div className="dev-card-header">
                                     {dev.logo ? (
-                                        <img src={dev.logo} alt={dev.name} className="dev-real-logo" />
+                                        <img src={dev.logo} alt={dev.name} className="dev-real-logo" loading="lazy" onError={handleImageError} />
                                     ) : (
                                         <h3 className="dev-fallback-logo">{dev.name}</h3>
                                     )}
@@ -89,12 +150,14 @@ const Developers = () => {
                                 </div>
 
                                 <div className="dev-projects-row">
-                                    {dev.projects.map((proj, pIdx) => (
-                                        <div key={pIdx} className="dev-project-card">
-                                            <div className="dev-proj-img-wrap">
-                                                <img src={proj.image} alt={proj.name} className="dev-proj-img" />
-                                                <div className="dev-proj-overlay"></div>
-                                                <div className="dev-proj-badges">
+                                    {dev.projects.map((proj, pIdx) => {
+                                        const projectImage = resolveProjectImage(dev.name, proj.name, proj.image);
+                                        return (
+                                            <div key={pIdx} className="dev-project-card">
+                                                <div className="dev-proj-img-wrap">
+                                                    <img src={projectImage} alt={proj.name} className="dev-proj-img" loading="lazy" onError={handleImageError} />
+                                                    <div className="dev-proj-overlay"></div>
+                                                    <div className="dev-proj-badges">
                                                     <span className="badge-type">{proj.type}</span>
                                                     <span className={`badge-status ${proj.status.replace(/\s+/g, '-').toLowerCase()}`}>{proj.status}</span>
                                                 </div>
@@ -107,7 +170,8 @@ const Developers = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
+                                    );
+                                })}
                                 </div>
                             </motion.div>
                         ))}
@@ -134,7 +198,7 @@ const Developers = () => {
                             <button className="proj-modal-close" onClick={closeModal}><X size={24} /></button>
                             
                             <div className="proj-modal-hero">
-                                <img src={selectedProject.image} alt={selectedProject.name} />
+                                <img src={selectedProject.image || GOLD_GRADIENT_FALLBACK} alt={selectedProject.name} className="proj-modal-hero-img" loading="lazy" onError={handleImageError} />
                                 <div className="proj-modal-hero-overlay"></div>
                                 <div className="proj-modal-hero-text">
                                     <span className="proj-modal-dev">{selectedProject.developerName}</span>
