@@ -44,14 +44,27 @@ const PROJECT_IMAGE_OVERRIDES = {
 
 const isUnsplash = (url) => typeof url === 'string' && url.includes('images.unsplash.com');
 
-const resolveProjectImage = (developer, projectName, imageUrl) => {
+const resolveProjectImage = (developer, projectName = '', imageUrl) => {
     const devSpec = PROJECT_IMAGE_OVERRIDES[developer];
-    if (devSpec && devSpec[projectName]) return devSpec[projectName];
 
-    if (isUnsplash(imageUrl) || !imageUrl) {
-        if (devSpec && Object.values(devSpec).length > 0) {
-            return Object.values(devSpec)[0];
+    if (devSpec) {
+        const normalizedProjectName = projectName.trim().toLowerCase();
+        const exactImage = Object.entries(devSpec).find(([key]) => key.toLowerCase() === normalizedProjectName);
+        if (exactImage) return exactImage[1];
+
+        const fuzzyImage = Object.entries(devSpec).find(([key]) => {
+            const needle = key.toLowerCase();
+            return normalizedProjectName.includes(needle) || needle.includes(normalizedProjectName) || needle.split(' ').some(s => normalizedProjectName.includes(s));
+        });
+        if (fuzzyImage) return fuzzyImage[1];
+
+        if (!imageUrl || isUnsplash(imageUrl)) {
+            const firstImage = Object.values(devSpec)[0];
+            if (firstImage) return firstImage;
         }
+    }
+
+    if (!imageUrl || isUnsplash(imageUrl)) {
         return GOLD_GRADIENT_FALLBACK;
     }
 
@@ -229,8 +242,8 @@ const Developers = () => {
                                         <div className="info-row">
                                             <Tag size={18} className="gold"/>
                                             <div>
-                                                <span className="info-label">Price Range</span>
-                                                <span className="info-value">{selectedProject.price}</span>
+                                                <span className="info-label">Developer</span>
+                                                <span className="info-value">{selectedProject.developerName}</span>
                                             </div>
                                         </div>
                                         <div className="info-row">
