@@ -7,7 +7,6 @@ const SUPABASE_KEY = process.env.SUPABASE_KEY ? process.env.SUPABASE_KEY.trim() 
 const DEVELOPER_META = {
     "Alef Group": { logo: "https://www.alefgroup.ae/wp-content/uploads/2022/11/alef-group-logo-white.png", tagline: "Building Premier Lifestyle Communities" },
     "Arada": { logo: "https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/arada-logo.svg", tagline: "Transforming the Future of Sharjah" },
-    "Maryam Island": { logo: "https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp", tagline: "Sharjah’s Premier Waterfront Destination" },
     "Eagle Hills": { logo: "https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp", tagline: "Pioneering Luxury Destinations" },
     "Diamond Developers": { logo: "https://sharjahsustainablecity.ae/wp-content/uploads/2021/04/SSC-Logo-White.png", tagline: "Pioneers in Sustainable Living" },
     "Tiger Group": { logo: "https://tigergroup.ae/wp-content/themes/tiger-group/assets/images/logo.png", tagline: "Iconic High-Rise Developments" },
@@ -49,7 +48,10 @@ export default async function handler(req, res) {
         
         // Group projects by developer
         const grouped = data.reduce((acc, project) => {
-            const devName = project.developer || 'Other';
+            // Handle Maryam Island project under Eagle Hills as requested
+            let devName = project.developer || 'Other';
+            if (devName === 'Maryam Island') devName = 'Eagle Hills';
+
             if (!acc[devName]) acc[devName] = [];
             
             let parsedImages = [];

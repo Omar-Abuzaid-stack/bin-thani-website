@@ -245,7 +245,7 @@ const Developers = () => {
                                     <div className="proj-modal-section">
                                         <h3><Home size={20} /> Key Features</h3>
                                         <ul className="proj-features-list">
-                                            {selectedProject.features.map((feat, i) => (
+                                            {(selectedProject.features || []).map((feat, i) => (
                                                 <li key={i}>{feat}</li>
                                             ))}
                                         </ul>
@@ -271,7 +271,7 @@ const Developers = () => {
                                         <div className="info-row">
                                             <div className="badge-wrap">
                                                 <span className="badge-type">{selectedProject.type}</span>
-                                                <span className={`badge-status ${selectedProject.status.replace(/\s+/g, '-').toLowerCase()}`}>{selectedProject.status}</span>
+                                                <span className={`badge-status ${selectedProject.status ? selectedProject.status.replace(/\s+/g, '-').toLowerCase() : ''}`}>{selectedProject.status || 'Details'}</span>
                                             </div>
                                         </div>
                                         
