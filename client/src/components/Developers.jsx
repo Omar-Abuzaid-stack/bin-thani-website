@@ -42,13 +42,31 @@ const PROJECT_IMAGE_OVERRIDES = {
     }
 };
 
+const UNSPLASH_IMAGE_BY_TYPE = {
+    apartment: 'https://images.unsplash.com/photo-1560448070-9a79ef82d833?auto=format&fit=crop&w=1400&q=80',
+    villa: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80',
+    townhouse: 'https://images.unsplash.com/photo-1572120360610-d971b9f5792b?auto=format&fit=crop&w=1400&q=80',
+    penthouse: 'https://images.unsplash.com/photo-1600077081180-122bba7565fe?auto=format&fit=crop&w=1400&q=80',
+    tower: 'https://images.unsplash.com/photo-1560184897-0af3f358b79a?auto=format&fit=crop&w=1400&q=80',
+    office: 'https://images.unsplash.com/photo-1592928306898-0bdcbce1c80a?auto=format&fit=crop&w=1400&q=80',
+    default: 'https://images.unsplash.com/photo-1492717560260-1a4d0ffc1caa?auto=format&fit=crop&w=1400&q=80'
+};
+
 const isUnsplash = (url) => typeof url === 'string' && url.includes('images.unsplash.com');
 
-const resolveProjectImage = (developer, projectName = '', imageUrl) => {
-    const devSpec = PROJECT_IMAGE_OVERRIDES[developer];
+const resolveProjectImage = (developer, projectName = '', imageUrl, projectType = '') => {
+    // Strictly use type-based Unsplash images to avoid blocked external sources
+    const normalizedType = (projectType || '').trim().toLowerCase();
+    const typeImage = UNSPLASH_IMAGE_BY_TYPE[normalizedType] || UNSPLASH_IMAGE_BY_TYPE.default;
 
+    if (typeImage) {
+        return typeImage;
+    }
+
+    // Fallback to developer-specific override if type is undefined (should not happen)
+    const devSpec = PROJECT_IMAGE_OVERRIDES[developer];
     if (devSpec) {
-        const normalizedProjectName = projectName.trim().toLowerCase();
+        const normalizedProjectName = (projectName || '').trim().toLowerCase();
         const exactImage = Object.entries(devSpec).find(([key]) => key.toLowerCase() === normalizedProjectName);
         if (exactImage) return exactImage[1];
 
@@ -58,17 +76,11 @@ const resolveProjectImage = (developer, projectName = '', imageUrl) => {
         });
         if (fuzzyImage) return fuzzyImage[1];
 
-        if (!imageUrl || isUnsplash(imageUrl)) {
-            const firstImage = Object.values(devSpec)[0];
-            if (firstImage) return firstImage;
-        }
+        const firstImage = Object.values(devSpec)[0];
+        if (firstImage) return firstImage;
     }
 
-    if (!imageUrl || isUnsplash(imageUrl)) {
-        return GOLD_GRADIENT_FALLBACK;
-    }
-
-    return imageUrl;
+    return GOLD_GRADIENT_FALLBACK;
 };
 
 const handleImageError = (e) => {
@@ -107,7 +119,7 @@ const Developers = () => {
     }, []);
 
     const openModal = (project, developer) => {
-        const resolvedImage = resolveProjectImage(developer, project.name, project.image);
+        const resolvedImage = resolveProjectImage(developer, project.name, project.image, project.type);
         setSelectedProject({ ...project, developerName: developer, image: resolvedImage });
         document.body.style.overflow = 'hidden';
     };
@@ -164,7 +176,7 @@ const Developers = () => {
 
                                 <div className="dev-projects-row">
                                     {dev.projects.map((proj, pIdx) => {
-                                        const projectImage = resolveProjectImage(dev.name, proj.name, proj.image);
+                                        const projectImage = resolveProjectImage(dev.name, proj.name, proj.image, proj.type);
                                         return (
                                             <div key={pIdx} className="dev-project-card">
                                                 <div className="dev-proj-img-wrap">
