@@ -74,8 +74,8 @@ const Contact = () => {
                             </div>
                             <h3>Visit Us</h3>
                             <p>
-                                Al Khan Street<br />
-                                Sharjah, United Arab Emirates
+                                Muwaileh Sharjah<br />
+                                United Arab Emirates
                             </p>
                         </div>
                         <div className="info-block">
@@ -167,7 +167,7 @@ const Contact = () => {
             <div className="container">
                 <div className="map-placeholder">
                     <MapPin size={40} />
-                    <p>Al Khan Street, Sharjah, UAE</p>
+                    <p>Muwaileh Sharjah, UAE</p>
                 </div>
             </div>
         </section>

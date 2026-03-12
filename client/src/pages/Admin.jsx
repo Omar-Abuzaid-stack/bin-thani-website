@@ -14,6 +14,7 @@ const Admin = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingProperty, setEditingProperty] = useState(null);
+    const [category, setCategory] = useState(''); // New state for category selection
     const [formData, setFormData] = useState({
         title: '',
         developer: '',
@@ -145,6 +146,7 @@ const Admin = () => {
                     </div>
                     <button className="btn-add" onClick={() => {
                         setEditingProperty(null);
+                        setCategory(''); // Reset category
                         setFormData({
                             title: '', developer: '', project: '', location: '', price: '',
                             price_numeric: '', type: 'Apartment', bedrooms: '', bathrooms: '',
@@ -164,81 +166,99 @@ const Admin = () => {
                                 <h2>{editingProperty ? 'Edit Property' : 'Add New Property'}</h2>
                                 <button className="close-btn" onClick={() => setShowForm(false)}><X size={24} /></button>
                             </div>
-                            <form onSubmit={handleSubmit} className="property-form">
-                                <div className="form-grid">
-                                    <div className="form-group">
-                                        <label>Property Name</label>
-                                        <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Developer</label>
-                                        <input type="text" name="developer" value={formData.developer} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Project</label>
-                                        <input type="text" name="project" value={formData.project} onChange={handleInputChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Location</label>
-                                        <input type="text" name="location" value={formData.location} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Price (AED)</label>
-                                        <input type="text" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g. AED 1,500,000" required />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Property Type</label>
-                                        <select name="type" value={formData.type} onChange={handleInputChange}>
-                                            <option value="Apartment">Apartment</option>
-                                            <option value="Villa">Villa</option>
-                                            <option value="Townhouse">Townhouse</option>
-                                            <option value="Penthouse">Penthouse</option>
-                                            <option value="Offfice">Office</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Bedrooms</label>
-                                        <input type="number" name="bedrooms" value={formData.bedrooms} onChange={handleInputChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Bathrooms</label>
-                                        <input type="number" name="bathrooms" value={formData.bathrooms} onChange={handleInputChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Square Footage (Area)</label>
-                                        <input type="text" name="area" value={formData.area} onChange={handleInputChange} placeholder="e.g. 1,500 sqft" />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Status</label>
-                                        <select name="status" value={formData.status} onChange={handleInputChange}>
-                                            <option value="Available">Available</option>
-                                            <option value="Off-Plan">Off-Plan</option>
-                                            <option value="Under Construction">Under Construction</option>
-                                            <option value="Sold">Sold</option>
-                                        </select>
+                            
+                            {!category && !editingProperty ? (
+                                <div className="category-selection">
+                                    <h3>Where do you want to put this property?</h3>
+                                    <div className="category-buttons">
+                                        <button className="cat-btn" onClick={() => { setCategory('Buy'); setFormData({...formData, type: 'Buy', status: 'Ready'}); }}>
+                                            <Home size={32} />
+                                            <span>Buy</span>
+                                        </button>
+                                        <button className="cat-btn" onClick={() => { setCategory('Rent'); setFormData({...formData, type: 'Rent', status: 'Ready'}); }}>
+                                            <Key size={32} />
+                                            <span>Rent</span>
+                                        </button>
+                                        <button className="cat-btn" onClick={() => { setCategory('Off-Plan'); setFormData({...formData, type: 'Buy', status: 'Off-Plan'}); }}>
+                                            <Building size={32} />
+                                            <span>Off-Plan</span>
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea name="description" value={formData.description} onChange={handleInputChange} rows="4"></textarea>
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Amenities (Comma separated)</label>
-                                    <input type="text" name="amenities" value={formData.amenities} onChange={handleInputChange} placeholder="Gym, Pool, Parking..." />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Images (URLs, one per line)</label>
-                                    <textarea name="images" value={formData.images} onChange={handleInputChange} rows="4"></textarea>
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Payment Plan Details</label>
-                                    <textarea name="payment_plan" value={formData.payment_plan} onChange={handleInputChange} rows="3"></textarea>
-                                </div>
-                                <div className="form-actions">
-                                    <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
-                                    <button type="submit" className="btn-submit">{editingProperty ? 'Update Property' : 'Add Property'}</button>
-                                </div>
-                            </form>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="property-form">
+                                    {(category || editingProperty) && (
+                                        <div className="category-indicator">
+                                            Category: <strong>{category || (editingProperty.status === 'Off-Plan' ? 'Off-Plan' : 'Ready')}</strong>
+                                            {!editingProperty && <button className="change-cat" onClick={() => setCategory('')}>Change</button>}
+                                        </div>
+                                    )}
+                                    <div className="form-grid">
+                                        <div className="form-group">
+                                            <label>Property Name</label>
+                                            <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Developer</label>
+                                            <input type="text" name="developer" value={formData.developer} onChange={handleInputChange} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Project</label>
+                                            <input type="text" name="project" value={formData.project} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Location</label>
+                                            <input type="text" name="location" value={formData.location} onChange={handleInputChange} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Price (AED)</label>
+                                            <input type="text" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g. AED 1,500,000" required />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label>Bedrooms</label>
+                                            <input type="number" name="bedrooms" value={formData.bedrooms} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Bathrooms</label>
+                                            <input type="number" name="bathrooms" value={formData.bathrooms} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Square Footage (Area)</label>
+                                            <input type="text" name="area" value={formData.area} onChange={handleInputChange} placeholder="e.g. 1,500 sqft" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Status</label>
+                                            <select name="status" value={formData.status} onChange={handleInputChange}>
+                                                <option value="Ready">Ready</option>
+                                                <option value="Off-Plan">Off-Plan</option>
+                                                <option value="Under Construction">Under Construction</option>
+                                                <option value="Sold">Sold</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Description</label>
+                                        <textarea name="description" value={formData.description} onChange={handleInputChange} rows="4"></textarea>
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Amenities (Comma separated)</label>
+                                        <input type="text" name="amenities" value={formData.amenities} onChange={handleInputChange} placeholder="Gym, Pool, Parking..." />
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Images (URLs, one per line)</label>
+                                        <textarea name="images" value={formData.images} onChange={handleInputChange} rows="4"></textarea>
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Payment Plan Details</label>
+                                        <textarea name="payment_plan" value={formData.payment_plan} onChange={handleInputChange} rows="3"></textarea>
+                                    </div>
+                                    <div className="form-actions">
+                                        <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
+                                        <button type="submit" className="btn-submit">{editingProperty ? 'Update Property' : 'Add Property'}</button>
+                                    </div>
+                                </form>
+                            )}
                         </div>
                     </div>
                 )}

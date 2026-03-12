@@ -92,7 +92,7 @@ export const Footer = () => {
                     <p><Phone size={16} /> <a href="tel:+971556626912" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 662 6912</a></p>
                     <p><Phone size={16} /> <a href="tel:+971557611400" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 761 1400</a></p>
                     <p><Mail size={16} /> <a href="mailto:info@binthanirealestate.ae" style={{ color: 'inherit', textDecoration: 'none' }}>info@binthanirealestate.ae</a></p>
-                    <p>Muwaila, Sharjah, United Arab Emirates</p>
+                    <p>Muwaileh Sharjah, United Arab Emirates</p>
                 </div>
                 <div className="footer-newsletter">
                     <h4>{t('newsletter')}</h4>
