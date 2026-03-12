@@ -107,6 +107,13 @@ const Admin = () => {
             imagesStr = property.images || '';
         }
 
+        const propertyCategory = property.type === 'Rent' ? 'Rent' : 
+                                property.type === 'Other' ? 'Others' : 
+                                property.status === 'Off-Plan' ? 'Off-Plan' : 'Buy Available';
+        
+        setCategory(propertyCategory);
+        setAdminStep(propertyCategory.startsWith('Buy') || propertyCategory === 'Off-Plan' ? 2 : 1);
+
         setFormData({
             title: property.title || '',
             developer: property.developer || '',

@@ -17,9 +17,19 @@ async function supabaseCall(endpoint, method = 'GET', body = null) {
     if (body) options.body = JSON.stringify(body);
     
     const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, options);
-    const data = await response.json();
+    
+    const text = await response.text();
+    let data = {};
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            data = { message: text };
+        }
+    }
+    
     if (response.ok) return data;
-    throw new Error(data.message || 'Supabase error');
+    throw new Error(data.message || data.error_description || 'Supabase error');
 }
 
 export default async function handler(req, res) {
