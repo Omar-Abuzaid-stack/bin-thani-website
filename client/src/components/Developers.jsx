@@ -197,9 +197,8 @@ const Developers = () => {
                                                     <img src={projectImage} alt={proj.name} className="dev-proj-img" loading="lazy" onError={handleImageError} />
                                                     <div className="dev-proj-overlay"></div>
                                                     <div className="dev-proj-badges">
-                                                    <span className="badge-type">{proj.type}</span>
-                                                    <span className={`badge-status ${proj.status.replace(/\s+/g, '-').toLowerCase()}`}>{proj.status}</span>
-                                                </div>
+                                                        <span className={`badge-status ${proj.status.replace(/\s+/g, '-').toLowerCase()}`}>{proj.status}</span>
+                                                    </div>
                                             </div>
                                             <div className="dev-proj-content">
                                                 <h4 className="dev-proj-name">{proj.name}</h4>
