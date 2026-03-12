@@ -7,38 +7,40 @@ const GOLD_GRADIENT_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 const PROJECT_IMAGE_OVERRIDES = {
     'Alef Group': {
-        'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
-        'Al Mamsha Sharjah': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2021/05/Al-Mamsha-Sharjah.jpg',
-        'Hayyan Villas': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2023/07/Hayyan-Villas.jpg'
+        'Masaar': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80',
+        'Al Mamsha Sharjah': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80',
+        'Al Mamsha Sharjah Apartments': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80',
+        'Hayyan Villas': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=80'
     },
     'Arada': {
-        'Aljada Sharjah': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/08/Aljada-Project.jpg',
-        'Jouri Hills': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/09/Jouri-Hills.jpg',
-        'Naseej District': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/10/Naseej-District.jpg'
+        'Aljada Sharjah': 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1400&q=80',
+        'Aljada Residences': 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1400&q=80',
+        'Jouri Hills': 'https://images.unsplash.com/photo-1572120360610-d971b9f5792b?auto=format&fit=crop&w=1400&q=80',
+        'Naseej District': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
     },
     'Shoumous': {
-        'Shoumous Residences': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2023/01/Shoumous-Residences.jpg'
+        'Shoumous Residences': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
     },
     'Ajmal Makan': {
-        'City Hamriyah': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2020/10/City-Hamriyah.jpg',
-        'Bab Al Bahar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2020/11/Bab-Al-Bahar.jpg'
+        'City Hamriyah': 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1400&q=80',
+        'Bab Al Bahar': 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1400&q=80'
     },
     'Tiger Group': {
-        'Tiger Sky Tower': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2019/12/Tiger-Sky-Tower.jpg',
-        'Tiger Palace': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2019/12/Tiger-Palace.jpg'
+        'Tiger Sky Tower': 'https://images.unsplash.com/photo-1560184897-0af3f358b79a?auto=format&fit=crop&w=1400&q=80',
+        'Tiger Palace': 'https://images.unsplash.com/photo-1572120360610-d971b9f5792b?auto=format&fit=crop&w=1400&q=80'
     },
     'Altay Hills': {
-        'Alta Hills villas': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/11/Altay-Hills-Villas.jpg'
+        'Alta Hills villas': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
     },
     'Manazil': {
-        'Al Reef': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2022/05/Al-Reef-Manazil-UAE.jpg'
+        'Al Reef': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80'
     },
     'Maryam Island': {
-        'Sharjah apartments': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2023/09/Maryam-Island-Sharjah-Apartments.jpg'
+        'Sharjah apartments': 'https://images.unsplash.com/photo-1491993946051-9fab1c8fd5af?auto=format&fit=crop&w=1400&q=80'
     },
     'Al Marwan': {
-        'Tilal City': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2021/04/Tilal-City.jpg',
-        'Garden City': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/2021/04/Garden-City.jpg'
+        'Tilal City': 'https://images.unsplash.com/photo-1489390355872-2f5f9d3b9d5c?auto=format&fit=crop&w=1400&q=80',
+        'Garden City': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1400&q=80'
     }
 };
 
@@ -55,15 +57,7 @@ const UNSPLASH_IMAGE_BY_TYPE = {
 const isUnsplash = (url) => typeof url === 'string' && url.includes('images.unsplash.com');
 
 const resolveProjectImage = (developer, projectName = '', imageUrl, projectType = '') => {
-    // Strictly use type-based Unsplash images to avoid blocked external sources
-    const normalizedType = (projectType || '').trim().toLowerCase();
-    const typeImage = UNSPLASH_IMAGE_BY_TYPE[normalizedType] || UNSPLASH_IMAGE_BY_TYPE.default;
-
-    if (typeImage) {
-        return typeImage;
-    }
-
-    // Fallback to developer-specific override if type is undefined (should not happen)
+    // 1) use explicit project override if exists
     const devSpec = PROJECT_IMAGE_OVERRIDES[developer];
     if (devSpec) {
         const normalizedProjectName = (projectName || '').trim().toLowerCase();
@@ -76,10 +70,19 @@ const resolveProjectImage = (developer, projectName = '', imageUrl, projectType 
         });
         if (fuzzyImage) return fuzzyImage[1];
 
+        // if no exact match but we have project override values, use first one
         const firstImage = Object.values(devSpec)[0];
         if (firstImage) return firstImage;
     }
 
+    // 2) fallback to type-based Unsplash
+    const normalizedType = (projectType || '').trim().toLowerCase();
+    const typeImage = UNSPLASH_IMAGE_BY_TYPE[normalizedType] || UNSPLASH_IMAGE_BY_TYPE.default;
+    if (typeImage) {
+        return typeImage;
+    }
+
+    // 3) last fallback
     return GOLD_GRADIENT_FALLBACK;
 };
 
