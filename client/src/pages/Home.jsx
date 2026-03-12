@@ -45,7 +45,7 @@ const services = [
     {
         title: 'Investment',
         description: 'High-yield investment opportunities in UAE real estate',
-        image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&q=80', // Updated image from previous task
+        image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&q=80',
         link: '/contact',
         icon: <TrendingUp size={24} />
     },

@@ -114,8 +114,16 @@ const Properties = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <h1 className="page-title">Our Properties</h1>
-                            <p className="page-subtitle">Discover Your Dream Home</p>
+                            <h1 className="page-title">
+                                {filters.status === 'Off-Plan' ? 'Off-Plan Projects' : 
+                                 filters.type === 'Rent' ? 'Properties for Rent' : 
+                                 filters.type === 'Buy' ? 'Properties for Sale' : 'Our Properties'}
+                            </h1>
+                            <p className="page-subtitle">
+                                {filters.status === 'Off-Plan' ? 'Exclusive Upcoming Developments' : 
+                                 filters.type === 'Rent' ? 'Long-term and Short-term Luxury Leases' : 
+                                 filters.type === 'Buy' ? 'Premium Homes Available for Purchase' : 'Discover Your Dream Home'}
+                            </p>
                         </motion.div>
                     </div>
                 </section>
@@ -237,8 +245,11 @@ const Properties = () => {
                                                 {property.status === 'Off-Plan' && (
                                                     <span className="property-badge">Off-Plan</span>
                                                 )}
-                                                {property.status === 'Ready' && (
-                                                    <span className="property-badge ready">Ready</span>
+                                                {property.status === 'Ready' && property.type === 'Buy' && (
+                                                    <span className="property-badge ready">For Sale</span>
+                                                )}
+                                                {property.type === 'Rent' && (
+                                                    <span className="property-badge rent">For Rent</span>
                                                 )}
                                             </div>
                                             <div className="property-info">
@@ -503,6 +514,11 @@ const Properties = () => {
                 
                 .property-badge.ready {
                     background: #22c55e;
+                    color: #fff;
+                }
+
+                .property-badge.rent {
+                    background: #3b82f6;
                     color: #fff;
                 }
                 

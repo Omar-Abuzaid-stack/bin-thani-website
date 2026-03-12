@@ -14,6 +14,7 @@ const Admin = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingProperty, setEditingProperty] = useState(null);
+    const [adminStep, setAdminStep] = useState(1); // 1: Main (Buy/Rent), 2: Buy Options
     const [category, setCategory] = useState(''); // New state for category selection
     const [formData, setFormData] = useState({
         title: '',
@@ -22,11 +23,11 @@ const Admin = () => {
         location: '',
         price: '',
         price_numeric: '',
-        type: 'Apartment',
+        type: 'Buy',
         bedrooms: '',
         bathrooms: '',
         area: '',
-        status: 'Available',
+        status: 'Ready',
         description: '',
         amenities: '',
         images: '',
@@ -73,13 +74,14 @@ const Admin = () => {
             
             setFormData({
                 title: '', developer: '', project: '', location: '', price: '',
-                price_numeric: '', type: 'Apartment', bedrooms: '', bathrooms: '',
-                area: '', status: 'Available', description: '', amenities: '',
+                price_numeric: '', type: 'Buy', bedrooms: '', bathrooms: '',
+                area: '', status: 'Ready', description: '', amenities: '',
                 images: '', payment_plan: ''
             });
             setShowForm(false);
             setEditingProperty(null);
             setCategory('');
+            setAdminStep(1);
             fetchProperties();
         } catch (err) {
             console.error('Error saving property:', err);
@@ -111,11 +113,11 @@ const Admin = () => {
             location: property.location || '',
             price: property.price || '',
             price_numeric: property.price_numeric || '',
-            type: property.type || 'Apartment',
+            type: property.type || 'Buy',
             bedrooms: property.bedrooms || '',
             bathrooms: property.bathrooms || '',
             area: property.area || '',
-            status: property.status || 'Available',
+            status: property.status || 'Ready',
             description: property.description || '',
             amenities: amenitiesStr,
             images: imagesStr,
@@ -148,10 +150,11 @@ const Admin = () => {
                     <button className="btn-add" onClick={() => {
                         setEditingProperty(null);
                         setCategory(''); // Reset category
+                        setAdminStep(1); // Reset step
                         setFormData({
                             title: '', developer: '', project: '', location: '', price: '',
-                            price_numeric: '', type: 'Apartment', bedrooms: '', bathrooms: '',
-                            area: '', status: 'Available', description: '', amenities: '',
+                            price_numeric: '', type: 'Buy', bedrooms: '', bathrooms: '',
+                            area: '', status: 'Ready', description: '', amenities: '',
                             images: '', payment_plan: ''
                         });
                         setShowForm(true);
@@ -170,32 +173,59 @@ const Admin = () => {
                             
                             {!category && !editingProperty ? (
                                 <div className="category-selection">
-                                    <h3>Where do you want to put this property?</h3>
-                                    <div className="category-buttons">
-                                        <button className="cat-btn" onClick={() => { setCategory('Buy'); setFormData({...formData, type: 'Buy', status: 'Ready'}); }}>
-                                            <Home size={32} />
-                                            <span>Buy</span>
-                                        </button>
-                                        <button className="cat-btn" onClick={() => { setCategory('Rent'); setFormData({...formData, type: 'Rent', status: 'Ready'}); }}>
-                                            <Key size={32} />
-                                            <span>Rent</span>
-                                        </button>
-                                        <button className="cat-btn" onClick={() => { setCategory('Off-Plan'); setFormData({...formData, type: 'Buy', status: 'Off-Plan'}); }}>
-                                            <Building size={32} />
-                                            <span>Off-Plan</span>
-                                        </button>
-                                        <button className="cat-btn" onClick={() => { setCategory('Other'); setFormData({...formData, type: 'Other', status: 'Ready'}); }}>
-                                            <MoreHorizontal size={32} />
-                                            <span>Others</span>
-                                        </button>
-                                    </div>
+                                    {adminStep === 1 ? (
+                                        <>
+                                            <h3>Choose Transaction Type</h3>
+                                            <div className="category-buttons">
+                                                <button className="cat-btn" onClick={() => { setAdminStep(2); }}>
+                                                    <Home size={32} />
+                                                    <span>Buy</span>
+                                                </button>
+                                                <button className="cat-btn" onClick={() => { 
+                                                    setCategory('Rent'); 
+                                                    setFormData({...formData, type: 'Rent', status: 'Ready'}); 
+                                                }}>
+                                                    <Key size={32} />
+                                                    <span>Rent</span>
+                                                </button>
+                                                <button className="cat-btn" onClick={() => { 
+                                                    setCategory('Others'); 
+                                                    setFormData({...formData, type: 'Other', status: 'Ready'}); 
+                                                }}>
+                                                    <MoreHorizontal size={32} />
+                                                    <span>Others</span>
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <h3>Choose Buy Option</h3>
+                                            <div className="category-buttons">
+                                                <button className="cat-btn" onClick={() => { 
+                                                    setCategory('Buy Available'); 
+                                                    setFormData({...formData, type: 'Buy', status: 'Ready'}); 
+                                                }}>
+                                                    <Check size={32} />
+                                                    <span>Available (Ready)</span>
+                                                </button>
+                                                <button className="cat-btn" onClick={() => { 
+                                                    setCategory('Off-Plan'); 
+                                                    setFormData({...formData, type: 'Buy', status: 'Off-Plan'}); 
+                                                }}>
+                                                    <Building size={32} />
+                                                    <span>Off-Plan</span>
+                                                </button>
+                                                <button className="back-btn" onClick={() => setAdminStep(1)}>Back</button>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="property-form">
                                     {(category || editingProperty) && (
                                         <div className="category-indicator">
-                                            Category: <strong>{category || (editingProperty.status === 'Off-Plan' ? 'Off-Plan' : 'Ready')}</strong>
-                                            {!editingProperty && <button className="change-cat" onClick={() => setCategory('')}>Change</button>}
+                                            Category: <strong>{category || (editingProperty.status === 'Off-Plan' ? 'Off-Plan' : editingProperty.type === 'Rent' ? 'Rent' : 'Buy')}</strong>
+                                            {!editingProperty && <button className="change-cat" onClick={() => { setCategory(''); setAdminStep(1); }}>Change</button>}
                                         </div>
                                     )}
                                     <div className="form-grid">
