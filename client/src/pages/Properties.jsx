@@ -176,6 +176,26 @@ const Properties = () => {
                                         <option value="Ready">Ready</option>
                                     </select>
                                 </div>
+                                <div className="filter-group">
+                                    <label>Min Price (AED)</label>
+                                    <select name="minPrice" value={filters.minPrice} onChange={handleFilterChange}>
+                                        <option value="">Any</option>
+                                        <option value="500000">500,000</option>
+                                        <option value="1000000">1,000,000</option>
+                                        <option value="2000000">2,000,000</option>
+                                        <option value="5000000">5,000,000</option>
+                                    </select>
+                                </div>
+                                <div className="filter-group">
+                                    <label>Max Price (AED)</label>
+                                    <select name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange}>
+                                        <option value="">Any</option>
+                                        <option value="1000000">1,000,000</option>
+                                        <option value="2000000">2,000,000</option>
+                                        <option value="5000000">5,000,000</option>
+                                        <option value="10000000">10,000,000+</option>
+                                    </select>
+                                </div>
                                 <button className="clear-filters" onClick={clearFilters}>
                                     <X size={16} /> Clear
                                 </button>

@@ -9,8 +9,10 @@ import PropertyDetail from './pages/PropertyDetail';
 import Services from './pages/Services';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Admin from './pages/Admin';
 import Chatbot from './components/Chatbot';
 import Developers from './components/Developers';
+import ScrollToTop from './components/ScrollToTop';
 import { LoadingScreen, CookieBanner } from './components/Extras';
 import './components/Layout.css';
 import './components/Extras.css';
@@ -24,6 +26,7 @@ function App() {
     <HelmetProvider>
       <LanguageProvider>
         <Router>
+          <ScrollToTop />
           <div className="app">
             <LoadingScreen />
             <Navbar />
@@ -35,6 +38,7 @@ function App() {
                 <Route path="/services" element={<Services />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/admin" element={<Admin />} />
                 <Route path="/developers" element={<Developers onDeveloperClick={handleDeveloperClick} />} />
               </Routes>
             </main>

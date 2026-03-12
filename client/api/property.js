@@ -38,6 +38,16 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Property ID required' });
         }
 
+        if (req.method === 'PUT') {
+            const result = await supabaseCall(`properties?id.eq.${id}`, 'PATCH', req.body);
+            return res.status(200).json(result);
+        }
+
+        if (req.method === 'DELETE') {
+            await supabaseCall(`properties?id.eq.${id}`, 'DELETE');
+            return res.status(204).send('');
+        }
+
         const data = await supabaseCall(`properties?id.eq.${id}&select=*&limit=1`);
         
         if (!data || data.length === 0) {

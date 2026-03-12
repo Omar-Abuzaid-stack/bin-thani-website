@@ -31,6 +31,11 @@ export default async function handler(req, res) {
         return res.status(200).send('');
     }
 
+    if (req.method === 'POST') {
+        const result = await supabaseCall('properties', 'POST', req.body);
+        return res.status(201).json(result);
+    }
+
     try {
         const { type, minPrice, maxPrice, bedrooms, location, status, developer } = req.query;
         
