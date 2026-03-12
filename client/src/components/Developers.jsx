@@ -7,27 +7,27 @@ const GOLD_GRADIENT_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 const PROJECT_IMAGE_OVERRIDES = {
     'Alef Group': {
-        'Masaar': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80',
-        'Al Mamsha Sharjah': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80',
-        'Al Mamsha Sharjah Apartments': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80',
-        'Hayyan Villas': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=80'
+        'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
+        'Al Mamsha Sharjah': 'https://www.alefgroup.ae/wp-content/uploads/al-mamsha-cover.jpg',
+        'Hayyan Villas': 'https://www.alefgroup.ae/wp-content/uploads/2024/09/hayyan-by-alef.jpg'
     },
     'Arada': {
-        'Aljada Sharjah': 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1400&q=80',
-        'Aljada Residences': 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1400&q=80',
-        'Jouri Hills': 'https://images.unsplash.com/photo-1572120360610-d971b9f5792b?auto=format&fit=crop&w=1400&q=80',
-        'Naseej District': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
+        'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
+        'Aljada Sharjah': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
+        'Aljada Residences': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
+        'Jouri Hills': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/jouri-hills-hero.jpg',
+        'Naseej District': 'https://aradawebcontent.blob.core.windows.net/arada-com/2021/10/hero-banner-new.jpg'
     },
     'Shoumous': {
         'Shoumous Residences': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
     },
     'Ajmal Makan': {
-        'City Hamriyah': 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1400&q=80',
-        'Bab Al Bahar': 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1400&q=80'
+        'City Hamriyah': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg',
+        'Bab Al Bahar': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg'
     },
     'Tiger Group': {
-        'Tiger Sky Tower': 'https://images.unsplash.com/photo-1560184897-0af3f358b79a?auto=format&fit=crop&w=1400&q=80',
-        'Tiger Palace': 'https://images.unsplash.com/photo-1572120360610-d971b9f5792b?auto=format&fit=crop&w=1400&q=80'
+        'Tiger Sky Tower': 'https://www.tigergroup.ae/_next/static/media/modal-tower.46f2808e.jpg',
+        'Tiger Palace': 'https://www.tigergroup.ae/_next/static/media/modal-tower.46f2808e.jpg'
     },
     'Altay Hills': {
         'Alta Hills villas': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
