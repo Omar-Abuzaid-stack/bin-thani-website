@@ -85,7 +85,8 @@ const Admin = () => {
             fetchProperties();
         } catch (err) {
             console.error('Error saving property:', err);
-            alert('Error saving property. Please try again.');
+            const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message;
+            alert(`Error saving property: ${errorMsg}`);
         }
     };
 

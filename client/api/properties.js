@@ -32,8 +32,44 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-        const result = await supabaseCall('properties', 'POST', req.body);
-        return res.status(201).json(result);
+        try {
+            const body = { ...req.body };
+            
+            // Map location to area_full if it exists for better searching
+            if (body.location && !body.area_full) {
+                body.area_full = body.location;
+            }
+
+            // Preservation: If project or payment_plan are present, append them to description 
+            // since they don't have columns yet.
+            let extraInfo = '';
+            if (body.project) extraInfo += `Project: ${body.project}\n`;
+            if (body.payment_plan) extraInfo += `Payment Plan: ${body.payment_plan}\n`;
+            
+            if (extraInfo) {
+                body.description = `${extraInfo}\n${body.description || ''}`;
+            }
+
+            // Columns that exist in the DB schema
+            const validColumns = [
+                'title', 'description', 'price', 'price_numeric', 'location', 'area_full', 
+                'type', 'bedrooms', 'bathrooms', 'area', 'images', 'status', 'amenities', 
+                'featured', 'developer', 'year_built', 'parking', 'furnished', 
+                'floor_plan', 'google_maps_embed'
+            ];
+
+            // Sanitise body: only keep columns that exist in DB
+            const cleanBody = {};
+            validColumns.forEach(id => {
+                if (body[id] !== undefined) cleanBody[id] = body[id];
+            });
+
+            const result = await supabaseCall('properties', 'POST', cleanBody);
+            return res.status(201).json(result);
+        } catch (err) {
+            console.error('API Error:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
     }
 
     try {

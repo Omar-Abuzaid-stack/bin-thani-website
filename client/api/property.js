@@ -39,7 +39,28 @@ export default async function handler(req, res) {
         }
 
         if (req.method === 'PUT') {
-            const result = await supabaseCall(`properties?id.eq.${id}`, 'PATCH', req.body);
+            const body = { ...req.body };
+            
+            // Map location to area_full if it exists
+            if (body.location && !body.area_full) {
+                body.area_full = body.location;
+            }
+
+            // Columns that exist in the DB schema
+            const validColumns = [
+                'title', 'description', 'price', 'price_numeric', 'location', 'area_full', 
+                'type', 'bedrooms', 'bathrooms', 'area', 'images', 'status', 'amenities', 
+                'featured', 'developer', 'year_built', 'parking', 'furnished', 
+                'floor_plan', 'google_maps_embed'
+            ];
+
+            // Sanitise body
+            const cleanBody = {};
+            validColumns.forEach(id => {
+                if (body[id] !== undefined) cleanBody[id] = body[id];
+            });
+
+            const result = await supabaseCall(`properties?id.eq.${id}`, 'PATCH', cleanBody);
             return res.status(200).json(result);
         }
 
