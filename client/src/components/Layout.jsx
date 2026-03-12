@@ -69,9 +69,13 @@ export const Footer = () => {
                     <h3>BIN THANI</h3>
                     <p>{t('luxuryRealEstate')}</p>
                     <div className="social-links">
-                        <Facebook size={20} />
-                        <Instagram size={20} />
-                        <Twitter size={20} />
+                        <a href="https://www.facebook.com/share/1CKmiQDoqX/?mibextid=wwXIfr" target="_blank" rel="noreferrer"><Facebook size={20} /></a>
+                        <a href="https://www.instagram.com/bin_thani1?igsh=MTNzZHJzZnhtcm1raA%3D%3D&utm_source=qr" target="_blank" rel="noreferrer"><Instagram size={20} /></a>
+                        <a href="https://www.tiktok.com/@binthani.realestate?_r=1&_t=ZS-94cTyhzej2e" target="_blank" rel="noreferrer" title="TikTok">
+                            <svg width="20" height="20" viewBox="0 0 448 512" fill="currentColor">
+                                <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                            </svg>
+                        </a>
                     </div>
                 </div>
                 <div className="footer-links">
