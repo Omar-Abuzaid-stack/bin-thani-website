@@ -70,12 +70,12 @@ export default async function handler(req, res) {
                 if (body[id] !== undefined) cleanBody[id] = body[id];
             });
 
-            const result = await supabaseCall(`properties?id.eq.${id}`, 'PATCH', cleanBody);
+            const result = await supabaseCall(`properties?id=eq.${id}`, 'PATCH', cleanBody);
             return res.status(200).json(result);
         }
 
         if (req.method === 'DELETE') {
-            await supabaseCall(`properties?id.eq.${id}`, 'DELETE');
+            await supabaseCall(`properties?id=eq.${id}`, 'DELETE');
             return res.status(204).send('');
         }
 

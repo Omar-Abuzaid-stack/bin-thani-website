@@ -88,11 +88,11 @@ export default async function handler(req, res) {
         let query = 'properties?select=*&order=created_at.desc';
         const filters = [];
         
-        if (type) filters.push(`type.eq.${type}`);
-        if (status) filters.push(`status.eq.${status}`);
-        if (developer) filters.push(`developer.eq.${developer}`);
-        if (bedrooms) filters.push(`bedrooms.gte.${bedrooms}`);
-        if (location) filters.push(`or(location.ilike.*${location}*,area_full.ilike.*${location}*)`);
+        if (type) filters.push(`type=eq.${type}`);
+        if (status) filters.push(`status=eq.${status}`);
+        if (developer) filters.push(`developer=eq.${developer}`);
+        if (bedrooms) filters.push(`bedrooms=gte.${bedrooms}`);
+        if (location) filters.push(`or=(location.ilike.*${location}*,area_full.ilike.*${location}*)`);
         
         if (filters.length > 0) query += '&' + filters.join('&');
         
