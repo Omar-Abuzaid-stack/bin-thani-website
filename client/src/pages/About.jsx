@@ -549,28 +549,70 @@ const About = () => {
                 }
                 
                 @media (max-width: 900px) {
+                    section {
+                        padding: 60px 0;
+                    }
+                    .page-hero {
+                        height: 40vh;
+                        min-height: 300px;
+                    }
+                    .page-title {
+                        font-size: 2.8rem;
+                    }
                     .founder-card {
                         grid-template-columns: 1fr;
-                        gap: 40px;
+                        gap: 35px;
+                        padding: 0 15px;
+                    }
+                    .founder-name {
+                        font-size: 2.4rem;
+                        margin-bottom: 20px;
+                    }
+                    .founder-bio p {
+                        font-size: 0.95rem;
+                        margin-bottom: 15px;
+                        line-height: 1.7;
                     }
                     .founder-image {
-                        max-width: 350px;
+                        max-width: 300px;
                         margin: 0 auto;
                     }
-                    .stats-grid, .values-grid {
+                    .founder-image img {
+                        height: 380px;
+                    }
+                    .founder-contact {
+                        gap: 15px;
+                        flex-direction: column;
+                        padding-top: 20px;
+                    }
+                    .founder-contact a {
+                        font-size: 0.85rem;
+                    }
+                    .stats-grid {
                         grid-template-columns: repeat(2, 1fr);
+                        gap: 25px;
+                    }
+                    .stat-number {
+                        font-size: 2.4rem;
+                    }
+                    .values-grid {
+                        grid-template-columns: 1fr;
+                        gap: 20px;
+                    }
+                    .value-card {
+                        padding: 30px 20px;
                     }
                 }
                 
                 @media (max-width: 600px) {
-                    .stats-grid, .values-grid {
-                        grid-template-columns: 1fr;
-                    }
                     .page-title {
-                        font-size: 3rem;
+                        font-size: 2.4rem;
                     }
                     .founder-name {
-                        font-size: 2.2rem;
+                        font-size: 2rem;
+                    }
+                    .cta-content h2 {
+                        font-size: 2.22rem;
                     }
                 }
             `}</style>

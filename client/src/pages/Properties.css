@@ -319,27 +319,77 @@
 }
 
 @media (max-width: 768px) {
+    .properties-hero {
+        padding: 60px 15px;
+    }
+    .properties-hero h1 {
+        font-size: 2.2rem;
+    }
+    .properties-hero p {
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+    .quick-search {
+        padding: 0 10px;
+    }
+    .quick-search input {
+        padding: 12px 18px;
+        font-size: 14px;
+    }
+    .quick-search .search-btn {
+        padding: 12px 20px;
+        font-size: 13px;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+    }
     .filter-toggle {
         display: flex;
+        font-size: 14px;
+        padding: 12px;
+        margin: 0 15px 20px;
     }
-    
     .filters-panel {
         display: none;
+        margin: 0 15px 30px;
+        padding: 20px;
+        gap: 15px;
     }
-    
     .filters-panel.active {
         display: grid;
     }
-    
-    .properties-hero h1 {
-        font-size: 2rem;
+    .filter-group label {
+        font-size: 12px;
     }
-    
-    .quick-search {
-        flex-direction: column;
+    .filter-group select,
+    .filter-group input {
+        padding: 10px;
+        font-size: 13px;
     }
-    
+    .properties-container {
+        padding: 20px 15px;
+    }
+    .results-count {
+        font-size: 0.95rem;
+        padding-left: 5px;
+    }
     .properties-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .property-image {
+        height: 180px;
+    }
+    .property-info {
+        padding: 15px;
+    }
+    .property-info h3 {
+        font-size: 1.1rem;
+    }
+    .property-price {
+        font-size: 1.3rem;
+    }
+    .property-details span {
+        font-size: 12px;
     }
 }
