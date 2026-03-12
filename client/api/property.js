@@ -1,8 +1,8 @@
 // Vercel Serverless Function: Single Property
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/[\r\n]/g, '');
+const SUPABASE_KEY = (process.env.SUPABASE_KEY || '').trim().replace(/[\r\n]/g, '');
 
 async function supabaseCall(endpoint, method = 'GET', body = null) {
     const options = {
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
                 'title', 'description', 'price', 'price_numeric', 'location', 'area_full', 
                 'type', 'bedrooms', 'bathrooms', 'area', 'images', 'status', 'amenities', 
                 'featured', 'developer', 'year_built', 'parking', 'furnished', 
-                'floor_plan', 'google_maps_embed'
+                'floor_plan', 'google_maps_embed', 'rent_period'
             ];
 
             // Sanitise body
