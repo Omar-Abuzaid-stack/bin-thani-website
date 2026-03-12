@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit2, Trash2, X, Check, Search, MapPin, Building, Home, Layout, List } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Check, Search, MapPin, Building, Home, Layout, List, Key, MoreHorizontal } from 'lucide-react';
 import './Admin.css';
 
 const getApiUrl = (endpoint) => {
@@ -79,6 +79,7 @@ const Admin = () => {
             });
             setShowForm(false);
             setEditingProperty(null);
+            setCategory('');
             fetchProperties();
         } catch (err) {
             console.error('Error saving property:', err);
@@ -182,6 +183,10 @@ const Admin = () => {
                                         <button className="cat-btn" onClick={() => { setCategory('Off-Plan'); setFormData({...formData, type: 'Buy', status: 'Off-Plan'}); }}>
                                             <Building size={32} />
                                             <span>Off-Plan</span>
+                                        </button>
+                                        <button className="cat-btn" onClick={() => { setCategory('Other'); setFormData({...formData, type: 'Other', status: 'Ready'}); }}>
+                                            <MoreHorizontal size={32} />
+                                            <span>Others</span>
                                         </button>
                                     </div>
                                 </div>
