@@ -7,20 +7,27 @@ const GOLD_GRADIENT_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 const PROJECT_IMAGE_OVERRIDES = {
     'Alef Group': {
-        'Al Mamsha': 'https://www.alefgroup.ae/wp-content/uploads/al-mamsha-cover.jpg',
-        'Al Mamsha Sharjah': 'https://www.alefgroup.ae/wp-content/uploads/al-mamsha-cover.jpg',
+        'Al Mamsha': 'https://www.alefgroup.ae/wp-content/uploads/2024/08/Al-Mamsha-web-banner.jpg',
+        'Al Mamsha Sharjah': 'https://www.alefgroup.ae/wp-content/uploads/2024/08/Al-Mamsha-web-banner.jpg',
         'Hayyan Villas': 'https://www.alefgroup.ae/wp-content/uploads/2024/09/hayyan-by-alef.jpg'
     },
     'Arada': {
         'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
-        'Aljada': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
-        'Aljada Sharjah': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
-        'Aljada Residences': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
+        'Aljada': 'https://www.arada.com/wp-content/uploads/2023/05/arada-completes-the-boulevard-a-600-home-residential-complex-at-sharjah-megaproject-aljada-3.jpg',
+        'Aljada Sharjah': 'https://www.arada.com/wp-content/uploads/2023/05/arada-completes-the-boulevard-a-600-home-residential-complex-at-sharjah-megaproject-aljada-3.jpg',
+        'Aljada Residences': 'https://www.arada.com/wp-content/uploads/2023/05/arada-completes-the-boulevard-a-600-home-residential-complex-at-sharjah-megaproject-aljada-3.jpg',
         'Jouri Hills': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/jouri-hills-hero.jpg',
         'Naseej District': 'https://aradawebcontent.blob.core.windows.net/arada-com/2021/10/hero-banner-new.jpg'
     },
     'Eagle Hills': {
-        'Maryam Island': 'https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp'
+        'Maryam Island': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/DOTM-Maryam-Island_Cover-28-SEP-2019.jpg'
+    },
+    'Diamond Developers': {
+        'Sharjah Sustainable City Phase 2': 'https://www.mepmiddleeast.com/cloud/2026/01/20/Sharjah-Sustainable-City-II-1-scaled.jpg',
+        'Sharjah Sustainable City': 'https://www.mepmiddleeast.com/cloud/2026/01/20/Sharjah-Sustainable-City-II-1-scaled.jpg'
+    },
+    'BEEAH': {
+        'Khalid Bin Sultan City': 'https://khalidbinsultancity.com/sites/default/files/2025-10/Khalid-Bin-Sultan-City_PhaseOne_1.jpg'
     },
     'Shoumous': {
         'Shoumous Residences': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
@@ -31,8 +38,10 @@ const PROJECT_IMAGE_OVERRIDES = {
         'Bab Al Bahar': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg'
     },
     'Tiger Group': {
-        'Tiger Sky Tower': 'https://www.tigergroup.ae/_next/static/media/modal-tower.46f2808e.jpg',
-        'Tiger Palace': 'https://www.tigergroup.ae/_next/static/media/modal-tower.46f2808e.jpg'
+        'Tiger Sky Tower': 'https://s3.amazonaws.com/attachments.website.tigergroup.ae/5c5d546c-a0f6-43ba-90de-7cb2409baec1',
+        'Tiger Palace': 'https://s3.amazonaws.com/attachments.website.tigergroup.ae/5c5d546c-a0f6-43ba-90de-7cb2409baec1',
+        'Joud Tower': 'https://keltandcorealty.com/wp-content/uploads/2025/11/Joud-Tower-at-Al-Mamzar-__Sharjah-Al-Batha-3-1.webp',
+        'Al Ghaf Tower': 'https://admin.grandreverealty.com/wp-content/propertyimg/1520/Al-Ghaf-Tower-hero-image2-bMZfBQ.webp'
     },
     'Altay Hills': {
         'Alta Hills villas': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=80'
