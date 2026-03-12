@@ -31,7 +31,8 @@ const Admin = () => {
         description: '',
         amenities: '',
         images: '',
-        payment_plan: ''
+        payment_plan: '',
+        rent_period: 'Yearly'
     });
 
     useEffect(() => {
@@ -57,9 +58,18 @@ const Admin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            let priceVal = formData.price.replace('AED', '').replace('/', '').trim();
+            // Remove any existing period if already in string
+            ['Yearly', 'Monthly', 'Weekly', 'Daily', 'Year', 'Month', 'Week', 'Day'].forEach(p => {
+                priceVal = priceVal.replace(p, '').trim();
+            });
+
+            const formattedPrice = formData.type === 'Rent' ? `AED ${priceVal} / ${formData.rent_period}` : `AED ${priceVal}`;
+
             const dataToSubmit = {
                 ...formData,
-                price_numeric: parseInt(formData.price.replace(/[^0-9]/g, '')) || 0,
+                price: formattedPrice,
+                price_numeric: parseInt(priceVal.replace(/[^0-9]/g, '')) || 0,
                 amenities: typeof formData.amenities === 'string' ? JSON.stringify(formData.amenities.split(',').map(s => s.trim())) : formData.amenities,
                 images: typeof formData.images === 'string' ? JSON.stringify(formData.images.split('\n').filter(url => url.trim() !== '')) : formData.images
             };
@@ -76,7 +86,7 @@ const Admin = () => {
                 title: '', developer: '', project: '', location: '', price: '',
                 price_numeric: '', type: 'Buy', bedrooms: '', bathrooms: '',
                 area: '', status: 'Ready', description: '', amenities: '',
-                images: '', payment_plan: ''
+                images: '', payment_plan: '', rent_period: 'Yearly'
             });
             setShowForm(false);
             setEditingProperty(null);
@@ -114,12 +124,16 @@ const Admin = () => {
         setCategory(propertyCategory);
         setAdminStep(propertyCategory.startsWith('Buy') || propertyCategory === 'Off-Plan' ? 2 : 1);
 
+        // Extract base price for editing
+        let basePrice = property.price || '';
+        basePrice = basePrice.replace('AED', '').split('/')[0].trim();
+
         setFormData({
             title: property.title || '',
             developer: property.developer || '',
             project: property.project || '',
             location: property.location || '',
-            price: property.price || '',
+            price: basePrice,
             price_numeric: property.price_numeric || '',
             type: property.type || 'Buy',
             bedrooms: property.bedrooms || '',
@@ -129,7 +143,8 @@ const Admin = () => {
             description: property.description || '',
             amenities: amenitiesStr,
             images: imagesStr,
-            payment_plan: property.payment_plan || ''
+            payment_plan: property.payment_plan || '',
+            rent_period: property.rent_period || 'Yearly'
         });
         setEditingProperty(property);
         setShowForm(true);
@@ -142,7 +157,8 @@ const Admin = () => {
                 fetchProperties();
             } catch (err) {
                 console.error('Error deleting property:', err);
-                alert('Error deleting property.');
+                const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message;
+                alert(`Error deleting ID ${id}: ${errorMsg}\n\nPlease check if 'DELETE' is allowed in Supabase RLS Policies for the anon role.`);
             }
         }
     };
@@ -163,7 +179,7 @@ const Admin = () => {
                             title: '', developer: '', project: '', location: '', price: '',
                             price_numeric: '', type: 'Buy', bedrooms: '', bathrooms: '',
                             area: '', status: 'Ready', description: '', amenities: '',
-                            images: '', payment_plan: ''
+                            images: '', payment_plan: '', rent_period: 'Yearly'
                         });
                         setShowForm(true);
                     }}>
@@ -198,7 +214,7 @@ const Admin = () => {
                                                 </button>
                                                 <button className="cat-btn" onClick={() => { 
                                                     setCategory('Others'); 
-                                                    setFormData({...formData, type: 'Other', status: 'Ready'}); 
+                                                    setFormData({...formData, type: 'Other', status: 'Ready', rent_period: 'Yearly'}); 
                                                 }}>
                                                     <MoreHorizontal size={32} />
                                                     <span>Others</span>
@@ -211,14 +227,14 @@ const Admin = () => {
                                             <div className="category-buttons">
                                                 <button className="cat-btn" onClick={() => { 
                                                     setCategory('Buy Available'); 
-                                                    setFormData({...formData, type: 'Buy', status: 'Ready'}); 
+                                                    setFormData({...formData, type: 'Buy', status: 'Ready', rent_period: 'Yearly'}); 
                                                 }}>
                                                     <Check size={32} />
                                                     <span>Available (Ready)</span>
                                                 </button>
                                                 <button className="cat-btn" onClick={() => { 
                                                     setCategory('Off-Plan'); 
-                                                    setFormData({...formData, type: 'Buy', status: 'Off-Plan'}); 
+                                                    setFormData({...formData, type: 'Buy', status: 'Off-Plan', rent_period: 'Yearly'}); 
                                                 }}>
                                                     <Building size={32} />
                                                     <span>Off-Plan</span>
@@ -255,8 +271,20 @@ const Admin = () => {
                                         </div>
                                         <div className="form-group">
                                             <label>Price (AED)</label>
-                                            <input type="text" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g. AED 1,500,000" required />
+                                            <input type="text" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g. 1,500,000" required />
                                         </div>
+
+                                        {formData.type === 'Rent' && (
+                                            <div className="form-group">
+                                                <label>Rent Period</label>
+                                                <select name="rent_period" value={formData.rent_period} onChange={handleInputChange}>
+                                                    <option value="Yearly">Yearly</option>
+                                                    <option value="Monthly">Monthly</option>
+                                                    <option value="Weekly">Weekly</option>
+                                                    <option value="Daily">Daily</option>
+                                                </select>
+                                            </div>
+                                        )}
 
                                         <div className="form-group">
                                             <label>Bedrooms</label>

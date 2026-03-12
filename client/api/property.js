@@ -29,7 +29,7 @@ async function supabaseCall(endpoint, method = 'GET', body = null) {
     }
     
     if (response.ok) return data;
-    throw new Error(data.message || data.error_description || 'Supabase error');
+    throw new Error(JSON.stringify(data) || data.message || 'Supabase error');
 }
 
 export default async function handler(req, res) {
