@@ -38,6 +38,16 @@ const getPropertyImage = (property, index) => {
 const Properties = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchTerm);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
     const [filters, setFilters] = useState({
         type: '',
         location: '',
@@ -52,7 +62,7 @@ const Properties = () => {
 
     useEffect(() => {
         fetchProperties();
-    }, [filters]);
+    }, [filters, debouncedSearch]);
 
     // Parse query params on mount
     useEffect(() => {
@@ -63,6 +73,7 @@ const Properties = () => {
             status: params.get('status') || '',
             developer: params.get('developer') || ''
         }));
+        setSearchTerm(params.get('location') || params.get('search') || '');
     }, []);
 
     const fetchProperties = async () => {
@@ -70,8 +81,14 @@ const Properties = () => {
         try {
             const params = new URLSearchParams();
             Object.entries(filters).forEach(([key, value]) => {
-                if (value) params.append(key, value);
+                if (value && key !== 'location') params.append(key, value);
             });
+            
+            // Add search term to backend query if any
+            if (debouncedSearch) {
+                params.append('location', debouncedSearch);
+            }
+            
             const res = await axios.get(getApiUrl('properties') + `?${params}`);
             setProperties(res.data);
         } catch (err) {
@@ -84,7 +101,54 @@ const Properties = () => {
         setFilters({ ...filters, [e.target.name]: e.target.value });
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // Common area translations to help search work better in both languages
+    const areaMap = {
+        'sharjah': 'الشارقة',
+        'dubai': 'دبي',
+        'aljada': 'الجادة',
+        'masaar': 'مسار',
+        'maryam island': 'جزيرة مريم',
+        'muwaileh': 'مويلحة',
+        'tilal': 'تلال',
+        'al mamsha': 'الممشى',
+        'hayyan': 'حيان',
+        'ready': 'جاهز',
+        'off-plan': 'على الخريطة'
+    };
+
+    // Instant frontend filtering for even faster response
+    const filteredProperties = properties.filter(p => {
+        const term = searchTerm.toLowerCase();
+        if (!term) return true;
+        
+        // Find if the term has a translation
+        let translatedTerm = '';
+        for (const [en, ar] of Object.entries(areaMap)) {
+            if (term.includes(en)) translatedTerm = ar;
+            if (term.includes(ar)) translatedTerm = en;
+        }
+
+        const matches = (text) => {
+            if (!text) return false;
+            const content = text.toLowerCase();
+            return content.includes(term) || (translatedTerm && content.includes(translatedTerm));
+        };
+
+        return (
+            matches(p.title) ||
+            matches(p.location) ||
+            matches(p.description) ||
+            matches(p.developer) ||
+            matches(p.project)
+        );
+    });
+
     const clearFilters = () => {
+        setSearchTerm('');
         setFilters({
             type: '',
             location: '',
@@ -136,9 +200,9 @@ const Properties = () => {
                                 <Search size={20} />
                                 <input 
                                     type="text" 
-                                    placeholder="Search properties..."
-                                    value={filters.location}
-                                    onChange={(e) => setFilters({...filters, location: e.target.value})}
+                                    placeholder="Search by area, project, or property name..."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
                                 />
                             </div>
                             <button 
@@ -220,14 +284,16 @@ const Properties = () => {
                                 <div className="loading-spinner"></div>
                                 <p>Loading properties...</p>
                             </div>
-                        ) : properties.length === 0 ? (
+                        ) : filteredProperties.length === 0 ? (
                             <div className="empty-state">
+                                <Search size={48} className="empty-icon" />
                                 <h3>No Properties Found</h3>
-                                <p>Try adjusting your filters</p>
+                                <p>We couldn't find any properties matching "{searchTerm}". Try different keywords or adjust your filters.</p>
+                                <button className="btn-clear-search" onClick={() => setSearchTerm('')}>Clear Search</button>
                             </div>
                         ) : (
                             <div className="properties-grid">
-                                {properties.map((property, index) => (
+                                {filteredProperties.map((property, index) => (
                                     <motion.div 
                                         key={property.id}
                                         className="property-card"
@@ -611,6 +677,27 @@ const Properties = () => {
                     .page-title {
                         font-size: 3rem;
                     }
+                }
+                .empty-icon {
+                    color: #444;
+                    margin-bottom: 20px;
+                }
+                
+                .btn-clear-search {
+                    margin-top: 20px;
+                    background: none;
+                    border: 1px solid #B8960C;
+                    color: #B8960C;
+                    padding: 10px 25px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    transition: all 0.3s ease;
+                }
+                
+                .btn-clear-search:hover {
+                    background: #B8960C;
+                    color: #080808;
                 }
             `}</style>
         </>

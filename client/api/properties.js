@@ -92,7 +92,10 @@ export default async function handler(req, res) {
         if (status) filters.push(`status=eq.${status}`);
         if (developer) filters.push(`developer=eq.${developer}`);
         if (bedrooms) filters.push(`bedrooms=gte.${bedrooms}`);
-        if (location) filters.push(`or=(location.ilike.*${location}*,area_full.ilike.*${location}*)`);
+        if (location) {
+            const search = decodeURIComponent(location);
+            filters.push(`or=(location.ilike.*${search}*,area_full.ilike.*${search}*,title.ilike.*${search}*,description.ilike.*${search}*,developer.ilike.*${search}*,project.ilike.*${search}*)`);
+        }
         
         if (filters.length > 0) query += '&' + filters.join('&');
         

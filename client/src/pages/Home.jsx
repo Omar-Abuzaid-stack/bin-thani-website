@@ -150,7 +150,7 @@ const Home = () => {
                             <Search className="search-icon" />
                             <input 
                                 type="text" 
-                                placeholder="Search by location, property name..."
+                                placeholder="Search by area, project, or property name..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
