@@ -168,7 +168,7 @@ const Chatbot = () => {
                             />
                             <input
                                 type="tel"
-                                placeholder="Phone: +971 55 662 6912"
+                                placeholder="Phone: +971 55 762 6912"
                                 value={leadInfo.requirements}
                                 onChange={(e) => setLeadInfo({ ...leadInfo, requirements: e.target.value })}
                             />

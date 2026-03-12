@@ -352,13 +352,13 @@ const Admin = () => {
                             </div>
                             {properties.map(prop => (
                                 <div key={prop.id} className="inventory-item">
-                                    <span className="prop-title">{prop.title}</span>
-                                    <span>{prop.developer}</span>
-                                    <span className="prop-price">{prop.price}</span>
-                                    <span><span className={`status-pill ${prop.status.toLowerCase().replace(' ', '-')}`}>{prop.status}</span></span>
+                                    <span className="prop-title" data-label="Title">{prop.title}</span>
+                                    <span data-label="Developer">{prop.developer}</span>
+                                    <span className="prop-price" data-label="Price">{prop.price}</span>
+                                    <span data-label="Status"><span className={`status-pill ${prop.status.toLowerCase().replace(' ', '-')}`}>{prop.status}</span></span>
                                     <div className="actions">
-                                        <button className="edit-btn" onClick={() => handleEdit(prop)}><Edit2 size={16} /></button>
-                                        <button className="delete-btn" onClick={() => handleDelete(prop.id)}><Trash2 size={16} /></button>
+                                        <button className="edit-btn" onClick={() => handleEdit(prop)} aria-label="Edit"><Edit2 size={16} /></button>
+                                        <button className="delete-btn" onClick={() => handleDelete(prop.id)} aria-label="Delete"><Trash2 size={16} /></button>
                                     </div>
                                 </div>
                             ))}

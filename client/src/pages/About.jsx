@@ -62,11 +62,11 @@ const About = () => {
                                     </p>
                                 </div>
                                 <div className="founder-contact">
-                                    <a href="tel:+971556626912">
-                                        <Phone size={16} /> +971 55 662 6912
+                                    <a href="tel:+971557626912">
+                                        <Phone size={16} /> +971 55 762 6912
                                     </a>
-                                    <a href="tel:+971557611400">
-                                        <Phone size={16} /> +971 55 761 1400
+                                    <a href="tel:+971556611400">
+                                        <Phone size={16} /> +971 55 661 1400
                                     </a>
                                     <a href="mailto:info@binthanirealestate.ae">
                                         <Mail size={16} /> info@binthanirealestate.ae
@@ -76,7 +76,7 @@ const About = () => {
                             <div className="founder-image">
                                 <div className="image-frame gold-border">
                                     <img 
-                                        src="https://i.postimg.cc/K41JZnYF/image.png" 
+                                        src="/src/assets/owner.png" 
                                         alt="Eissa bin Rashid bin Thani - Founder & CEO" 
                                     />
                                 </div>

@@ -89,8 +89,8 @@ export const Footer = () => {
                 </div>
                 <div className="footer-contact">
                     <h4>{t('contactUs')}</h4>
-                    <p><Phone size={16} /> <a href="tel:+971556626912" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 662 6912</a></p>
-                    <p><Phone size={16} /> <a href="tel:+971557611400" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 761 1400</a></p>
+                    <p><Phone size={16} /> <a href="tel:+971557626912" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 762 6912</a></p>
+                    <p><Phone size={16} /> <a href="tel:+971556611400" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 661 1400</a></p>
                     <p><Mail size={16} /> <a href="mailto:info@binthanirealestate.ae" style={{ color: 'inherit', textDecoration: 'none' }}>info@binthanirealestate.ae</a></p>
                     <p>Muwaileh Sharjah, United Arab Emirates</p>
                 </div>
@@ -111,7 +111,7 @@ export const Footer = () => {
 
 export const WhatsAppButton = () => {
     return (
-        <a href="https://wa.me/971500000000" className="whatsapp-btn" target="_blank" rel="noreferrer">
+        <a href="https://wa.me/971557626912" className="whatsapp-btn" target="_blank" rel="noreferrer">
             <MessageCircle size={32} />
         </a>
     );

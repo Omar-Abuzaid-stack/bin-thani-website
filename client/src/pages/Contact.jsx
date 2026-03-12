@@ -83,15 +83,15 @@ const Contact = () => {
                                 <Phone />
                             </div>
                             <h3>Call Us</h3>
-                            <p>+971 55 662 6912</p>
-                            <p>+971 50 123 4567</p>
+                            <p>+971 55 762 6912</p>
+                            <p>+971 55 661 1400</p>
                         </div>
                         <div className="info-block">
                             <div className="info-icon">
                                 <Mail />
                             </div>
                             <h3>Email Us</h3>
-                            <p>info@binthani.ae</p>
+                            <p>info@binthanirealestate.ae</p>
                         </div>
                     </motion.div>
 

@@ -609,8 +609,15 @@ section {
 }
 
 @media (max-width: 768px) {
+    .section-title {
+        font-size: 2.2rem;
+    }
     .hero-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
+    }
+    .hero-subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
     }
     .search-bar {
         flex-direction: column;
@@ -619,10 +626,12 @@ section {
     }
     .search-input-wrapper {
         padding: 10px 0;
+        width: 100%;
     }
     .search-btn {
         width: 100%;
         border-radius: 10px;
+        padding: 14px;
     }
     .services-grid {
         grid-template-columns: 1fr;
@@ -634,13 +643,18 @@ section {
         grid-template-columns: 1fr;
     }
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
     .cta-content h2 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     .cta-buttons {
         flex-direction: column;
+        gap: 15px;
+    }
+    .btn {
+        width: 100%;
     }
 }
 

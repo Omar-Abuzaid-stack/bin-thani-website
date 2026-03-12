@@ -69,6 +69,12 @@ ul {
     padding: 0 40px;
 }
 
+@media (max-width: 768px) {
+    .container {
+        padding: 0 20px;
+    }
+}
+
 /* ========================================
    ANNOUNCEMENT BAR
    ======================================== */
@@ -144,6 +150,12 @@ ul {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 40px;
+}
+
+@media (max-width: 768px) {
+    .nav-content {
+        padding: 0 20px;
+    }
 }
 
 /* Logo */
@@ -273,6 +285,26 @@ ul {
     padding: 0 40px;
 }
 
+@media (max-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        padding: 0 20px;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .footer-info .logo {
     margin-bottom: 20px;
     display: inline-block;
@@ -347,12 +379,6 @@ ul {
 .footer-bottom p {
     color: var(--text-dark);
     font-size: 13px;
-}
-
-@media (max-width: 900px) {
-    .footer-grid {
-        grid-template-columns: 1fr 1fr;
-    }
 }
 
 @media (max-width: 600px) {
