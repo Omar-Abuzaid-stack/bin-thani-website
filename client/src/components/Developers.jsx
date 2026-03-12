@@ -7,21 +7,26 @@ const GOLD_GRADIENT_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 const PROJECT_IMAGE_OVERRIDES = {
     'Alef Group': {
-        'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
+        'Al Mamsha': 'https://www.alefgroup.ae/wp-content/uploads/al-mamsha-cover.jpg',
         'Al Mamsha Sharjah': 'https://www.alefgroup.ae/wp-content/uploads/al-mamsha-cover.jpg',
         'Hayyan Villas': 'https://www.alefgroup.ae/wp-content/uploads/2024/09/hayyan-by-alef.jpg'
     },
     'Arada': {
         'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
+        'Aljada': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
         'Aljada Sharjah': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
         'Aljada Residences': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/aljada-hero.jpg',
         'Jouri Hills': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/jouri-hills-hero.jpg',
         'Naseej District': 'https://aradawebcontent.blob.core.windows.net/arada-com/2021/10/hero-banner-new.jpg'
     },
+    'Eagle Hills': {
+        'Maryam Island': 'https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp'
+    },
     'Shoumous': {
         'Shoumous Residences': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
     },
     'Ajmal Makan': {
+        'Ajmal Makan': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg',
         'City Hamriyah': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg',
         'Bab Al Bahar': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg'
     },
@@ -30,17 +35,14 @@ const PROJECT_IMAGE_OVERRIDES = {
         'Tiger Palace': 'https://www.tigergroup.ae/_next/static/media/modal-tower.46f2808e.jpg'
     },
     'Altay Hills': {
-        'Alta Hills villas': 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=80'
+        'Alta Hills villas': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=80'
     },
     'Manazil': {
         'Al Reef': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80'
     },
-    'Maryam Island': {
-        'Sharjah apartments': 'https://images.unsplash.com/photo-1491993946051-9fab1c8fd5af?auto=format&fit=crop&w=1400&q=80'
-    },
     'Al Marwan': {
-        'Tilal City': 'https://images.unsplash.com/photo-1489390355872-2f5f9d3b9d5c?auto=format&fit=crop&w=1400&q=80',
-        'Garden City': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1400&q=80'
+        'Tilal City': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Tilal-City-Sharjah.jpg',
+        'Garden City': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Tilal-City-Sharjah.jpg'
     }
 };
 
@@ -246,7 +248,7 @@ const Developers = () => {
                                         <h3><Home size={20} /> Key Features</h3>
                                         <ul className="proj-features-list">
                                             {(selectedProject.features || []).map((feat, i) => (
-                                                <li key={i}>{feat}</li>
+                                                <li key={i}>{typeof feat === 'string' ? feat : (feat && feat.name) || JSON.stringify(feat)}</li>
                                             ))}
                                         </ul>
                                     </div>

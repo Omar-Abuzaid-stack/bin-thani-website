@@ -7,7 +7,7 @@ const SUPABASE_KEY = process.env.SUPABASE_KEY ? process.env.SUPABASE_KEY.trim() 
 const DEVELOPER_META = {
     "Alef Group": { logo: "https://www.alefgroup.ae/wp-content/uploads/2022/11/alef-group-logo-white.png", tagline: "Building Premier Lifestyle Communities" },
     "Arada": { logo: "https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/arada-logo.svg", tagline: "Transforming the Future of Sharjah" },
-    "Eagle Hills": { logo: "https://maryamisland.ae/wp-content/uploads/2023/09/Uplifted-MI-logo-01-02-white.png.webp", tagline: "Pioneering Luxury Destinations" },
+    "Eagle Hills": { logo: "https://eaglehills.com/wp-content/uploads/2021/04/EAGLE-HILLS-LOGO-WHITE-01.png", tagline: "Pioneering Luxury Destinations" },
     "Diamond Developers": { logo: "https://sharjahsustainablecity.ae/wp-content/uploads/2021/04/SSC-Logo-White.png", tagline: "Pioneers in Sustainable Living" },
     "Tiger Group": { logo: "https://tigergroup.ae/wp-content/themes/tiger-group/assets/images/logo.png", tagline: "Iconic High-Rise Developments" },
     "BEEAH": { logo: "https://beeahgroup.com/wp-content/themes/beeah/assets/images/logo-white.svg", tagline: "Pioneering a Sustainable Quality of Life" },
@@ -48,9 +48,18 @@ export default async function handler(req, res) {
         
         // Group projects by developer
         const grouped = data.reduce((acc, project) => {
-            // Handle Maryam Island project under Eagle Hills as requested
-            let devName = project.developer || 'Other';
-            if (devName === 'Maryam Island') devName = 'Eagle Hills';
+            let devName = project.developer ? project.developer.trim() : 'Other';
+            if (devName.toLowerCase().includes('maryam island')) {
+                devName = 'Eagle Hills';
+                project.title = 'Maryam Island';
+                project.location = 'Al Khan, Sharjah';
+                project.status = 'Off-Plan / Available';
+            } else if (project.title && project.title.toLowerCase().includes('maryam island')) {
+                devName = 'Eagle Hills';
+                project.title = 'Maryam Island';
+                project.location = 'Al Khan, Sharjah';
+                project.status = 'Off-Plan / Available';
+            }
 
             if (!acc[devName]) acc[devName] = [];
             
@@ -63,7 +72,20 @@ export default async function handler(req, res) {
                 }
             }
 
-            acc[devName].push({
+            let parsedAmenities = [];
+            if (project.amenities) {
+                if (Array.isArray(project.amenities)) {
+                    parsedAmenities = project.amenities;
+                } else if (typeof project.amenities === 'string') {
+                    try { 
+                        parsedAmenities = JSON.parse(project.amenities); 
+                    } catch(e) {
+                        parsedAmenities = project.amenities.split(',').map(s => s.trim());
+                    }
+                }
+            }
+
+            const newProject = {
                 name: project.title,
                 image: (parsedImages && parsedImages[0]) || null,
                 location: project.location,
@@ -73,8 +95,18 @@ export default async function handler(req, res) {
                 price: project.price,
                 bedrooms: project.bedrooms > 0 ? `${project.bedrooms} Bedrooms` : 'Various layouts',
                 description: project.description,
-                features: project.amenities || []
-            });
+                features: parsedAmenities
+            };
+            
+            // Deduplicate Maryam Island exactly
+            if (newProject.name === 'Maryam Island') {
+                const existing = acc[devName].find(p => p.name === 'Maryam Island');
+                if (!existing) {
+                    acc[devName].push(newProject);
+                }
+            } else {
+                acc[devName].push(newProject);
+            }
             return acc;
         }, {});
 

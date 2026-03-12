@@ -84,8 +84,31 @@ const PropertyDetail = () => {
     if (loading) return <div className="loading">Loading property...</div>;
     if (!property) return <div className="not-found">Property not found</div>;
 
-    const images = property.images ? JSON.parse(property.images) : [];
-    const amenities = property.amenities ? JSON.parse(property.amenities) : [];
+    let images = [];
+    if (property.images) {
+        if (Array.isArray(property.images)) {
+            images = property.images;
+        } else if (typeof property.images === 'string') {
+            try {
+                images = JSON.parse(property.images);
+            } catch (e) {
+                images = [property.images];
+            }
+        }
+    }
+
+    let amenities = [];
+    if (property.amenities) {
+        if (Array.isArray(property.amenities)) {
+            amenities = property.amenities;
+        } else if (typeof property.amenities === 'string') {
+            try {
+                amenities = JSON.parse(property.amenities);
+            } catch (e) {
+                amenities = property.amenities.split(',').map(s => s.trim());
+            }
+        }
+    }
 
     return (
         <div className="property-detail-page">
