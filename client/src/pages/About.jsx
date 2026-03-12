@@ -76,7 +76,7 @@ const About = () => {
                             <div className="founder-image">
                                 <div className="image-frame gold-border">
                                     <img 
-                                        src="/src/assets/owner.png" 
+                                        src="/owner.png" 
                                         alt="Eissa bin Rashid bin Thani - Founder & CEO" 
                                     />
                                 </div>
