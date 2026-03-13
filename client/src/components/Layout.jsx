@@ -38,12 +38,12 @@ export const Navbar = () => {
                         <Link to="/services" onClick={() => setIsOpen(false)}>{t('services')}</Link>
                         <Link to="/about" onClick={() => setIsOpen(false)}>{t('about')}</Link>
                         <Link to="/contact" onClick={() => setIsOpen(false)}>{t('contact')}</Link>
-                    </div>
-                    <div className="nav-actions">
                         <button className="lang-toggle" onClick={toggleLanguage} aria-label="Toggle Language">
-                            <Globe size={18} />
+                            <Globe size={16} />
                             <span className="lang-label">{language === 'en' ? 'عربي' : 'EN'}</span>
                         </button>
+                    </div>
+                    <div className="nav-actions">
                         <div className="nav-toggle" onClick={() => setIsOpen(!isOpen)}>
                             {isOpen ? <X color="#c9a84c" /> : <Menu color="#c9a84c" />}
                         </div>

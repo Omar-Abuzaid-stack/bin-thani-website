@@ -32,8 +32,8 @@ body {
   background: var(--primary-black);
   color: var(--text-white);
   line-height: 1.6;
-  min-width: 1440px;
-  overflow-x: auto;
+  min-width: 100%;
+  overflow-x: hidden;
 }
 
 .app {
@@ -46,7 +46,8 @@ main {
 }
 
 .container {
-  width: 1400px;
+  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 20px;
 }
