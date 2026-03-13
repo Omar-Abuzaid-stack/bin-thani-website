@@ -261,15 +261,6 @@ const Properties = () => {
                                         </select>
                                     </div>
                                     <div className="filter-item">
-                                        <select name="status" value={filters.status} onChange={handleFilterChange}>
-                                            <option value="">{language === 'ar' ? 'الحالة' : 'Status'}</option>
-                                            <option value="Available">{language === 'ar' ? 'متوفر' : 'Available'}</option>
-                                            <option value="Off-Plan">{language === 'ar' ? 'على الخارطة' : 'Off-Plan'}</option>
-                                            <option value="Under Construction">{language === 'ar' ? 'قيد الإنشاء' : 'Under Construction'}</option>
-                                            <option value="Upcoming">{language === 'ar' ? 'قادم' : 'Upcoming'}</option>
-                                        </select>
-                                    </div>
-                                    <div className="filter-item">
                                         <select name="bedrooms" value={filters.bedrooms} onChange={handleFilterChange}>
                                             <option value="">{language === 'ar' ? 'غرف النوم' : 'Bedrooms'}</option>
                                             <option value="0">{language === 'ar' ? 'ستوديو' : 'Studio'}</option>
