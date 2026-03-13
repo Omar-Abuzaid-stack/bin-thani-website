@@ -36,7 +36,7 @@
     position: relative;
 }
 
-/* Buy / Rent listing toggle */
+/* Buy / Rent / Off-Plan listing toggle */
 .listing-type-toggle {
     display: flex;
     gap: 0;
@@ -49,7 +49,7 @@
 }
 
 .listing-tab-btn {
-    padding: 12px 36px;
+    padding: 12px 32px;
     border: none;
     border-radius: 9px;
     background: transparent;
@@ -60,6 +60,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .listing-tab-btn:hover {
@@ -71,6 +72,13 @@
     background: linear-gradient(135deg, #c9a84c, #a07c33);
     color: #000;
     box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+}
+
+/* Off-Plan tab — distinct purple/violet when active */
+.listing-tab-btn.offplan.active {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
 }
 
 /* Listing type badge on property card image */
@@ -91,6 +99,10 @@
 }
 .listing-type-badge.rent {
     background: rgba(59, 130, 246, 0.85);
+    color: #fff;
+}
+.listing-type-badge.offplan {
+    background: rgba(124, 58, 237, 0.85);
     color: #fff;
 }
 

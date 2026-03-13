@@ -79,7 +79,13 @@ const Admin = () => {
             // Filter by type
             let filtered = res.data;
             if (adminView === 'Properties') {
-                filtered = res.data.filter(p => p.type !== 'Off-Plan Project' && (p.listing_type || 'buy') === propertyTab);
+                // off-plan tab → listing_type='off-plan'
+                // buy/rent tabs → match listing_type, exclude Off-Plan Project type
+                filtered = res.data.filter(p => {
+                    if (p.type === 'Off-Plan Project') return false; // those live in Projects section
+                    const lt = p.listing_type || 'buy';
+                    return lt === propertyTab;
+                });
             } else if (adminView === 'Projects') {
                 filtered = res.data.filter(p => p.type === 'Off-Plan Project');
             }
@@ -247,13 +253,19 @@ const Admin = () => {
                                 className={`sub-tab ${propertyTab === 'buy' ? 'active' : ''}`}
                                 onClick={() => setPropertyTab('buy')}
                             >
-                                Buy
+                                🏠 Buy
                             </button>
                             <button 
                                 className={`sub-tab ${propertyTab === 'rent' ? 'active' : ''}`}
                                 onClick={() => setPropertyTab('rent')}
                             >
-                                Rent
+                                🔑 Rent
+                            </button>
+                            <button 
+                                className={`sub-tab offplan ${propertyTab === 'off-plan' ? 'active' : ''}`}
+                                onClick={() => setPropertyTab('off-plan')}
+                            >
+                                🏗️ Off-Plan
                             </button>
                         </div>
                     )}
@@ -269,7 +281,7 @@ const Admin = () => {
                         setFormData({
                             title: '', title_ar: '', developer: '', developer_ar: '',
                             location: '', location_ar: '', price: '', price_numeric: '',
-                            listing_type: propertyTab, // pre-fill from current tab
+                            listing_type: propertyTab, // pre-fill from current tab (buy | rent | off-plan)
                             price_per: propertyTab === 'rent' ? 'yearly' : 'total',
                             type: adminView === 'Properties' ? 'Apartment' : 'Off-Plan Project',
                             bedrooms: '', bathrooms: '', area: '', status: 'Available',
@@ -338,23 +350,30 @@ const Admin = () => {
                                 </form>
                             ) : (
                                 <form onSubmit={handleSubmit} className="property-form">
-                                {adminView === 'Properties' && !editingProperty && (
+                                {adminView === 'Properties' && (
                                     <div className="form-question">
-                                        <h3>Is this property for Buy or Rent?</h3>
+                                        <h3>Listing Type</h3>
                                         <div className="question-options">
                                             <button 
                                                 type="button" 
                                                 className={`option-btn ${formData.listing_type === 'buy' ? 'active' : ''}`}
                                                 onClick={() => setFormData({...formData, listing_type: 'buy', price_per: 'total'})}
                                             >
-                                                For Sale (Buy)
+                                                🏠 For Sale (Buy)
                                             </button>
                                             <button 
                                                 type="button" 
                                                 className={`option-btn ${formData.listing_type === 'rent' ? 'active' : ''}`}
                                                 onClick={() => setFormData({...formData, listing_type: 'rent', price_per: 'yearly'})}
                                             >
-                                                For Rent
+                                                🔑 For Rent
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className={`option-btn offplan ${formData.listing_type === 'off-plan' ? 'active' : ''}`}
+                                                onClick={() => setFormData({...formData, listing_type: 'off-plan', price_per: 'total'})}
+                                            >
+                                                🏗️ Off-Plan
                                             </button>
                                         </div>
                                     </div>

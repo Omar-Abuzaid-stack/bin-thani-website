@@ -143,6 +143,13 @@
     border: 1px solid rgba(184, 150, 12, 0.4);
 }
 
+/* Off-Plan sub-tab — purple tint when active */
+.sub-tab.offplan.active {
+    background: rgba(124, 58, 237, 0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(124, 58, 237, 0.4);
+}
+
 /* Form listing type question */
 .form-question {
     background: rgba(184, 150, 12, 0.05);
@@ -190,6 +197,12 @@
     background: #B8960C;
     border-color: #B8960C;
     color: #000;
+}
+
+.option-btn.offplan.active {
+    background: #7c3aed;
+    border-color: #7c3aed;
+    color: #fff;
 }
 
 /* Inventory List */

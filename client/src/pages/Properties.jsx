@@ -29,96 +29,99 @@ const getPropertyImage = (property, index) => {
         try {
             const images = JSON.parse(property.images);
             if (images && images[0]) return images[0];
-        } catch (e) {
-            // Use default
-        }
+        } catch (e) { /* use default */ }
     }
     return defaultImages[index % defaultImages.length];
 };
 
 /**
- * Format price depending on listing_type and price_per:
- * Buy           → AED 1,200,000
- * Rent yearly   → AED 50,000/yr
- * Rent monthly  → AED 4,200/mo
+ * Format price by listing_type:
+ *   buy      → AED 1,200,000
+ *   off-plan → AED 1,200,000  (same as buy — total price)
+ *   rent/yr  → AED 50,000/yr
+ *   rent/mo  → AED 4,200/mo
  */
 const formatPrice = (property, language) => {
-    const num = property.price_numeric;
-    const prefix = language === 'ar' ? 'د.إ ' : 'AED ';
+    const num  = property.price_numeric;
+    const pfx  = language === 'ar' ? 'د.إ ' : 'AED ';
 
     if (!num || num === 0) {
         return language === 'ar' ? 'تواصل لمعرفة السعر' : 'Contact for Details';
     }
 
-    const formatted = Number(num).toLocaleString();
+    const fmt = Number(num).toLocaleString();
 
     if (property.listing_type === 'rent') {
-        const suffix    = property.price_per === 'monthly' ? '/mo'  : '/yr';
-        const suffixAr  = property.price_per === 'monthly' ? '/شهر' : '/سنة';
-        return `${prefix}${formatted}${language === 'ar' ? suffixAr : suffix}`;
+        const sfx   = property.price_per === 'monthly' ? '/mo'  : '/yr';
+        const sfxAr = property.price_per === 'monthly' ? '/شهر' : '/سنة';
+        return `${pfx}${fmt}${language === 'ar' ? sfxAr : sfx}`;
     }
 
-    // Buy (default)
-    return `${prefix}${formatted}`;
+    // buy OR off-plan → plain total price
+    return `${pfx}${fmt}`;
 };
 
+// Tab definitions
+const TABS = [
+    { key: 'buy',      label: '🏠 Buy',      labelAr: '🏠 للبيع',      badge: 'buy'     },
+    { key: 'rent',     label: '🔑 Rent',     labelAr: '🔑 للإيجار',   badge: 'rent'    },
+    { key: 'off-plan', label: '🏗️ Off-Plan', labelAr: '🏗️ على الخارطة', badge: 'offplan' },
+];
+
 const Properties = () => {
-    const [properties, setProperties] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [listingTab, setListingTab] = useState('buy'); // 'buy' | 'rent'
-    const [searchTerm, setSearchTerm] = useState('');
+    const [properties, setProperties]   = useState([]);
+    const [loading, setLoading]         = useState(true);
+    const [listingTab, setListingTab]   = useState('buy');
+    const [searchTerm, setSearchTerm]   = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
-    const { t, language, getContent } = useLanguage();
+    const { t, language, getContent }   = useLanguage();
 
     // Debounce search
     useEffect(() => {
-        const handler = setTimeout(() => setDebouncedSearch(searchTerm), 300);
-        return () => clearTimeout(handler);
+        const h = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+        return () => clearTimeout(h);
     }, [searchTerm]);
 
     const [filters, setFilters] = useState({
-        type: '',
-        location: '',
-        bedrooms: '',
-        minPrice: '',
-        maxPrice: '',
-        status: '',
-        developer: ''
+        type: '', location: '', bedrooms: '',
+        minPrice: '', maxPrice: '', status: '', developer: ''
     });
 
     // Re-fetch whenever filters, search, or tab change
-    useEffect(() => {
-        fetchProperties();
-    }, [filters, debouncedSearch, listingTab]);
+    useEffect(() => { fetchProperties(); }, [filters, debouncedSearch, listingTab]);
 
     // Parse query params on mount
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
+        const p = new URLSearchParams(window.location.search);
         setFilters(prev => ({
             ...prev,
-            type:      params.get('type')      || '',
-            status:    params.get('status')    || '',
-            developer: params.get('developer') || ''
+            type:      p.get('type')      || '',
+            status:    p.get('status')    || '',
+            developer: p.get('developer') || ''
         }));
-        setSearchTerm(params.get('location') || params.get('search') || '');
-        if (params.get('listing') === 'rent') setListingTab('rent');
+        setSearchTerm(p.get('location') || p.get('search') || '');
+        if (p.get('listing') === 'rent')     setListingTab('rent');
+        if (p.get('listing') === 'off-plan') setListingTab('off-plan');
     }, []);
 
     const fetchProperties = async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            Object.entries(filters).forEach(([key, value]) => {
-                if (value && key !== 'location') params.append(key, value);
+            Object.entries(filters).forEach(([k, v]) => {
+                if (v && k !== 'location') params.append(k, v);
             });
             if (debouncedSearch) params.append('location', debouncedSearch);
 
             const res = await axios.get(getApiUrl('properties') + `?${params}`);
 
-            // Exclude Off-Plan Projects and filter by listing tab
+            // STRICT filtering:
+            // 1. Never show Off-Plan Project type (those are in Developers/Projects section)
+            // 2. Show only properties whose listing_type matches current tab
+            //    Legacy properties (no listing_type) default to 'buy'
             const filtered = res.data.filter(p => {
-                if (p.type === 'Off-Plan Project') return false;
-                const lt = p.listing_type || 'buy'; // legacy default = buy
+                if (p.type === 'Off-Plan Project') return false; // ← Project section only
+                const lt = p.listing_type || 'buy';
                 return lt === listingTab;
             });
             setProperties(filtered);
@@ -130,13 +133,12 @@ const Properties = () => {
 
     const handleFilterChange = (e) => setFilters({ ...filters, [e.target.name]: e.target.value });
     const handleSearchChange = (e) => setSearchTerm(e.target.value);
-
     const clearFilters = () => {
         setSearchTerm('');
         setFilters({ type: '', location: '', bedrooms: '', minPrice: '', maxPrice: '', status: '', developer: '' });
     };
 
-    // Area translations for bilingual fuzzy search
+    // Bilingual area map for fuzzy search
     const areaMap = {
         'sharjah': 'الشارقة', 'dubai': 'دبي', 'aljada': 'الجادة', 'masaar': 'مسار',
         'maryam island': 'جزيرة مريم', 'muwaileh': 'مويلحة', 'muwaila': 'مويلحة',
@@ -147,10 +149,7 @@ const Properties = () => {
 
     const fuseOptions = {
         keys: ['title', 'location', 'description', 'developer', 'project'],
-        threshold: 0.4,
-        distance: 100,
-        includeScore: true,
-        useExtendedSearch: true
+        threshold: 0.4, distance: 100, includeScore: true, useExtendedSearch: true
     };
 
     const filteredProperties = React.useMemo(() => {
@@ -158,20 +157,29 @@ const Properties = () => {
         if (!term) return properties;
 
         const fuse = new Fuse(properties, fuseOptions);
-        const fuzzyResults = fuse.search(term).map(r => r.item);
-        if (fuzzyResults.length > 0) return fuzzyResults;
+        const fuzzy = fuse.search(term).map(r => r.item);
+        if (fuzzy.length > 0) return fuzzy;
 
-        let translatedTerm = '';
+        let translated = '';
         for (const [en, ar] of Object.entries(areaMap)) {
-            if (term.includes(en.toLowerCase())) translatedTerm = ar;
-            if (term.includes(ar)) translatedTerm = en;
+            if (term.includes(en.toLowerCase())) translated = ar;
+            if (term.includes(ar)) translated = en;
         }
 
         return properties.filter(p => {
-            const m = (text) => text && (text.toLowerCase().includes(term) || (translatedTerm && text.toLowerCase().includes(translatedTerm.toLowerCase())));
+            const m = (txt) => txt && (txt.toLowerCase().includes(term) || (translated && txt.toLowerCase().includes(translated.toLowerCase())));
             return m(p.title) || m(p.location) || m(p.description) || m(p.developer) || m(p.project);
         });
     }, [properties, searchTerm]);
+
+    // Badge config per listing_type
+    const getBadge = (lt) => {
+        if (lt === 'rent')     return { cls: 'rent',    label: language === 'ar' ? 'إيجار'      : 'Rent'     };
+        if (lt === 'off-plan') return { cls: 'offplan', label: language === 'ar' ? 'على الخارطة': 'Off-Plan' };
+        return                        { cls: 'buy',     label: language === 'ar' ? 'بيع'        : 'Buy'      };
+    };
+
+    const currentTab = TABS.find(t => t.key === listingTab);
 
     return (
         <>
@@ -194,22 +202,18 @@ const Properties = () => {
                 <div className="container">
                     <div className="properties-content">
 
-                        {/* ── Buy / Rent Toggle ── */}
+                        {/* ── Buy / Rent / Off-Plan Toggle ── */}
                         <div className="listing-type-toggle">
-                            <button
-                                id="listing-tab-buy"
-                                className={`listing-tab-btn ${listingTab === 'buy' ? 'active' : ''}`}
-                                onClick={() => setListingTab('buy')}
-                            >
-                                {language === 'ar' ? '🏠 للبيع' : '🏠 Buy'}
-                            </button>
-                            <button
-                                id="listing-tab-rent"
-                                className={`listing-tab-btn ${listingTab === 'rent' ? 'active' : ''}`}
-                                onClick={() => setListingTab('rent')}
-                            >
-                                {language === 'ar' ? '🔑 للإيجار' : '🔑 Rent'}
-                            </button>
+                            {TABS.map(tab => (
+                                <button
+                                    key={tab.key}
+                                    id={`listing-tab-${tab.key}`}
+                                    className={`listing-tab-btn ${tab.key === 'off-plan' ? 'offplan' : ''} ${listingTab === tab.key ? 'active' : ''}`}
+                                    onClick={() => setListingTab(tab.key)}
+                                >
+                                    {language === 'ar' ? tab.labelAr : tab.label}
+                                </button>
+                            ))}
                         </div>
 
                         {/* ── Search & Filters ── */}
@@ -302,63 +306,71 @@ const Properties = () => {
                             <div className="empty-state">
                                 <Search size={48} className="empty-icon" />
                                 <h3>{t('noPropertiesFound')}</h3>
-                                <p>{t('noMatchFor')} "{searchTerm}". {t('adjustFilters')}</p>
-                                <button className="btn-clear-search" onClick={() => setSearchTerm('')}>{t('clearSearch')}</button>
+                                <p>
+                                    {searchTerm
+                                        ? `${t('noMatchFor')} "${searchTerm}". ${t('adjustFilters')}`
+                                        : (language === 'ar'
+                                            ? `لا توجد عقارات ${listingTab === 'rent' ? 'للإيجار' : listingTab === 'off-plan' ? 'على الخارطة' : 'للبيع'} في الوقت الحالي.`
+                                            : `No ${listingTab === 'rent' ? 'rental' : listingTab === 'off-plan' ? 'off-plan' : 'sale'} properties listed yet.`)
+                                    }
+                                </p>
+                                {searchTerm && <button className="btn-clear-search" onClick={() => setSearchTerm('')}>{t('clearSearch')}</button>}
                             </div>
                         ) : (
                             <div className="properties-grid">
-                                {filteredProperties.map((property, index) => (
-                                    <motion.div
-                                        key={property.id}
-                                        className="property-card"
-                                        layout
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                    >
-                                        <Link to={`/property/${property.id}`}>
-                                            <div className="property-image">
-                                                <img src={getPropertyImage(property, index)} alt={getContent(property, 'title')} />
-                                                <span className={`property-badge ${property.status?.toLowerCase()}`}>
-                                                    {getContent(property, 'status')}
-                                                </span>
-                                                <span className={`listing-type-badge ${property.listing_type === 'rent' ? 'rent' : 'buy'}`}>
-                                                    {property.listing_type === 'rent'
-                                                        ? (language === 'ar' ? 'إيجار' : 'Rent')
-                                                        : (language === 'ar' ? 'بيع' : 'Buy')}
-                                                </span>
-                                            </div>
-                                            <div className="property-info">
-                                                <div className="property-price">
-                                                    {formatPrice(property, language)}
+                                {filteredProperties.map((property, index) => {
+                                    const badge = getBadge(property.listing_type);
+                                    return (
+                                        <motion.div
+                                            key={property.id}
+                                            className="property-card"
+                                            layout
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                        >
+                                            <Link to={`/property/${property.id}`}>
+                                                <div className="property-image">
+                                                    <img src={getPropertyImage(property, index)} alt={getContent(property, 'title')} />
+                                                    <span className={`property-badge ${property.status?.toLowerCase().replace(' ', '-')}`}>
+                                                        {getContent(property, 'status')}
+                                                    </span>
+                                                    <span className={`listing-type-badge ${badge.cls}`}>
+                                                        {badge.label}
+                                                    </span>
                                                 </div>
-                                                <h3 className="property-title">{getContent(property, 'title')}</h3>
-                                                <div className="property-location">
-                                                    <MapPin size={16} />
-                                                    <span>{getContent(property, 'location')}</span>
-                                                </div>
-                                                <div className="property-features">
-                                                    {property.bedrooms > 0 && (
-                                                        <div className="feature">
-                                                            <Bed size={16} />
-                                                            <span>{property.bedrooms} {t('beds')}</span>
-                                                        </div>
-                                                    )}
-                                                    {property.bathrooms > 0 && (
-                                                        <div className="feature">
-                                                            <Bath size={16} />
-                                                            <span>{property.bathrooms} {t('baths')}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="feature">
-                                                        <Square size={16} />
-                                                        <span>{property.area ? property.area.replace(/sqft/i, t('sqft')) : ''}</span>
+                                                <div className="property-info">
+                                                    <div className="property-price">
+                                                        {formatPrice(property, language)}
                                                     </div>
+                                                    <h3 className="property-title">{getContent(property, 'title')}</h3>
+                                                    <div className="property-location">
+                                                        <MapPin size={16} />
+                                                        <span>{getContent(property, 'location')}</span>
+                                                    </div>
+                                                    <div className="property-features">
+                                                        {property.bedrooms > 0 && (
+                                                            <div className="feature">
+                                                                <Bed size={16} />
+                                                                <span>{property.bedrooms} {t('beds')}</span>
+                                                            </div>
+                                                        )}
+                                                        {property.bathrooms > 0 && (
+                                                            <div className="feature">
+                                                                <Bath size={16} />
+                                                                <span>{property.bathrooms} {t('baths')}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="feature">
+                                                            <Square size={16} />
+                                                            <span>{property.area ? property.area.replace(/sqft/i, t('sqft')) : ''}</span>
+                                                        </div>
+                                                    </div>
+                                                    <button className="view-btn">{t('viewDetails')}</button>
                                                 </div>
-                                                <button className="view-btn">{t('viewDetails')}</button>
-                                            </div>
-                                        </Link>
-                                    </motion.div>
-                                ))}
+                                            </Link>
+                                        </motion.div>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
