@@ -208,73 +208,100 @@ const Properties = () => {
 
                 <div className="container">
                     <div className="properties-content">
-                        {/* Search and Filter Bar */}
-                        <div className="search-filter-bar">
-                            <div className="search-box">
-                                <Search size={20} />
-                                <input 
-                                    type="text" 
-                                    placeholder={t('searchPlaceholder')}
-                                    value={searchTerm}
-                                    onChange={handleSearchChange}
-                                />
+                        {/* Redesigned Luxury Search and Filter Section */}
+                        <div className="luxury-search-container">
+                            <div className="search-bar-wrapper">
+                                <div className="search-input-box">
+                                    <Search className="search-icon" size={20} />
+                                    <input 
+                                        type="text" 
+                                        placeholder={language === 'ar' ? 'بحث عن طريق المنطقة، المشروع أو اسم العقار...' : 'Search by area, project or property name...'}
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                    />
+                                    <button className="gold-search-btn" onClick={fetchProperties}>
+                                        {language === 'ar' ? 'بحث' : 'Search'}
+                                    </button>
+                                </div>
                             </div>
-                            <button 
-                                className={`filter-toggle ${showFilters ? 'active' : ''}`}
-                                onClick={() => setShowFilters(!showFilters)}
-                            >
-                                <Filter size={20} />
-                                <span>{language === 'ar' ? 'تصفية' : 'Filters'}</span>
-                            </button>
-                        </div>
 
-                        {/* Expandable Filters */}
-                        <motion.div 
-                            className="filters-panel"
-                            initial={false}
-                            animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
-                            style={{ overflow: 'hidden' }}
-                        >
-                            <div className="filters-grid">
-                                <div className="filter-group">
-                                    <label>{language === 'ar' ? 'النوع' : 'Property Type'}</label>
-                                    <select name="type" value={filters.type} onChange={handleFilterChange}>
-                                        <option value="">{t('allTypes')}</option>
-                                        <option value="Buy">{language === 'ar' ? 'شراء' : 'Buy'}</option>
-                                        <option value="Rent">{language === 'ar' ? 'إيجار' : 'Rent'}</option>
-                                    </select>
+                            <div className="luxury-filters-container">
+                                <div className="filters-row">
+                                    <div className="filter-item">
+                                        <select name="developer" value={filters.developer} onChange={handleFilterChange}>
+                                            <option value="">{language === 'ar' ? 'المطور' : 'Developer'}</option>
+                                            <option value="Arada">Arada</option>
+                                            <option value="Alef Group">Alef Group</option>
+                                            <option value="Eagle Hills">Eagle Hills</option>
+                                            <option value="Tiger Group">Tiger Group</option>
+                                            <option value="Shoumous">Shoumous</option>
+                                            <option value="Al Tay Hills">Al Tay Hills</option>
+                                            <option value="Manazil">Manazil</option>
+                                            <option value="Al Marwan">Al Marwan</option>
+                                            <option value="Diamond Developers">Diamond Developers</option>
+                                            <option value="Ajmal Makan">Ajmal Makan</option>
+                                            <option value="BEEAH">BEEAH</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="filter-item">
+                                        <select name="type" value={filters.type} onChange={handleFilterChange}>
+                                            <option value="">{language === 'ar' ? 'نوع العقار' : 'Property Type'}</option>
+                                            <option value="Apartment">{language === 'ar' ? 'شقة' : 'Apartment'}</option>
+                                            <option value="Villa">{language === 'ar' ? 'فيلا' : 'Villa'}</option>
+                                            <option value="Townhouse">{language === 'ar' ? 'تاون هاوس' : 'Townhouse'}</option>
+                                            <option value="Penthouse">{language === 'ar' ? 'بنتهاوس' : 'Penthouse'}</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="filter-item">
+                                        <select name="status" value={filters.status} onChange={handleFilterChange}>
+                                            <option value="">{language === 'ar' ? 'الحالة' : 'Status'}</option>
+                                            <option value="Available">{language === 'ar' ? 'متوفر' : 'Available'}</option>
+                                            <option value="Off-Plan">{language === 'ar' ? 'على الخارطة' : 'Off-Plan'}</option>
+                                            <option value="Under Construction">{language === 'ar' ? 'قيد الإنشاء' : 'Under Construction'}</option>
+                                            <option value="Upcoming">{language === 'ar' ? 'قادم' : 'Upcoming'}</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="filter-item">
+                                        <select name="bedrooms" value={filters.bedrooms} onChange={handleFilterChange}>
+                                            <option value="">{language === 'ar' ? 'غرف النوم' : 'Bedrooms'}</option>
+                                            <option value="0">{language === 'ar' ? 'ستوديو' : 'Studio'}</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5+</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="filter-item">
+                                        <input 
+                                            type="number" 
+                                            name="minPrice" 
+                                            placeholder={language === 'ar' ? 'أقل سعر (د.إ)' : 'Min Price (AED)'} 
+                                            value={filters.minPrice} 
+                                            onChange={handleFilterChange} 
+                                        />
+                                    </div>
+
+                                    <div className="filter-item">
+                                        <input 
+                                            type="number" 
+                                            name="maxPrice" 
+                                            placeholder={language === 'ar' ? 'أقصى سعر (د.إ)' : 'Max Price (AED)'} 
+                                            value={filters.maxPrice} 
+                                            onChange={handleFilterChange} 
+                                        />
+                                    </div>
+
+                                    <button className="clear-filters-btn" onClick={clearFilters}>
+                                        <X size={16} /> {language === 'ar' ? 'مسح الكل' : 'Clear All'}
+                                    </button>
                                 </div>
-                                <div className="filter-group">
-                                    <label>{language === 'ar' ? 'الحالة' : 'Status'}</label>
-                                    <select name="status" value={filters.status} onChange={handleFilterChange}>
-                                        <option value="">{t('allStatus')}</option>
-                                        <option value="Ready">{t('available')}</option>
-                                        <option value="Off-Plan">{t('offPlan')}</option>
-                                        <option value="Sold">{t('sold')}</option>
-                                    </select>
-                                </div>
-                                <div className="filter-group">
-                                    <label>{language === 'ar' ? 'غرف النوم' : 'Bedrooms'}</label>
-                                    <select name="bedrooms" value={filters.bedrooms} onChange={handleFilterChange}>
-                                        <option value="">{t('anyBedrooms')}</option>
-                                        {[1, 2, 3, 4, 5].map(num => (
-                                            <option key={num} value={num}>{num}+</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="filter-group">
-                                    <label>{t('minPrice')}</label>
-                                    <input type="number" name="minPrice" placeholder="0" value={filters.minPrice} onChange={handleFilterChange} />
-                                </div>
-                                <div className="filter-group">
-                                    <label>{t('maxPrice')}</label>
-                                    <input type="number" name="maxPrice" placeholder={language === 'ar' ? 'أي' : 'Any'} value={filters.maxPrice} onChange={handleFilterChange} />
-                                </div>
-                                <button className="clear-all" onClick={clearFilters}>
-                                    <X size={16} /> {t('clearAll')}
-                                </button>
                             </div>
-                        </motion.div>
+                        </div>
 
                         <div className="results-header">
                             <p>{filteredProperties.length} {t('propertiesFound')}</p>
@@ -364,8 +391,8 @@ const Properties = () => {
                 .btn-clear-search {
                     margin-top: 20px;
                     background: none;
-                    border: 1px solid #B8960C;
-                    color: #B8960C;
+                    border: 1px solid #c9a84c;
+                    color: #c9a84c;
                     padding: 10px 25px;
                     border-radius: 6px;
                     cursor: pointer;
@@ -373,50 +400,8 @@ const Properties = () => {
                     transition: all 0.3s ease;
                 }
                 .btn-clear-search:hover {
-                    background: #B8960C;
+                    background: #c9a84c;
                     color: #080808;
-                }
-                .filters-grid {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 20px;
-                    background: rgba(255,255,255,0.02);
-                    padding: 20px;
-                    border-radius: 12px;
-                    align-items: flex-end;
-                }
-                .filter-group {
-                    flex: 1;
-                    min-width: 150px;
-                }
-                .filter-group label {
-                    display: block;
-                    font-size: 12px;
-                    color: #888;
-                    margin-bottom: 8px;
-                }
-                .filter-group select, .filter-group input {
-                    width: 100%;
-                    padding: 10px;
-                    background: #222;
-                    border: 1px solid #333;
-                    color: #fff;
-                    border-radius: 6px;
-                }
-                .clear-all {
-                    padding: 10px 20px;
-                    background: none;
-                    border: 1px solid #444;
-                    color: #888;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-                .clear-all:hover {
-                    color: #fff;
-                    border-color: #666;
                 }
             `}} />
         </>
