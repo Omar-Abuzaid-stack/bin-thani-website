@@ -15,6 +15,11 @@ const Developers = () => {
     const [error, setError] = useState(null);
     const [selectedProject, setSelectedProject] = useState(null);
     const [expandedDeveloper, setExpandedDeveloper] = useState(null);
+    const [imgErrors, setImgErrors] = useState({});
+
+    const handleImgError = (name) => {
+        setImgErrors(prev => ({ ...prev, [name]: true }));
+    };
 
     const toggleDeveloper = (devName) => {
         setExpandedDeveloper(expandedDeveloper === devName ? null : devName);
@@ -26,9 +31,10 @@ const Developers = () => {
                 const apiUrl = import.meta.env.PROD ? '/api/developers' : `${import.meta.env.VITE_API_URL || ''}/api/developers`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-                setDevelopersData(data || []);
+                setDevelopersData(Array.isArray(data) ? data : []);
             } catch (err) {
                 setError(err.message);
+                setDevelopersData([]);
             } finally {
                 setIsLoading(false);
             }
@@ -85,11 +91,21 @@ const Developers = () => {
                                     onClick={() => toggleDeveloper(dev.name)}
                                 >
                                     <div className="dev-card-header compact-header">
-                                        {dev.logo ? (
-                                            <img src={dev.logo} alt={dev.name} className="dev-real-logo compact-img" />
-                                        ) : (
-                                            <h3 className="dev-fallback-logo">{dev.name}</h3>
-                                        )}
+                                        <div className="dev-logo-container">
+                                            {dev.logo && !imgErrors[dev.name] ? (
+                                                <img 
+                                                    src={dev.logo} 
+                                                    alt={dev.name} 
+                                                    className="dev-real-logo compact-img" 
+                                                    onError={() => handleImgError(dev.name)}
+                                                />
+                                            ) : (
+                                                <div className="dev-initial-logo">
+                                                    {getContent(dev, 'name')?.charAt(0) || 'D'}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <h3 className="dev-card-name">{getContent(dev, 'name')}</h3>
                                         <div className="dev-tagline compact-tagline"><i>{getContent(dev, 'tagline')}</i></div>
                                         <button className="dev-expand-btn">
                                             {isExpanded 

@@ -312,26 +312,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* CTA SECTION */}
-            <section className="cta-luxury">
-                <div className="cta-bg"></div>
-                <div className="cta-overlay"></div>
-                <div className="container">
-                    <motion.div 
-                        className="cta-content"
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2>{t('readyToFind')}</h2>
-                        <p>{t('findPerfect')}</p>
-                        <div className="cta-buttons">
-                            <Link to="/properties" className="btn btn-primary">{t('browseProperties')}</Link>
-                            <Link to="/contact" className="btn btn-outline">{t('contactUs')}</Link>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
 
             {/* STATS */}
             <section className="stats-section">

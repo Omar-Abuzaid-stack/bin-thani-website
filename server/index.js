@@ -24,10 +24,14 @@ async function supabaseCall(endpoint, method = 'GET', body = null) {
     };
     if (body) options.body = JSON.stringify(body);
     
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, options);
+    const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+    const response = await fetch(url, options);
     const data = await response.json();
+    
     if (response.ok) return data;
-    throw new Error(data.message || 'Supabase error');
+    
+    console.error(`❌ Supabase Error (${method} ${endpoint}):`, JSON.stringify(data, null, 2));
+    throw new Error(data.message || data.error_description || 'Supabase error');
 }
 
 // Middleware
@@ -347,6 +351,89 @@ Help users find properties, answer questions about the UAE real estate market (S
     } catch (err) {
         console.error('Mistral API Error:', err.response?.data || err.message);
         res.status(500).json({ error: 'Chatbot service unavailable' });
+    }
+});
+
+// Create new property
+app.post('/api/properties', async (req, res) => {
+    try {
+        const data = await supabaseCall('properties', 'POST', req.body);
+        res.status(201).json(data?.[0] || { success: true });
+    } catch (err) {
+        console.error('Create property error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update property
+app.put('/api/property', async (req, res) => {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'ID is required' });
+    
+    try {
+        const data = await supabaseCall(`properties?id=eq.${id}`, 'PATCH', req.body);
+        res.json(data?.[0] || { success: true });
+    } catch (err) {
+        console.error('Update property error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete property
+app.delete('/api/property', async (req, res) => {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'ID is required' });
+    
+    try {
+        await supabaseCall(`properties?id=eq.${id}`, 'DELETE');
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete property error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Create new developer
+app.post('/api/developers', async (req, res) => {
+    try {
+        const data = await supabaseCall('developers', 'POST', req.body);
+        res.status(201).json(data?.[0] || { success: true });
+    } catch (err) {
+        console.error('Create developer error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update developer
+app.put('/api/developers', async (req, res) => {
+    const { id, name } = req.query;
+    if (!id && !name) return res.status(400).json({ error: 'ID or Name is required' });
+    
+    try {
+        const query = id ? `developers?id=eq.${id}` : `developers?name=eq.${name}`;
+        const data = await supabaseCall(query, 'PATCH', req.body);
+        res.json(data?.[0] || { success: true });
+    } catch (err) {
+        console.error('Update developer error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete developer
+app.delete('/api/developers', async (req, res) => {
+    const { id, name } = req.query;
+    if (!id && !name) return res.status(400).json({ error: 'ID or Name is required' });
+    
+    try {
+        // If deleting by name, also delete associated properties? 
+        // Or just let the database foreign keys handle it if configured (they aren't in this schema).
+        // Let's just delete the developer metadata.
+        const query = id ? `developers?id=eq.${id}` : `developers?name=eq.${name}`;
+        await supabaseCall(query, 'DELETE');
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete developer error:', err.message);
+        res.status(500).json({ error: err.message });
     }
 });
 

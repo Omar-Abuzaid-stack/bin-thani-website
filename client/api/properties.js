@@ -16,20 +16,18 @@ async function supabaseCall(endpoint, method = 'GET', body = null) {
     };
     if (body) options.body = JSON.stringify(body);
     
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, options);
-    
+    const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+    const response = await fetch(url, options);
     const text = await response.text();
     let data = {};
     if (text) {
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            data = { message: text };
-        }
+        try { data = JSON.parse(text); } catch (e) { data = { message: text }; }
     }
     
     if (response.ok) return data;
-    throw new Error(JSON.stringify(data) || data.message || 'Supabase error');
+    
+    console.error(`❌ DB Error (${method} ${endpoint}):`, JSON.stringify(data, null, 2));
+    throw new Error(data.message || data.error_description || JSON.stringify(data));
 }
 
 export default async function handler(req, res) {
@@ -45,36 +43,30 @@ export default async function handler(req, res) {
         try {
             const body = { ...req.body };
             
+            // Clean numeric fields
+            body.price_numeric = parseInt(String(body.price_numeric || '0').replace(/[^0-9]/g, '')) || 0;
+            body.bedrooms = parseInt(body.bedrooms) || 0;
+            body.bathrooms = parseInt(body.bathrooms) || 0;
+            body.parking = parseInt(body.parking) || 0;
+            body.year_built = parseInt(body.year_built) || null;
+
+            // Ensure JSON fields are parsed objects (if they came as strings)
+            if (typeof body.images === 'string' && body.images.startsWith('[')) {
+                try { body.images = JSON.parse(body.images); } catch(e) {}
+            }
+            if (typeof body.amenities === 'string' && body.amenities.startsWith('[')) {
+                try { body.amenities = JSON.parse(body.amenities); } catch(e) {}
+            }
+            if (typeof body.features === 'string' && body.features.startsWith('[')) {
+                try { body.features = JSON.parse(body.features); } catch(e) {}
+            }
+
             // Map location to area_full if it exists for better searching
             if (body.location && !body.area_full) {
                 body.area_full = body.location;
             }
 
-            // Preservation: If project or payment_plan are present, append them to description 
-            // since they don't have columns yet.
-            let extraInfo = '';
-            if (body.project) extraInfo += `Project: ${body.project}\n`;
-            if (body.payment_plan) extraInfo += `Payment Plan: ${body.payment_plan}\n`;
-            
-            if (extraInfo) {
-                body.description = `${extraInfo}\n${body.description || ''}`;
-            }
-
-            // Columns that exist in the DB schema
-            const validColumns = [
-                'title', 'description', 'price', 'price_numeric', 'location', 'area_full', 
-                'type', 'bedrooms', 'bathrooms', 'area', 'images', 'status', 'amenities', 
-                'featured', 'developer', 'year_built', 'parking', 'furnished', 
-                'floor_plan', 'google_maps_embed', 'rent_period'
-            ];
-
-            // Sanitise body: only keep columns that exist in DB
-            const cleanBody = {};
-            validColumns.forEach(id => {
-                if (body[id] !== undefined) cleanBody[id] = body[id];
-            });
-
-            const result = await supabaseCall('properties', 'POST', cleanBody);
+            const result = await supabaseCall('properties', 'POST', body);
             return res.status(201).json(result);
         } catch (err) {
             console.error('API Error:', err.message);

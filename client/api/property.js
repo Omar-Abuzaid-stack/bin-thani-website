@@ -16,20 +16,18 @@ async function supabaseCall(endpoint, method = 'GET', body = null) {
     };
     if (body) options.body = JSON.stringify(body);
     
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, options);
-    
+    const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+    const response = await fetch(url, options);
     const text = await response.text();
     let data = {};
     if (text) {
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            data = { message: text };
-        }
+        try { data = JSON.parse(text); } catch (e) { data = { message: text }; }
     }
     
     if (response.ok) return data;
-    throw new Error(JSON.stringify(data) || data.message || 'Supabase error');
+    
+    console.error(`❌ DB Error (${method} ${endpoint}):`, JSON.stringify(data, null, 2));
+    throw new Error(data.message || data.error_description || JSON.stringify(data));
 }
 
 export default async function handler(req, res) {
@@ -51,26 +49,26 @@ export default async function handler(req, res) {
         if (req.method === 'PUT') {
             const body = { ...req.body };
             
+            // Clean numeric fields
+            if (body.price_numeric !== undefined) body.price_numeric = parseInt(String(body.price_numeric || '0').replace(/[^0-9]/g, '')) || 0;
+            if (body.bedrooms !== undefined) body.bedrooms = parseInt(body.bedrooms) || 0;
+            if (body.bathrooms !== undefined) body.bathrooms = parseInt(body.bathrooms) || 0;
+            if (body.parking !== undefined) body.parking = parseInt(body.parking) || 0;
+            if (body.year_built !== undefined) body.year_built = parseInt(body.year_built) || null;
+
+            // Ensure JSON fields are parsed objects (if they came as strings)
+            ['images', 'amenities', 'features'].forEach(field => {
+                if (typeof body[field] === 'string' && body[field].startsWith('[')) {
+                    try { body[field] = JSON.parse(body[field]); } catch(e) {}
+                }
+            });
+
             // Map location to area_full if it exists
             if (body.location && !body.area_full) {
                 body.area_full = body.location;
             }
 
-            // Columns that exist in the DB schema
-            const validColumns = [
-                'title', 'description', 'price', 'price_numeric', 'location', 'area_full', 
-                'type', 'bedrooms', 'bathrooms', 'area', 'images', 'status', 'amenities', 
-                'featured', 'developer', 'year_built', 'parking', 'furnished', 
-                'floor_plan', 'google_maps_embed', 'rent_period'
-            ];
-
-            // Sanitise body
-            const cleanBody = {};
-            validColumns.forEach(id => {
-                if (body[id] !== undefined) cleanBody[id] = body[id];
-            });
-
-            const result = await supabaseCall(`properties?id=eq.${id}`, 'PATCH', cleanBody);
+            const result = await supabaseCall(`properties?id=eq.${id}`, 'PATCH', body);
             return res.status(200).json(result);
         }
 

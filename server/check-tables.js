@@ -1,21 +1,23 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function checkTables() {
-    const { data: developers, error: devError } = await supabase.from('developers').select('*').limit(1);
-    if (devError) {
-        console.log('Developers table error:', devError.message);
-    } else {
-        console.log('Developers table exists and has data:', developers);
-    }
-
-    const { data: properties, error: propError } = await supabase.from('properties').select('*').limit(1);
-    if (propError) {
-        console.log('Properties table error:', propError.message);
-    } else {
-        console.log('Properties table exists and has data:', properties);
+    console.log('🔍 Checking Supabase tables...');
+    
+    const tables = ['properties', 'developers', 'leads', 'chat_messages'];
+    
+    for (const table of tables) {
+        const { error } = await supabase.from(table).select('*').limit(1);
+        if (error) {
+            console.log(`❌ Table '${table}': ${error.message}`);
+        } else {
+            console.log(`✅ Table '${table}': OK`);
+        }
     }
 }
 

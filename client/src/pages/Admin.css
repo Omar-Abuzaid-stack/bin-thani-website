@@ -15,6 +15,40 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.schema-warning {
+    background: rgba(184, 150, 12, 0.1);
+    border: 1px solid rgba(184, 150, 12, 0.4);
+    color: #ffd700;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.schema-warning strong {
+    color: #fff;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.schema-warning p {
+    margin: 5px 0;
+    color: #ccc;
+}
+
+.btn-small {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
 .admin-header h1 {
     font-family: 'Cormorant Garamond', serif;
     font-size: 2.5rem;
@@ -73,6 +107,88 @@
 
 .toggle-btn.active {
     background: #B8960C;
+    color: #000;
+}
+
+/* Buy / Rent Sub-Tabs */
+.admin-sub-tabs {
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(184, 150, 12, 0.2);
+}
+
+.sub-tab {
+    padding: 7px 18px;
+    background: none;
+    border: none;
+    color: #888;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.sub-tab:hover {
+    color: #fff;
+}
+
+.sub-tab.active {
+    background: rgba(184, 150, 12, 0.15);
+    color: #B8960C;
+    border: 1px solid rgba(184, 150, 12, 0.4);
+}
+
+/* Form listing type question */
+.form-question {
+    background: rgba(184, 150, 12, 0.05);
+    border: 1px solid rgba(184, 150, 12, 0.2);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.form-question h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 18px;
+    font-weight: 400;
+}
+
+.question-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.option-btn {
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+    color: #888;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.option-btn:hover {
+    color: #fff;
+    border-color: rgba(184, 150, 12, 0.5);
+    background: rgba(184, 150, 12, 0.08);
+}
+
+.option-btn.active {
+    background: #B8960C;
+    border-color: #B8960C;
     color: #000;
 }
 
@@ -145,6 +261,114 @@
 
 .edit-btn:hover { color: #fff; border-color: #fff; }
 .delete-btn:hover { color: #fe4a49; border-color: #fe4a49; }
+
+.visibility-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #4cd137;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visibility-btn.hidden {
+    color: #444;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.visibility-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #4cd137;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #ffd700;
+}
+
+.checkbox-label input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+.local-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffd700;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    margin-left: 10px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-list-logo {
+    height: 30px;
+    max-width: 60px;
+    object-fit: contain;
+    filter: brightness(0.9);
+}
+
+.admin-list-logo-mini {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+    margin-right: 8px;
+    vertical-align: middle;
+    filter: brightness(0.9);
+}
+
+.dev-logo-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-logo-placeholder {
+    font-size: 0.7rem;
+    color: #444;
+    text-transform: uppercase;
+}
+
+.prop-dev-cell {
+    display: flex;
+    align-items: center;
+}
+
+.logo-input-group {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.logo-preview-box {
+    width: 60px;
+    height: 60px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.logo-preview-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
 
 /* Modal Form */
 .form-modal {

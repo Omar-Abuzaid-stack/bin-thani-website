@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit2, Trash2, X, Check, Search, MapPin, Building, Home, Layout, List, Key, MoreHorizontal, Globe } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Check, Search, MapPin, Building, Home, Layout, List, Key, MoreHorizontal, Globe, Eye, EyeOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import './Admin.css';
 
@@ -16,24 +16,55 @@ const Admin = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingProperty, setEditingProperty] = useState(null);
-    const [adminView, setAdminView] = useState('Properties'); // 'Properties' or 'Projects'
+    const [adminView, setAdminView] = useState('Properties'); // 'Properties', 'Projects', or 'Developers'
+    const [propertyTab, setPropertyTab] = useState('buy'); // 'buy' or 'rent'
+    const [developers, setDevelopers] = useState([]);
+    const [schemaError, setSchemaError] = useState(null);
     
     const [formData, setFormData] = useState({
         title: '', title_ar: '',
         developer: '', developer_ar: '',
         location: '', location_ar: '',
         price: '', price_numeric: '',
+        listing_type: 'buy', // 'buy' or 'rent'
+        price_per: 'total', // 'total', 'yearly', 'monthly'
         type: 'Apartment', // Default to Apartment for props
         bedrooms: '', bathrooms: '',
         area: '', status: 'Available',
         description: '', description_ar: '',
         amenities: '',
         images: '',
+        visible: true,
     });
 
+    const [devFormData, setDevFormData] = useState({
+        name: '', name_ar: '',
+        logo: '', tagline: '', tagline_ar: '',
+        visible: true
+    });
+    const [editingDeveloper, setEditingDeveloper] = useState(null);
+
     useEffect(() => {
-        fetchData();
-    }, [adminView]);
+        if (adminView === 'Developers') {
+            fetchDevelopers();
+        } else {
+            fetchData();
+            fetchDevelopers(); // Also fetch devs for dropdowns
+        }
+    }, [adminView, propertyTab]);
+
+    const fetchDevelopers = async () => {
+        try {
+            const res = await axios.get(getApiUrl('developers'));
+            setDevelopers(res.data);
+            setSchemaError(null);
+        } catch (err) {
+            console.error('Error fetching developers:', err);
+            if (err.response?.data?.error?.includes('PGRST205')) {
+                setSchemaError('Missing developers table');
+            }
+        }
+    };
 
     const fetchData = async () => {
         setLoading(true);
@@ -45,14 +76,22 @@ const Admin = () => {
             
             const res = await axios.get(url);
             
-            // If viewing properties, filter OUT projects
-            const filtered = adminView === 'Properties' 
-                ? res.data.filter(p => p.type !== 'Off-Plan Project')
-                : res.data;
+            // Filter by type
+            let filtered = res.data;
+            if (adminView === 'Properties') {
+                filtered = res.data.filter(p => p.type !== 'Off-Plan Project' && (p.listing_type || 'buy') === propertyTab);
+            } else if (adminView === 'Projects') {
+                filtered = res.data.filter(p => p.type === 'Off-Plan Project');
+            }
                 
             setProperties(filtered);
+            setSchemaError(null);
         } catch (err) {
             console.error('Error fetching data:', err);
+            // Detect missing table error
+            if (err.response?.status === 500 || err.message.includes('500') || err.message.includes('code 404')) {
+                setSchemaError('Database Connection Error - Schema mismatch detected.');
+            }
         }
         setLoading(false);
     };
@@ -69,8 +108,10 @@ const Admin = () => {
                 ...formData,
                 type: adminView === 'Projects' ? 'Off-Plan Project' : formData.type,
                 price_numeric: parseInt(String(formData.price_numeric).replace(/[^0-9]/g, '')) || 0,
-                amenities: typeof formData.amenities === 'string' ? JSON.stringify(formData.amenities.split(',').map(s => s.trim())) : formData.amenities,
-                images: typeof formData.images === 'string' ? JSON.stringify(formData.images.split('\n').filter(url => url.trim() !== '')) : formData.images
+                bedrooms: parseInt(formData.bedrooms) || 0,
+                bathrooms: parseInt(formData.bathrooms) || 0,
+                amenities: typeof formData.amenities === 'string' ? formData.amenities.split(',').map(s => s.trim()).filter(a => a) : formData.amenities,
+                images: typeof formData.images === 'string' ? formData.images.split('\n').filter(url => url.trim() !== '') : formData.images
             };
 
             if (editingProperty) {
@@ -85,7 +126,45 @@ const Admin = () => {
             setEditingProperty(null);
             fetchData();
         } catch (err) {
-            alert('Error: ' + err.message);
+            const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message;
+            alert('Error: ' + errorMsg);
+        }
+    };
+
+    const toggleVisibility = async (item, type) => {
+        try {
+            const newVisibility = item.visible === false ? true : false;
+            const endpoint = type === 'developer' ? 'developers' : 'property';
+            const url = `${getApiUrl(endpoint)}?id=${item.id}`;
+            
+            await axios.put(url, { visible: newVisibility });
+            
+            if (type === 'developer') {
+                setDevelopers(prev => prev.map(d => d.id === item.id ? { ...d, visible: newVisibility } : d));
+            } else {
+                setProperties(prev => prev.map(p => p.id === item.id ? { ...p, visible: newVisibility } : p));
+            }
+        } catch (err) {
+            alert('Visibility toggle failed: ' + (err.response?.data?.error || err.message));
+        }
+    };
+
+    const handleDevSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (editingDeveloper && editingDeveloper.id) {
+                await axios.put(`${getApiUrl('developers')}?id=${editingDeveloper.id}`, devFormData);
+                alert('Developer updated successfully!');
+            } else {
+                await axios.post(getApiUrl('developers'), devFormData);
+                alert('Developer saved successfully!');
+            }
+            setDevFormData({ name: '', name_ar: '', logo: '', tagline: '', tagline_ar: '' });
+            setEditingDeveloper(null);
+            setShowForm(false);
+            fetchDevelopers();
+        } catch (err) {
+            alert('Error saving developer: ' + (err.response?.data?.error || err.message));
         }
     };
 
@@ -108,9 +187,12 @@ const Admin = () => {
         if (window.confirm('Delete this item?')) {
             try {
                 await axios.delete(`${getApiUrl('property')}?id=${id}`);
-                fetchData();
+                setProperties(prev => prev.filter(p => p.id !== id));
+                alert('Success: Item removed.');
             } catch (err) {
-                alert('Delete failed');
+                console.error('Delete error:', err);
+                alert('Delete failed: ' + (err.response?.data?.error || err.message));
+                fetchData(); // Refresh if failed
             }
         }
     };
@@ -118,10 +200,25 @@ const Admin = () => {
     return (
         <div className={`admin-page ${language === 'ar' ? 'rtl' : ''}`}>
             <div className="container">
+                {schemaError && (
+                    <div className="schema-warning">
+                        <div className="warning-content">
+                            <h3>⚠️ Database Configuration Required</h3>
+                            <p>It looks like your Supabase database is not fully set up. Adding or deleting properties/developers will not work until the schema is updated.</p>
+                            <p className="sql-instruction">Please copy the SQL script from the chat and run it in your <strong>Supabase SQL Editor</strong>.</p>
+                            <button className="btn-small" onClick={() => setSchemaError(null)}>I understand, show me anyway</button>
+                        </div>
+                    </div>
+                )}
+
                 <header className="admin-header">
                     <div>
                         <h1>{language === 'ar' ? 'لوحة التحكم' : 'Bin Thani Admin'}</h1>
-                        <p>{adminView === 'Properties' ? 'Managing Listings' : 'Managing Developer Projects'}</p>
+                        <p>
+                            {adminView === 'Properties' ? 'Managing Property Listings' : 
+                             adminView === 'Projects' ? 'Managing Off-Plan Projects' : 
+                             'Managing Developer Partners'}
+                        </p>
                     </div>
                     <div className="admin-view-toggle">
                         <button 
@@ -134,21 +231,54 @@ const Admin = () => {
                             className={`toggle-btn ${adminView === 'Projects' ? 'active' : ''}`}
                             onClick={() => setAdminView('Projects')}
                         >
-                            Developer Projects
+                            Projects
+                        </button>
+                        <button 
+                            className={`toggle-btn ${adminView === 'Developers' ? 'active' : ''}`}
+                            onClick={() => setAdminView('Developers')}
+                        >
+                            Developers
                         </button>
                     </div>
+
+                    {adminView === 'Properties' && (
+                        <div className="admin-sub-tabs">
+                            <button 
+                                className={`sub-tab ${propertyTab === 'buy' ? 'active' : ''}`}
+                                onClick={() => setPropertyTab('buy')}
+                            >
+                                Buy
+                            </button>
+                            <button 
+                                className={`sub-tab ${propertyTab === 'rent' ? 'active' : ''}`}
+                                onClick={() => setPropertyTab('rent')}
+                            >
+                                Rent
+                            </button>
+                        </div>
+                    )}
+
                     <button className="btn-add" onClick={() => { 
+                        if (adminView === 'Developers') {
+                            setEditingDeveloper(null);
+                            setDevFormData({ name: '', name_ar: '', logo: '', tagline: '', tagline_ar: '', visible: true });
+                            setShowForm(true);
+                            return;
+                        }
                         setEditingProperty(null); 
                         setFormData({
                             title: '', title_ar: '', developer: '', developer_ar: '',
                             location: '', location_ar: '', price: '', price_numeric: '',
+                            listing_type: propertyTab, // pre-fill from current tab
+                            price_per: propertyTab === 'rent' ? 'yearly' : 'total',
                             type: adminView === 'Properties' ? 'Apartment' : 'Off-Plan Project',
                             bedrooms: '', bathrooms: '', area: '', status: 'Available',
                             description: '', description_ar: '', amenities: '', images: '',
+                            visible: true,
                         });
                         setShowForm(true); 
                     }}>
-                        <Plus size={20} /> Add {adminView === 'Projects' ? 'Project' : 'Property'}
+                        <Plus size={20} /> Add {adminView === 'Projects' ? 'Project' : adminView === 'Properties' ? 'Property' : 'Developer'}
                     </button>
                 </header>
 
@@ -156,11 +286,79 @@ const Admin = () => {
                     <div className="form-modal">
                         <div className="form-container">
                             <div className="form-header">
-                                <h2>{editingProperty ? 'Edit' : 'Add New'} {adminView === 'Projects' ? 'Project' : 'Property'}</h2>
-                                <button className="close-btn" onClick={() => setShowForm(false)}><X size={24} /></button>
+                                <h2>{editingProperty || editingDeveloper ? 'Edit' : 'Add New'} {adminView === 'Projects' ? 'Project' : adminView === 'Properties' ? 'Property' : 'Developer'}</h2>
+                                <button className="close-btn" onClick={() => {
+                                    setShowForm(false);
+                                    setEditingProperty(null);
+                                    setEditingDeveloper(null);
+                                }}><X size={24} /></button>
                             </div>
                             
-                            <form onSubmit={handleSubmit} className="property-form">
+                            {adminView === 'Developers' ? (
+                                <form onSubmit={handleDevSubmit} className="property-form">
+                                    <div className="form-grid">
+                                        <div className="form-group">
+                                            <label>Developer Name (English)</label>
+                                            <input type="text" value={devFormData.name} onChange={(e) => setDevFormData({...devFormData, name: e.target.value})} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Developer Name (Arabic)</label>
+                                            <input type="text" value={devFormData.name_ar} onChange={(e) => setDevFormData({...devFormData, name_ar: e.target.value})} />
+                                        </div>
+                                        <div className="form-group full-width">
+                                            <label>Logo URL</label>
+                                            <div className="logo-input-group">
+                                                <input type="text" value={devFormData.logo} onChange={(e) => setDevFormData({...devFormData, logo: e.target.value})} placeholder="https://example.com/logo.png" style={{ flex: 1 }} />
+                                                {devFormData.logo && (
+                                                    <div className="logo-preview-box">
+                                                        <img src={devFormData.logo} alt="Preview" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Tagline (English)</label>
+                                            <input type="text" value={devFormData.tagline} onChange={(e) => setDevFormData({...devFormData, tagline: e.target.value})} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Tagline (Arabic)</label>
+                                            <input type="text" value={devFormData.tagline_ar} onChange={(e) => setDevFormData({...devFormData, tagline_ar: e.target.value})} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="checkbox-label">
+                                                <input type="checkbox" checked={devFormData.visible} onChange={(e) => setDevFormData({...devFormData, visible: e.target.checked})} />
+                                                Visible on Website
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div className="form-actions">
+                                        <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
+                                        <button type="submit" className="btn-submit">Save Developer</button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="property-form">
+                                {adminView === 'Properties' && !editingProperty && (
+                                    <div className="form-question">
+                                        <h3>Is this property for Buy or Rent?</h3>
+                                        <div className="question-options">
+                                            <button 
+                                                type="button" 
+                                                className={`option-btn ${formData.listing_type === 'buy' ? 'active' : ''}`}
+                                                onClick={() => setFormData({...formData, listing_type: 'buy', price_per: 'total'})}
+                                            >
+                                                For Sale (Buy)
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className={`option-btn ${formData.listing_type === 'rent' ? 'active' : ''}`}
+                                                onClick={() => setFormData({...formData, listing_type: 'rent', price_per: 'yearly'})}
+                                            >
+                                                For Rent
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>Name (English)</label>
@@ -172,12 +370,29 @@ const Admin = () => {
                                     </div>
                                     
                                     <div className="form-group">
-                                        <label>Developer (English)</label>
-                                        <input type="text" name="developer" value={formData.developer} onChange={handleInputChange} required />
+                                        <label>Developer</label>
+                                        <select 
+                                            name="developer" 
+                                            value={formData.developer} 
+                                            onChange={(e) => {
+                                                const dev = developers.find(d => d.name === e.target.value);
+                                                setFormData({
+                                                    ...formData,
+                                                    developer: e.target.value,
+                                                    developer_ar: dev ? dev.name_ar : formData.developer_ar
+                                                });
+                                            }}
+                                            required
+                                        >
+                                            <option value="">Select Developer</option>
+                                            {developers.map(dev => (
+                                                <option key={dev.id || dev.name} value={dev.name}>{dev.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="form-group">
-                                        <label>Developer (Arabic)</label>
-                                        <input type="text" name="developer_ar" value={formData.developer_ar} onChange={handleInputChange} />
+                                        <label>Developer (Arabic Display)</label>
+                                        <input type="text" name="developer_ar" value={formData.developer_ar} onChange={handleInputChange} readOnly />
                                     </div>
 
                                     <div className="form-group">
@@ -190,47 +405,65 @@ const Admin = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Price Display (e.g. AED 1.2M)</label>
-                                        <input type="text" name="price" value={formData.price} onChange={handleInputChange} />
+                                        <label>Price Display (Auto-formatted)</label>
+                                        <input 
+                                            type="text" 
+                                            placeholder={formData.listing_type === 'rent' ? 'e.g. 50,000/yr' : 'e.g. 1.2M'}
+                                            name="price" 
+                                            value={formData.price} 
+                                            onChange={handleInputChange} 
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Price Numeric (e.g. 1200000)</label>
+                                        <label>Price Numeric</label>
                                         <input type="number" name="price_numeric" value={formData.price_numeric} onChange={handleInputChange} />
                                     </div>
 
+                                    {formData.listing_type === 'rent' && (
+                                        <div className="form-group">
+                                            <label>Rental Period</label>
+                                            <select name="price_per" value={formData.price_per} onChange={handleInputChange}>
+                                                <option value="yearly">Yearly (/yr)</option>
+                                                <option value="monthly">Monthly (/mo)</option>
+                                            </select>
+                                        </div>
+                                    )}
+
                                     {adminView === 'Properties' && (
                                         <>
-                                            <div className="form-group">
-                                                <label>Property Type</label>
-                                                <select name="type" value={formData.type} onChange={handleInputChange}>
-                                                    <option value="Apartment">Apartment</option>
-                                                    <option value="Villa">Villa</option>
-                                                    <option value="Townhouse">Townhouse</option>
-                                                    <option value="Penthouse">Penthouse</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Status</label>
-                                                <select name="status" value={formData.status} onChange={handleInputChange}>
-                                                    <option value="Available">Available</option>
-                                                    <option value="Off-Plan">Off-Plan</option>
-                                                    <option value="New">New</option>
-                                                    <option value="Sold">Sold</option>
-                                                </select>
-                                            </div>
+                                    <div className="form-group">
+                                        <label>Property Type</label>
+                                        <select name="type" value={formData.type} onChange={handleInputChange}>
+                                            <option value="Apartment">Apartment</option>
+                                            <option value="Villa">Villa</option>
+                                            <option value="Townhouse">Townhouse</option>
+                                            <option value="Penthouse">Penthouse</option>
+                                            <option value="Mixed Use">Mixed Use</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Status</label>
+                                        <select name="status" value={formData.status} onChange={handleInputChange}>
+                                            <option value="Available">Available</option>
+                                            <option value="Off-Plan">Off-Plan</option>
+                                            <option value="Under Construction">Under Construction</option>
+                                            <option value="Upcoming">Upcoming</option>
+                                            <option value="Sold">Sold</option>
+                                        </select>
+                                    </div>
                                         </>
                                     )}
 
                                     {adminView === 'Projects' && (
-                                        <div className="form-group">
-                                            <label>Project Status</label>
-                                            <select name="status" value={formData.status} onChange={handleInputChange}>
-                                                <option value="Available">Available</option>
-                                                <option value="Off-Plan Project / Available">Off-Plan Project / Available</option>
-                                                <option value="Under Construction">Under Construction</option>
-                                                <option value="Upcoming">Upcoming</option>
-                                            </select>
-                                        </div>
+                                    <div className="form-group">
+                                        <label>Project Status</label>
+                                        <select name="status" value={formData.status} onChange={handleInputChange}>
+                                            <option value="Available">Available</option>
+                                            <option value="Off-Plan">Off-Plan</option>
+                                            <option value="Under Construction">Under Construction</option>
+                                            <option value="Upcoming">Upcoming</option>
+                                        </select>
+                                    </div>
                                     )}
 
                                     <div className="form-group">
@@ -262,39 +495,153 @@ const Admin = () => {
                                     <textarea name="images" value={formData.images} onChange={handleInputChange} rows="3"></textarea>
                                 </div>
                                 
+                                <div className="form-group full-width">
+                                    <label className="checkbox-label">
+                                        <input type="checkbox" name="visible" checked={formData.visible} onChange={(e) => setFormData({...formData, visible: e.target.checked})} />
+                                        Visible on Website
+                                    </label>
+                                </div>
+                                
                                 <div className="form-actions">
                                     <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
                                     <button type="submit" className="btn-submit">{editingProperty ? 'Update' : 'Save'}</button>
                                 </div>
                             </form>
+                            )}
                         </div>
                     </div>
                 )}
 
                 <div className="admin-content">
-                    {loading ? (
+                    {loading && adminView !== 'Developers' ? (
                         <div className="loading">Loading...</div>
                     ) : (
                         <div className="inventory-list">
-                            <div className="inventory-header">
-                                <span>Item</span>
-                                <span>Developer</span>
-                                <span>Price</span>
-                                <span>Status</span>
-                                <span>Actions</span>
-                            </div>
-                            {properties.map(prop => (
-                                <div key={prop.id} className="inventory-item">
-                                    <span className="prop-title" data-label="Title">{prop.title}</span>
-                                    <span data-label="Developer">{prop.developer}</span>
-                                    <span className="prop-price" data-label="Price">{prop.price}</span>
-                                    <span data-label="Status"><span className={`status-pill ${prop.status.toLowerCase().split(' ')[0]}`}>{prop.status}</span></span>
-                                    <div className="actions">
-                                        <button className="edit-btn" onClick={() => handleEdit(prop)}><Edit2 size={16} /></button>
-                                        <button className="delete-btn" onClick={() => handleDelete(prop.id)}><Trash2 size={16} /></button>
+                            {adminView === 'Developers' ? (
+                                <>
+                                    <div className="inventory-header" style={{ gridTemplateColumns: '80px 2fr 2fr 1fr 120px' }}>
+                                        <span>Logo</span>
+                                        <span>Name</span>
+                                        <span>Tagline</span>
+                                        <span>Projects</span>
+                                        <span>Actions</span>
                                     </div>
-                                </div>
-                            ))}
+                                    {developers.map(dev => (
+                                        <div key={dev.id || dev.name} className="inventory-item" style={{ gridTemplateColumns: '80px 2fr 2fr 1fr 120px' }}>
+                                            <span data-label="Logo" className="dev-logo-cell">
+                                                {dev.logo ? <img src={dev.logo} alt={dev.name} className="admin-list-logo" /> : <div className="no-logo-placeholder">No Logo</div>}
+                                            </span>
+                                            <span className="prop-title" data-label="Name">
+                                                {dev.name}
+                                                {!dev.id && <span className="local-badge" title="This developer exists in properties but hasn't been added to the developer database yet.">Local Only</span>}
+                                            </span>
+                                            <span data-label="Tagline">{dev.tagline}</span>
+                                            <span data-label="Projects">{dev.projects_count || 0}</span>
+                                            <div className="actions">
+                                                {dev.id ? (
+                                                    <>
+                                                        <button 
+                                                            className={`visibility-btn ${dev.visible === false ? 'hidden' : ''}`} 
+                                                            onClick={() => toggleVisibility(dev, 'developer')}
+                                                            title={dev.visible === false ? 'Make Visible' : 'Hide from Website'}
+                                                        >
+                                                            {dev.visible === false ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                        </button>
+                                                        <button className="edit-btn" title="Edit Developer" onClick={() => {
+                                                            setEditingDeveloper(dev);
+                                                            setDevFormData({
+                                                                name: dev.name || '',
+                                                                name_ar: dev.name_ar || '',
+                                                                logo: dev.logo || '',
+                                                                tagline: dev.tagline || '',
+                                                                tagline_ar: dev.tagline_ar || '',
+                                                                visible: dev.visible !== false
+                                                            });
+                                                            setShowForm(true);
+                                                        }}><Edit2 size={16} /></button>
+                                                        
+                                                        <button className="delete-btn" title="Delete Developer" onClick={async () => {
+                                                            const isLocal = !dev.id;
+                                                            const msg = isLocal 
+                                                                ? `Delete ALL properties and projects associated with ${dev.name}?`
+                                                                : `Delete ${dev.name}? This will remove their info and all their linked properties.`;
+                                                            
+                                                            if (window.confirm(msg)) {
+                                                                try {
+                                                                    const url = isLocal 
+                                                                        ? `${getApiUrl('developers')}?name=${encodeURIComponent(dev.name)}`
+                                                                        : `${getApiUrl('developers')}?id=${dev.id}&name=${encodeURIComponent(dev.name)}`;
+                                                                    
+                                                                    await axios.delete(url);
+                                                                    setDevelopers(prev => prev.filter(d => d.name !== dev.name));
+                                                                    alert('Developer and all associated items removed.');
+                                                                    fetchData(); 
+                                                                } catch (err) {
+                                                                    alert('Delete failed: ' + (err.response?.data?.error || err.message));
+                                                                }
+                                                            }
+                                                        }}><Trash2 size={16} /></button>
+                                                    </>
+                                                ) : (
+                                                    <button className="delete-btn" title="Delete Local Developer" onClick={async () => {
+                                                        if (window.confirm(`Delete ALL properties and projects associated with ${dev.name}?`)) {
+                                                            try {
+                                                                const url = `${getApiUrl('developers')}?name=${encodeURIComponent(dev.name)}`;
+                                                                await axios.delete(url);
+                                                                setDevelopers(prev => prev.filter(d => d.name !== dev.name));
+                                                                alert('Developer removed.');
+                                                                fetchData();
+                                                            } catch (err) {
+                                                                alert('Delete failed: ' + (err.response?.data?.error || err.message));
+                                                            }
+                                                        }
+                                                    }}><Trash2 size={16} /></button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : (
+                                <>
+                                    <div className="inventory-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr 120px' }}>
+                                        <span>Item</span>
+                                        <span>Developer</span>
+                                        <span>Price</span>
+                                        <span>Status</span>
+                                        <span>Actions</span>
+                                    </div>
+                                    {properties.map(prop => {
+                                        const dev = developers.find(d => d.name === prop.developer);
+                                        return (
+                                            <div key={prop.id} className="inventory-item" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr 120px' }}>
+                                                <span className="prop-title" data-label="Title">{prop.title}</span>
+                                                <span data-label="Developer" className="prop-dev-cell">
+                                                    {dev?.logo && <img src={dev.logo} alt="" className="admin-list-logo-mini" />}
+                                                    {prop.developer}
+                                                </span>
+                                                <span className="prop-price" data-label="Price">
+                                                    {prop.listing_type === 'rent' 
+                                                       ? `AED ${parseInt(prop.price_numeric || 0).toLocaleString()}/${prop.price_per === 'monthly' ? 'mo' : 'yr'}`
+                                                       : `AED ${parseInt(prop.price_numeric || 0).toLocaleString()}`
+                                                    }
+                                                </span>
+                                                <span data-label="Status"><span className={`status-pill ${prop.status.toLowerCase().split(' ')[0]}`}>{prop.status}</span></span>
+                                                <div className="actions">
+                                                    <button 
+                                                        className={`visibility-btn ${prop.visible === false ? 'hidden' : ''}`} 
+                                                        onClick={() => toggleVisibility(prop, 'property')}
+                                                        title={prop.visible === false ? 'Make Visible' : 'Hide from Website'}
+                                                    >
+                                                        {prop.visible === false ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                    </button>
+                                                    <button className="edit-btn" onClick={() => handleEdit(prop)}><Edit2 size={16} /></button>
+                                                    <button className="delete-btn" onClick={() => handleDelete(prop.id)}><Trash2 size={16} /></button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </>
+                            )}
                         </div>
                     )}
                 </div>

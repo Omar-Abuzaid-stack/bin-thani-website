@@ -1,9 +1,9 @@
 // Vercel Serverless Function: Chat API (Mistral AI)
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const SUPABASE_URL = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.trim() : '';
-const SUPABASE_KEY = process.env.SUPABASE_KEY ? process.env.SUPABASE_KEY.trim() : '';
-const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY ? process.env.MISTRAL_API_KEY.trim() : '';
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/[\r\n]/g, '');
+const SUPABASE_KEY = (process.env.SUPABASE_KEY || '').trim().replace(/[\r\n]/g, '');
+const MISTRAL_API_KEY = (process.env.MISTRAL_API_KEY || '').trim().replace(/[\r\n]/g, '');
 
 const SYSTEM_PROMPT = `You are Layla, the elite senior real estate advisor at Bin Thani Real Estate in Sharjah. You have 15+ years of expertise.
 

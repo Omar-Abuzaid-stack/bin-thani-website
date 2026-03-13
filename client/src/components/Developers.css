@@ -101,11 +101,40 @@
     margin-bottom: 35px;
 }
 
+.dev-logo-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
 .dev-real-logo {
-    max-height: 55px;
-    max-width: 180px;
+    height: 60px;
+    max-width: 100%;
     object-fit: contain;
-    margin-bottom: 12px;
+}
+
+.dev-initial-logo {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #c9a84c, #a07c33);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.dev-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 5px;
+    font-weight: 500;
 }
 
 .dev-expand-btn {
@@ -158,8 +187,10 @@
 
 .dev-tagline {
     color: #C0C0C0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     letter-spacing: 0.5px;
+    font-style: italic;
+    margin-bottom: 15px;
 }
 
 .dev-projects-row {

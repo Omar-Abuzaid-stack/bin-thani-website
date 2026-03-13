@@ -1,39 +1,34 @@
-// Vercel Serverless Function: Developers
+// Vercel Serverless Function: Developers API
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const SUPABASE_URL = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.trim() : '';
-const SUPABASE_KEY = process.env.SUPABASE_KEY ? process.env.SUPABASE_KEY.trim() : '';
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/[\r\n]/g, '');
+const SUPABASE_KEY = (process.env.SUPABASE_KEY || '').trim().replace(/[\r\n]/g, '');
 
-const DEVELOPER_META = {
-    "Alef Group": { logo: "https://www.alefgroup.ae/wp-content/uploads/2022/11/alef-group-logo-white.png", tagline: "Building Premier Lifestyle Communities" },
-    "Arada": { logo: "https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/arada-logo.svg", tagline: "Transforming the Future of Sharjah" },
-    "Eagle Hills": { logo: "https://primepalaces.com/uploads/developers/eagle-hills-0EhBhtWNL0.png", tagline: "Pioneering Luxury Destinations" },
-    "Diamond Developers": { logo: "https://megapolis.ae/_next/image?url=https%3A%2F%2Fadmin.megapolis.ae%2Fuploads%2FDiamond_Developers_976e983696.webp&w=750&q=75", tagline: "Pioneers in Sustainable Living" },
-    "Tiger Group": { logo: "https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/l3fff94wkmjmzxrlvslh?ik-sanitizeSvg=true", tagline: "Iconic High-Rise Developments" },
-    "BEEAH": { logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs8v9v-qdEmtWhcfCWFmylvhkrpuxpCH3Ngw&s", tagline: "Pioneering a Sustainable Quality of Life" },
-    "Ajmal Makan": { logo: "https://manage.tanamiproperties.com/Developer/Developer_Logo/148/Thumb/148.png", tagline: "Masters of Waterfront Living" },
-    "Shoumous": { logo: "https://www.shoumous.com/wp-content/uploads/2022/12/logo-HD1.png", tagline: "A Gated Luxury Villa Community" },
-    "Al Tay Hills": { logo: "https://static.tildacdn.one/tild3331-3630-4365-b834-663032323632/Al_Tay_Hills_Brochur.png", tagline: "UAE's Most Prestigious Hill Community" },
-    "Manazil": { logo: "https://images.seeklogo.com/logo-png/49/2/manazel-logo-png_seeklogo-492290.png", tagline: "Urban Living Along Sharjah's Iconic Canal" },
-    "Al Marwan": { logo: "https://www.palmera.realestate/wp-content/uploads/2025/06/Al-Marwan-Developments-Logo.png", tagline: "Elevated Living in the Heart of Tilal City" },
-    "Tilal Properties": { logo: "https://tilaluae.com/wp-content/uploads/2021/04/Tilal-Logo.png", tagline: "Developing Sharjah's Vision" },
-    "Emaar": { logo: "https://properties.emaar.com/wp-content/uploads/2018/11/emaar-logo.png", tagline: "Pioneering Global Lifestyles" },
-    "Aldar": { logo: "https://www.aldar.com/assets/images/aldar-logo.svg", tagline: "Shape the Life You Want" },
-    "Damac": { logo: "https://www.damacproperties.com/assets/images/damac-logo-white.svg", tagline: "Live the Luxury" },
-    "Sobha Realty": { logo: "https://www.sobha.com/wp-content/themes/sobha/assets/images/logo.svg", tagline: "Passion for Perfection" },
-    "Nakheel": { logo: "https://www.nakheel.com/images/nakheel-logo.svg", tagline: "Building Icons" }
-};
-
-const ALLOWED_DEVELOPERS = ["Arada", "Eagle Hills", "Tiger Group", "Ajmal Makan", "Alef Group", "BEEAH", "Shoumous", "Al Tay Hills", "Manazil", "Al Marwan"];
-
-async function supabaseCall(endpoint) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+async function supabaseCall(endpoint, method = 'GET', body = null) {
+    const options = {
+        method,
         headers: {
             'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': (method === 'POST' || method === 'PATCH') ? 'return=representation' : 'return=minimal'
         }
-    });
-    return await response.json();
+    };
+    if (body) options.body = JSON.stringify(body);
+    
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, options);
+    const text = await response.text();
+    let data = [];
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            data = { message: text };
+        }
+    }
+    
+    if (response.ok) return data;
+    throw new Error(JSON.stringify(data) || 'Supabase error');
 }
 
 export default async function handler(req, res) {
@@ -45,86 +40,129 @@ export default async function handler(req, res) {
         return res.status(200).send('');
     }
 
+    // CREATE Developer
+    if (req.method === 'POST') {
+        try {
+            const result = await supabaseCall('developers', 'POST', req.body);
+            return res.status(201).json(result?.[0] || { success: true });
+        } catch (err) {
+            console.error('Create developer error:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
+    // UPDATE Developer
+    if (req.method === 'PUT') {
+        try {
+            const { id } = req.query;
+            if (!id) return res.status(400).json({ error: 'ID is required' });
+            const result = await supabaseCall(`developers?id=eq.${id}`, 'PATCH', req.body);
+            return res.status(200).json(result?.[0] || { success: true });
+        } catch (err) {
+            console.error('Update developer error:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
+    // DELETE Developer
+    if (req.method === 'DELETE') {
+        try {
+            const { id, name } = req.query;
+            
+            if (id) {
+                await supabaseCall(`developers?id=eq.${id}`, 'DELETE');
+            }
+            
+            if (name) {
+                // 1. Delete all properties associated with this developer
+                await supabaseCall(`properties?developer=eq.${encodeURIComponent(name)}`, 'DELETE');
+                
+                // 2. Also try to delete from developers metadata table if it exists
+                try {
+                    await supabaseCall(`developers?name=eq.${encodeURIComponent(name)}`, 'DELETE');
+                } catch (e) {
+                    // Ignore error if profile didn't exist in metadata table
+                }
+            }
+            
+            if (!id && !name) return res.status(400).json({ error: 'ID or Name is required' });
+            return res.status(204).send('');
+        } catch (err) {
+            console.error('Delete developer error:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
+    // GET Developers (with projects)
     try {
-        const data = await supabaseCall('properties?select=*');
+        // 1. Fetch metadata from DB
+        let developerMetadata = [];
+        try {
+            developerMetadata = await supabaseCall('developers?select=*&order=name.asc');
+        } catch (e) {
+            console.log('Developers table error:', e.message);
+        }
+
+        // 2. Fetch all properties to group by developer
+        const properties = await supabaseCall('properties?select=*');
         
-        // Group projects by developer
-        const grouped = data.reduce((acc, project) => {
-            let devName = project.developer ? project.developer.trim() : 'Other';
+        // 3. Combine metadata with projects
+        const developersMap = new Map();
+
+        // Initialize with metadata
+        developerMetadata.forEach(dev => {
+            developersMap.set(dev.name.toLowerCase(), {
+                ...dev,
+                projects: [],
+                projects_count: 0
+            });
+        });
+
+        // Group projects
+        properties.forEach(p => {
+            if (!p.developer) return;
+            const devKey = p.developer.toLowerCase();
             
-            // Normalize Maryam Island
-            if (devName.toLowerCase().includes('maryam island')) {
-                devName = 'Eagle Hills';
-            } else if (project.title && project.title.toLowerCase().includes('maryam island')) {
-                devName = 'Eagle Hills';
+            // Auto-create developer entry if not in metadata
+            if (!developersMap.has(devKey)) {
+                developersMap.set(devKey, {
+                    name: p.developer,
+                    name_ar: p.developer_ar || p.developer,
+                    logo: null,
+                    tagline: `${p.developer} - Leading Developer`,
+                    projects: [],
+                    projects_count: 0
+                });
             }
 
-            if (!ALLOWED_DEVELOPERS.includes(devName)) return acc;
-
-            // CRITICAL: Separation Logic
-            // Only include in the Developers Section if it's explicitly an "Off-Plan Project"
-            // This prevents regular properties from cluttering the developer's project catalog.
-            if (project.type !== 'Off-Plan Project') return acc;
-
-            if (!acc[devName]) acc[devName] = [];
+            const dev = developersMap.get(devKey);
             
-            let parsedImages = [];
-            if (project.images) {
-                if (Array.isArray(project.images)) {
-                    parsedImages = project.images;
-                } else if (typeof project.images === 'string') {
-                    try { parsedImages = JSON.parse(project.images); } catch(e) {}
-                }
+            // Only include in project list if it's an "Off-Plan Project" or regular property matching dev
+            // The original logic was strict: project.type === 'Off-Plan Project'
+            // We'll keep that for the "Projects" sub-list to match website expectations
+            if (p.type === 'Off-Plan Project') {
+                dev.projects.push({
+                    id: p.id,
+                    name: p.title,
+                    name_ar: p.title_ar,
+                    location: p.location,
+                    image: (() => {
+                        try {
+                            const imgs = typeof p.images === 'string' ? JSON.parse(p.images) : p.images;
+                            return Array.isArray(imgs) ? imgs[0] : null;
+                        } catch(e) { return null; }
+                    })(),
+                    status: p.status,
+                    price: p.price
+                });
+                dev.projects_count++;
             }
+        });
 
-            let parsedAmenities = [];
-            if (project.amenities) {
-                if (Array.isArray(project.amenities)) {
-                    parsedAmenities = project.amenities;
-                } else if (typeof project.amenities === 'string') {
-                    try { 
-                        parsedAmenities = JSON.parse(project.amenities); 
-                    } catch(e) {
-                        parsedAmenities = project.amenities.split(',').map(s => s.trim());
-                    }
-                }
-            }
-
-            const newProject = {
-                name: project.title,
-                image: (parsedImages && parsedImages[0]) || null,
-                location: project.location,
-                gmaps: project.location ? project.location.replace(/\s+/g, '+') : 'Sharjah',
-                type: project.type,
-                status: project.status,
-                price: project.price,
-                bedrooms: project.bedrooms > 0 ? `${project.bedrooms} Bedrooms` : 'Various layouts',
-                description: project.description,
-                features: parsedAmenities
-            };
-            
-            // Deduplicate project titles under the same developer
-            const existing = acc[devName].find(p => p.name === newProject.name);
-            if (!existing) {
-                acc[devName].push(newProject);
-            }
-            
-            return acc;
-        }, {});
-
-        // Format for frontend
-        const developers = ALLOWED_DEVELOPERS.map(devName => {
-            const meta = DEVELOPER_META[devName] || { logo: null, tagline: "Premium Real Estate Development" };
-            return {
-                name: devName,
-                logo: meta.logo,
-                tagline: meta.tagline,
-                projects: grouped[devName] || []
-            };
-        }).filter(dev => dev.projects.length > 0 || ["Shoumous", "Al Tay Hills", "Manazil", "Al Marwan"].includes(dev.name));
-        
-        return res.status(200).json(developers);
+        const result = Array.from(developersMap.values());
+        return res.status(200).json(result);
     } catch (err) {
+        console.error('Get developers error:', err.message);
         return res.status(500).json({ error: err.message });
     }
 }
