@@ -14,6 +14,11 @@ const Developers = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [expandedDeveloper, setExpandedDeveloper] = useState(null);
+
+    const toggleDeveloper = (devName) => {
+        setExpandedDeveloper(expandedDeveloper === devName ? null : devName);
+    };
 
     useEffect(() => {
         const fetchDevelopers = async () => {
@@ -66,46 +71,67 @@ const Developers = () => {
                         <p>{t('loadingProjects')}</p>
                     </div>
                 ) : (
-                    <div className="developers-grid">
-                        {developersData.map((dev, idx) => (
-                            <motion.div 
-                                key={idx} 
-                                className="dev-card-glass"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1 }}
-                            >
-                                <div className="dev-card-header">
-                                    {dev.logo ? (
-                                        <img src={dev.logo} alt={dev.name} className="dev-real-logo" />
-                                    ) : (
-                                        <h3 className="dev-fallback-logo">{dev.name}</h3>
-                                    )}
-                                    <div className="dev-tagline"><i>{getContent(dev, 'tagline')}</i></div>
-                                </div>
+                    <div className="developers-grid compact-grid">
+                        {developersData.map((dev, idx) => {
+                            const isExpanded = expandedDeveloper === dev.name;
+                            return (
+                                <motion.div 
+                                    key={idx} 
+                                    className={`dev-card-glass compact ${isExpanded ? 'expanded' : ''}`}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    onClick={() => toggleDeveloper(dev.name)}
+                                >
+                                    <div className="dev-card-header compact-header">
+                                        {dev.logo ? (
+                                            <img src={dev.logo} alt={dev.name} className="dev-real-logo compact-img" />
+                                        ) : (
+                                            <h3 className="dev-fallback-logo">{dev.name}</h3>
+                                        )}
+                                        <div className="dev-tagline compact-tagline"><i>{getContent(dev, 'tagline')}</i></div>
+                                        <button className="dev-expand-btn">
+                                            {isExpanded ? t('closeProjects', 'Close Projects') : t('viewDevProjects', 'View Projects')}
+                                        </button>
+                                    </div>
 
-                                <div className="dev-projects-row">
-                                    {dev.projects.map((proj, pIdx) => (
-                                        <div key={pIdx} className="dev-project-card">
-                                            <div className="dev-proj-img-wrap">
-                                                <img src={resolveProjectImage(dev.name, proj.name, proj.image)} alt={getContent(proj, 'name')} />
-                                                <div className="dev-proj-badges">
-                                                    <span className={`badge-status ${proj.status?.toLowerCase()}`}>{getContent(proj, 'status')}</span>
-                                                </div>
-                                            </div>
-                                            <div className="dev-proj-content">
-                                                <h4 className="dev-proj-name">{getContent(proj, 'name')}</h4>
-                                                <p className="dev-proj-loc"><MapPin size={14}/> {getContent(proj, 'location')}</p>
-                                                <button className="dev-proj-btn" onClick={() => openModal(proj, dev)}>
-                                                    {t('viewProject')} <ChevronRight size={16} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        ))}
+                                    <AnimatePresence>
+                                        {isExpanded && (
+                                            <motion.div 
+                                                className="dev-projects-row"
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {dev.projects && dev.projects.length > 0 ? dev.projects.map((proj, pIdx) => (
+                                                    <div key={pIdx} className="dev-project-card">
+                                                        <div className="dev-proj-img-wrap">
+                                                            <img src={resolveProjectImage(dev.name, proj.name, proj.image)} alt={getContent(proj, 'name')} />
+                                                            <div className="dev-proj-badges">
+                                                                <span className={`badge-status ${proj.status?.toLowerCase()}`}>{getContent(proj, 'status')}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="dev-proj-content">
+                                                            <h4 className="dev-proj-name">{getContent(proj, 'name')}</h4>
+                                                            <p className="dev-proj-loc"><MapPin size={14}/> {getContent(proj, 'location')}</p>
+                                                            <button className="dev-proj-btn" onClick={() => openModal(proj, dev)}>
+                                                                {t('viewProject')} <ChevronRight size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )) : (
+                                                    <div className="no-projects-msg">
+                                                        {language === 'ar' ? 'المشاريع قريباً' : 'Projects Coming Soon'}
+                                                    </div>
+                                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
