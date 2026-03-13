@@ -110,7 +110,7 @@ const Developers = () => {
                                                 {dev.projects && dev.projects.length > 0 ? dev.projects.map((proj, pIdx) => (
                                                     <div key={pIdx} className="dev-project-card">
                                                         <div className="dev-proj-img-wrap">
-                                                            <img src={resolveProjectImage(dev.name, proj.name, proj.image)} alt={getContent(proj, 'name')} />
+                                                            <img src={resolveProjectImage(dev.name, proj.name, proj.image)} alt={getContent(proj, 'name')} className="dev-proj-img" />
                                                             <div className="dev-proj-badges">
                                                                 <span className={`badge-status ${proj.status?.toLowerCase()}`}>{getContent(proj, 'status')}</span>
                                                             </div>
