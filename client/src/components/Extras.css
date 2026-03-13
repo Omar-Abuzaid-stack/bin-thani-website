@@ -73,10 +73,3 @@
     }
 }
 
-@media (max-width: 768px) {
-    .banner-content {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-}

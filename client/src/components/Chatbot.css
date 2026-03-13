@@ -339,20 +339,4 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 480px) {
-    .chatbot-container {
-        bottom: 20px;
-        right: 20px;
-    }
-    
-    .chatbot-toggle {
-        width: 54px;
-        height: 54px;
-    }
-    
-    .chatbot-window {
-        width: calc(100vw - 40px);
-        height: 480px;
-        bottom: 70px;
-    }
-}
+

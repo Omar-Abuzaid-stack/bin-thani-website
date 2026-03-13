@@ -1,23 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Bot, Loader2 } from 'lucide-react';
+import { MessageSquare, Send, X, Bot } from 'lucide-react';
 import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Chatbot.css';
 
-// Direct Vercel /api/ path - no need for VITE_API_URL
-// Use relative paths for Vercel serverless functions
-const CHAT_API_URL = '/api/chat';
-const LEADS_API_URL = '/api/leads';
-
 const Chatbot = () => {
+    const { t, language } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
-    const { t } = useLanguage();
     
-    // Persist states in localStorage to support long conversations
+    const initialMessage = language === 'ar' 
+        ? 'مرحباً! أنا ليلى من بن ثاني للعقارات. كيف يمكنني مساعدتكم في البحث عن عقار فاخر في الإمارات اليوم؟'
+        : 'Marhaba! I am Layla from Bin Thani Real Estate. How can I assist you with your luxury property search in UAE today?';
+
+    useEffect(() => {
+        const saved = localStorage.getItem('chat_messages');
+        if (!saved) {
+            setMessages([{ role: 'assistant', content: initialMessage }]);
+        }
+    }, [language, initialMessage]);
+
     const [messages, setMessages] = useState(() => {
         const saved = localStorage.getItem('chat_messages');
-        return saved ? JSON.parse(saved) : [{ role: 'assistant', content: 'Marhaba! I am Layla from Bin Thani Real Estate. How can I assist you with your luxury property search in UAE today?' }];
+        return saved ? JSON.parse(saved) : [{ role: 'assistant', content: initialMessage }];
     });
+    
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showLeadForm, setShowLeadForm] = useState(() => localStorage.getItem('chat_show_lead_form') === 'true');
@@ -34,20 +40,8 @@ const Chatbot = () => {
 
     const scrollRef = useRef(null);
 
-    // Save states whenever they change
     useEffect(() => {
         localStorage.setItem('chat_messages', JSON.stringify(messages));
-    }, [messages]);
-
-    useEffect(() => {
-        localStorage.setItem('chat_message_count', userMessageCount.toString());
-    }, [userMessageCount]);
-
-    useEffect(() => {
-        localStorage.setItem('chat_show_lead_form', showLeadForm.toString());
-    }, [showLeadForm]);
-
-    useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
@@ -65,21 +59,20 @@ const Chatbot = () => {
         setUserMessageCount(prev => prev + 1);
 
         try {
-            // Keep only the last 40 messages to avoid huge payloads and hitting token limits
-            const messagesToSend = newMessages.length > 40 ? newMessages.slice(-40) : newMessages;
-            
-            const res = await axios.post('/api/chat', { messages: messagesToSend, sessionId }, { timeout: 10000 });
-            const assistantResponse = res.data;
-            setMessages(prev => [...prev, assistantResponse]);
+            const res = await axios.post('/api/chat', { 
+                messages: newMessages.slice(-20), 
+                sessionId,
+                language // Pass language to backend if needed
+            });
+            setMessages(prev => [...prev, res.data]);
 
-            // Show lead form after 2 messages
-            if (userMessageCount + 1 >= 2 && !showLeadForm) {
+            if (userMessageCount >= 1 && !showLeadForm) {
                 setTimeout(() => setShowLeadForm(true), 1500);
             }
         } catch (err) {
             console.error('Chat error:', err);
-            const errorMessage = err.response?.data?.error || err.message || 'Sorry, I am having trouble connecting. Please try again later.';
-            setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
+            const errorMsg = language === 'ar' ? 'عذراً، أواجه مشكلة في الاتصال حالياً.' : 'Sorry, I am having trouble connecting.';
+            setMessages(prev => [...prev, { role: 'assistant', content: errorMsg }]);
         } finally {
             setIsLoading(false);
         }
@@ -88,27 +81,21 @@ const Chatbot = () => {
     const handleLeadSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(LEADS_API_URL, {
-                ...leadInfo,
-                source: 'chatbot'
-            }, { timeout: 10000 });
-            setMessages(prev => [...prev, { 
-                role: 'assistant', 
-                content: `Thank you ${leadInfo.name}! I've saved your details and one of our agents will contact you at ${leadInfo.email} shortly.` 
-            }]);
+            await axios.post('/api/leads', { ...leadInfo, source: 'chatbot' });
+            const successMsg = language === 'ar' 
+                ? `شكراً لك ${leadInfo.name}! لقد تم استلام بياناتك وسنتواصل معك قريباً.`
+                : `Thank you ${leadInfo.name}! I've saved your details and we will contact you shortly.`;
+            setMessages(prev => [...prev, { role: 'assistant', content: successMsg }]);
             setShowLeadForm(false);
-            setLeadInfo({ name: '', email: '', requirements: '' });
         } catch (err) {
-            console.error('Lead submission error:', err);
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Thank you! We have received your details and will contact you soon.' }]);
             setShowLeadForm(false);
         }
     };
 
     return (
-        <div className="chatbot-container">
+        <div className={`chatbot-container ${language === 'ar' ? 'rtl' : ''}`}>
             {!isOpen && (
-                <button className="chatbot-toggle" onClick={() => setIsOpen(true)} aria-label="Open chat">
+                <button className="chatbot-toggle" onClick={() => setIsOpen(true)}>
                     <MessageSquare size={26} />
                 </button>
             )}
@@ -117,80 +104,48 @@ const Chatbot = () => {
                 <div className="chatbot-window">
                     <div className="chatbot-header">
                         <div className="chatbot-header-info">
-                            <div className="chatbot-avatar">
-                                <Bot size={22} />
-                            </div>
+                            <Bot size={22} />
                             <div className="chatbot-header-text">
-                                <h4>Bin Thani Real Estate</h4>
-                                <p>info@binthanirealestate.ae</p>
+                                <h4>{language === 'ar' ? 'بن ثاني للعقارات' : 'Bin Thani Real Estate'}</h4>
+                                <p>{t('onlineSupport')}</p>
                             </div>
                         </div>
-                        <button className="chatbot-close" onClick={() => setIsOpen(false)} aria-label="Close chat">
-                            <X size={18} />
-                        </button>
+                        <button className="chatbot-close" onClick={() => setIsOpen(false)}><X size={18} /></button>
                     </div>
 
                     <div className="chatbot-messages" ref={scrollRef}>
                         {messages.map((m, i) => (
                             <div key={i} className={`message ${m.role}`}>
-                                <div className="message-avatar">
-                                    {m.role === 'assistant' ? <Bot size={14} /> : <span>{(i % 2) + 1}</span>}
-                                </div>
                                 <div className="message-content">{m.content}</div>
                             </div>
                         ))}
                         {isLoading && (
                             <div className="message assistant">
-                                <div className="message-avatar"><Bot size={14} /></div>
-                                <div className="typing-indicator">
-                                    <span></span><span></span><span></span>
-                                </div>
+                                <div className="typing-indicator"><span></span><span></span><span></span></div>
                             </div>
                         )}
                     </div>
 
                     {showLeadForm && (
                         <div className="lead-form">
-                            <h4>Get in Touch</h4>
-                            <input
-                                type="text"
-                                placeholder="Your Name"
-                                required
-                                value={leadInfo.name}
-                                onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })}
-                            />
-                            <input
-                                type="email"
-                                placeholder="Email Address"
-                                required
-                                value={leadInfo.email}
-                                onChange={(e) => setLeadInfo({ ...leadInfo, email: e.target.value })}
-                            />
-                            <input
-                                type="tel"
-                                placeholder="Phone: +971 55 762 6912"
-                                value={leadInfo.requirements}
-                                onChange={(e) => setLeadInfo({ ...leadInfo, requirements: e.target.value })}
-                            />
-                            <button type="submit" onClick={handleLeadSubmit}>Submit</button>
-                            <button type="button" className="skip-btn" onClick={() => setShowLeadForm(false)}>Continue Chatting</button>
+                            <h4>{t('getInTouch')}</h4>
+                            <input type="text" placeholder={t('yourName')} value={leadInfo.name} onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })} />
+                            <input type="email" placeholder={t('emailAddress')} value={leadInfo.email} onChange={(e) => setLeadInfo({ ...leadInfo, email: e.target.value })} />
+                            <input type="tel" placeholder={t('phoneNumber')} value={leadInfo.requirements} onChange={(e) => setLeadInfo({ ...leadInfo, requirements: e.target.value })} />
+                            <button onClick={handleLeadSubmit} className="btn-primary">{t('submit')}</button>
+                            <button className="skip-btn" onClick={() => setShowLeadForm(false)}>{t('skip')}</button>
                         </div>
                     )}
 
                     <form className="chatbot-input-area" onSubmit={handleSend}>
-                        <div className="chatbot-form">
-                            <input
-                                type="text"
-                                className="chatbot-input"
-                                placeholder="Type a message..."
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                disabled={isLoading}
-                            />
-                            <button type="submit" className="chatbot-send" disabled={isLoading || !input.trim()}>
-                                <Send size={18} />
-                            </button>
-                        </div>
+                        <input
+                            type="text"
+                            placeholder={t('typeMessage')}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            disabled={isLoading}
+                        />
+                        <button type="submit" disabled={isLoading || !input.trim()}><Send size={18} /></button>
                     </form>
                 </div>
             )}

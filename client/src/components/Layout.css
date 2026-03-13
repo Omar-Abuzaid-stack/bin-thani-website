@@ -69,11 +69,7 @@ ul {
     padding: 0 40px;
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 0 15px;
-    }
-}
+
 
 /* ========================================
    ANNOUNCEMENT BAR
@@ -152,11 +148,7 @@ ul {
     padding: 0 40px;
 }
 
-@media (max-width: 768px) {
-    .nav-content {
-        padding: 0 20px;
-    }
-}
+
 
 /* Logo */
 .logo {
@@ -241,35 +233,7 @@ ul {
 }
 
 /* Mobile Menu */
-@media (max-width: 1024px) {
-    .nav-toggle {
-        display: block;
-    }
-    
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 75%;
-        max-width: 300px;
-        height: 100vh;
-        background: rgba(8, 8, 8, 0.98);
-        backdrop-filter: blur(25px);
-        flex-direction: column;
-        padding: 80px 30px;
-        gap: 25px;
-        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-left: 1px solid rgba(184, 150, 12, 0.2);
-    }
-    
-    .nav-links a {
-        font-size: 11px;
-    }
-    
-    .nav-links.active {
-        right: 0;
-    }
-}
+
 
 /* ========================================
    FOOTER
@@ -290,29 +254,11 @@ ul {
     padding: 0 40px;
 }
 
-@media (max-width: 1024px) {
-    .footer-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-    }
-}
 
-@media (max-width: 768px) {
-    .footer {
-        padding: 60px 0 30px;
-        margin-top: 60px;
-    }
-    .footer-grid {
-        padding: 0 15px;
-        gap: 25px;
-    }
-}
 
-@media (max-width: 600px) {
-    .footer-grid {
-        grid-template-columns: 1fr;
-    }
-}
+
+
+
 
 .footer-info .logo {
     margin-bottom: 20px;
@@ -390,11 +336,7 @@ ul {
     font-size: 13px;
 }
 
-@media (max-width: 600px) {
-    .footer-grid {
-        grid-template-columns: 1fr;
-    }
-}
+
 
 /* ========================================
    BUTTONS
@@ -461,18 +403,7 @@ ul {
     text-transform: uppercase;
 }
 
-@media (max-width: 768px) {
-    .page-hero .hero-title {
-        font-size: 2.2rem;
-        letter-spacing: 0.05em;
-    }
-    .page-hero .hero-subtitle {
-        font-size: 0.85rem;
-    }
-    .page-hero {
-        padding: 120px 15px 50px;
-    }
-}
+
 
 /* ========================================
    LOADING SCREEN

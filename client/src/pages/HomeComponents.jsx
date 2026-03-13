@@ -2,8 +2,10 @@ import React from 'react';
 import { Search, MapPin, Home, Users, Award, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './Home.css';
+import { useLanguage } from '../context/LanguageContext';
 
 export const Hero = () => {
+    const { language } = useLanguage();
     return (
         <section className="hero">
             <div className="hero-overlay"></div>
@@ -13,14 +15,14 @@ export const Hero = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    Elevating Luxury Living <br /> <span className="gold">In Sharjah</span>
+                    {language === 'ar' ? 'ارتقِ بمستوى معيشتك الفاخرة' : 'Elevating Luxury Living'} <br /> <span className="gold">{language === 'ar' ? 'في الشارقة' : 'In Sharjah'}</span>
                 </motion.h1>
                 <motion.p
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                    Discover premium properties and investment opportunities with Bin Thani Real Estate.
+                    {language === 'ar' ? 'اكتشف العقارات الفاخرة وفرص الاستثمار مع بن ثاني للعقارات.' : 'Discover premium properties and investment opportunities with Bin Thani Real Estate.'}
                 </motion.p>
 
                 <motion.div
@@ -31,19 +33,19 @@ export const Hero = () => {
                 >
                     <div className="search-input">
                         <MapPin size={20} color="#c9a84c" />
-                        <input type="text" placeholder="Location..." />
+                        <input type="text" placeholder={language === 'ar' ? "الموقع..." : "Location..."} />
                     </div>
                     <div className="search-input">
                         <Home size={20} color="#c9a84c" />
                         <select>
-                            <option>Property Type</option>
-                            <option>Apartment</option>
-                            <option>Villa</option>
-                            <option>Office</option>
+                            <option>{language === 'ar' ? 'نوع العقار' : 'Property Type'}</option>
+                            <option>{language === 'ar' ? 'شقة' : 'Apartment'}</option>
+                            <option>{language === 'ar' ? 'فيلا' : 'Villa'}</option>
+                            <option>{language === 'ar' ? 'مكتب' : 'Office'}</option>
                         </select>
                     </div>
                     <button className="btn-primary search-btn">
-                        <Search size={20} /> Search
+                        <Search size={20} /> {language === 'ar' ? 'بحث' : 'Search'}
                     </button>
                 </motion.div>
             </div>
@@ -92,7 +94,7 @@ export const PropertyCard = ({ property }) => {
                 </div>
                 <div className="property-footer">
                     <span className="price">{property.price}</span>
-                    <button className="btn-outline">View Details</button>
+                    <button className="btn-outline">{language === 'ar' ? 'عرض التفاصيل' : 'View Details'}</button>
                 </div>
             </div>
         </motion.div>

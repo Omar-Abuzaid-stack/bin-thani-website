@@ -3,12 +3,7 @@ import { Menu, X, Phone, Mail, Instagram, Facebook, Twitter, MessageCircle, Glob
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
-const marqueeMessages = [
-    "🏆 Bin Thani Real Estate — Sharjah's Most Trusted Agency",
-    "🏠 Premium Properties in Sharjah",
-    "📞 Book a Free Consultation Today",
-    "✨ Off-Plan & Ready Properties Available Now"
-];
+const marqueeMessages = ['buyDesc', 'rentDesc', 'investDesc', 'offPlanDesc'];
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +14,7 @@ export const Navbar = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setMessageIndex((prev) => (prev + 1) % marqueeMessages.length);
-        }, 3000);
+        }, 4000);
         return () => clearInterval(interval);
     }, []);
 
@@ -28,14 +23,14 @@ export const Navbar = () => {
             <div className="announcement-bar">
                 <div className="marquee-container">
                     <div className="marquee-content">
-                        <span>{marqueeMessages[messageIndex]}</span>
+                        <span>{t(marqueeMessages[messageIndex])}</span>
                     </div>
                 </div>
             </div>
             <nav className="navbar">
                 <div className="container nav-content">
                     <Link to="/" className="logo">
-                        <span className="gold">BIN</span> THANI
+                        <span className="gold">{language === 'ar' ? 'بن' : 'BIN'}</span> {language === 'ar' ? 'ثاني' : 'THANI'}
                     </Link>
                     <div className={`nav-links ${isOpen ? 'active' : ''}`}>
                         <Link to="/" onClick={() => setIsOpen(false)}>{t('home')}</Link>
@@ -45,7 +40,7 @@ export const Navbar = () => {
                         <Link to="/contact" onClick={() => setIsOpen(false)}>{t('contact')}</Link>
                     </div>
                     <div className="nav-actions">
-                        <button className="lang-toggle" onClick={toggleLanguage}>
+                        <button className="lang-toggle" onClick={toggleLanguage} aria-label="Toggle Language">
                             <Globe size={18} />
                             <span className="lang-label">{language === 'en' ? 'عربي' : 'EN'}</span>
                         </button>
@@ -60,18 +55,18 @@ export const Navbar = () => {
 };
 
 export const Footer = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     
     return (
         <footer className="footer">
             <div className="container footer-grid">
                 <div className="footer-info">
-                    <h3>BIN THANI</h3>
+                    <h3>{language === 'ar' ? 'بن ثاني' : 'BIN THANI'}</h3>
                     <p>{t('luxuryRealEstate')}</p>
                     <div className="social-links">
-                        <a href="https://www.facebook.com/share/1CKmiQDoqX/?mibextid=wwXIfr" target="_blank" rel="noreferrer"><Facebook size={20} /></a>
-                        <a href="https://www.instagram.com/bin_thani1?igsh=MTNzZHJzZnhtcm1raA%3D%3D&utm_source=qr" target="_blank" rel="noreferrer"><Instagram size={20} /></a>
-                        <a href="https://www.tiktok.com/@binthani.realestate?_r=1&_t=ZS-94cTyhzej2e" target="_blank" rel="noreferrer" title="TikTok">
+                        <a href="https://www.facebook.com/share/1CKmiQDoqX/?mibextid=wwXIfr" target="_blank" rel="noreferrer" aria-label="Facebook"><Facebook size={20} /></a>
+                        <a href="https://www.instagram.com/bin_thani1?igsh=MTNzZHJzZnhtcm1raA%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={20} /></a>
+                        <a href="https://www.tiktok.com/@binthani.realestate?_r=1&_t=ZS-94cTyhzej2e" target="_blank" rel="noreferrer" aria-label="TikTok">
                             <svg width="20" height="20" viewBox="0 0 448 512" fill="currentColor">
                                 <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
                             </svg>
@@ -92,18 +87,18 @@ export const Footer = () => {
                     <p><Phone size={16} /> <a href="tel:+971557626912" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 762 6912</a></p>
                     <p><Phone size={16} /> <a href="tel:+971556611400" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 661 1400</a></p>
                     <p><Mail size={16} /> <a href="mailto:info@binthanirealestate.ae" style={{ color: 'inherit', textDecoration: 'none' }}>info@binthanirealestate.ae</a></p>
-                    <p>Muwaileh Sharjah, United Arab Emirates</p>
+                    <p>{language === 'ar' ? 'مويلحة الشارقة، الإمارات العربية المتحدة' : 'Muwaileh Sharjah, United Arab Emirates'}</p>
                 </div>
                 <div className="footer-newsletter">
                     <h4>{t('newsletter')}</h4>
-                    <form className="newsletter-form">
-                        <input type="email" placeholder={t('yourEmail')} />
+                    <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
+                        <input type="email" placeholder={t('yourEmail')} required />
                         <button type="submit" className="btn-primary">{t('join')}</button>
                     </form>
                 </div>
             </div>
             <div className="footer-bottom">
-                <p>&copy; 2024 Bin Thani Real Estate. {t('copyright')}</p>
+                <p>&copy; {new Date().getFullYear()} {language === 'ar' ? 'بن ثاني للعقارات' : 'Bin Thani Real Estate'}. {t('copyright')}</p>
             </div>
         </footer>
     );

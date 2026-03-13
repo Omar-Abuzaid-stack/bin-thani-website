@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import './Extras.css';
 
 export const CookieBanner = () => {
+    const { t, language } = useLanguage();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -19,16 +21,17 @@ export const CookieBanner = () => {
     if (!isVisible) return null;
 
     return (
-        <div className="cookie-banner fade-in">
+        <div className={`cookie-banner fade-in ${language === 'ar' ? 'rtl' : ''}`}>
             <div className="container banner-content">
-                <p>We use cookies to ensure you get the best experience on our website. <a href="/privacy">Learn more</a></p>
-                <button className="btn-primary" onClick={handleAccept}>Accept</button>
+                <p>{t('cookieText')} <a href="/privacy">{t('privacyPolicy')}</a></p>
+                <button className="btn-primary" onClick={handleAccept}>{t('accept')}</button>
             </div>
         </div>
     );
 };
 
 export const LoadingScreen = () => {
+    const { t, language } = useLanguage();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -40,10 +43,11 @@ export const LoadingScreen = () => {
 
     return (
         <div className="loading-screen">
-            <div className="loader-logo">
-                <span className="gold">BIN</span> THANI
+            <div className={`loader-logo ${language === 'ar' ? 'rtl' : ''}`}>
+                <span className="gold">{language === 'ar' ? 'بن' : 'BIN'}</span> {language === 'ar' ? 'ثاني' : 'THANI'}
             </div>
             <div className="loader-bar"></div>
+            <div className="loader-text">{t('loading')}</div>
         </div>
     );
 };

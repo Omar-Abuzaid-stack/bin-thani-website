@@ -45,11 +45,11 @@ app.get('/api/properties', async (req, res) => {
         let query = 'properties?select=*&order=created_at.desc';
         const filters = [];
         
-        if (type) filters.push(`type.eq.${type}`);
-        if (status) filters.push(`status.eq.${status}`);
-        if (developer) filters.push(`developer.eq.${developer}`);
-        if (bedrooms) filters.push(`bedrooms.gte.${bedrooms}`);
-        if (location) filters.push(`or(location.ilike.*${location}*,area_full.ilike.*${location}*)`);
+        if (type) filters.push(`type=eq.${type}`);
+        if (status) filters.push(`status=eq.${status}`);
+        if (developer) filters.push(`developer=eq.${developer}`);
+        if (bedrooms) filters.push(`bedrooms=gte.${bedrooms}`);
+        if (location) filters.push(`or=(location.ilike.*${location}*,area_full.ilike.*${location}*)`);
         
         if (filters.length > 0) query += '&' + filters.join('&');
         
@@ -83,7 +83,7 @@ app.get('/api/properties/featured', async (req, res) => {
 // Get single property
 app.get('/api/properties/:id', async (req, res) => {
     try {
-        const data = await supabaseCall(`properties?id.eq.${req.params.id}&select=*&limit=1`);
+        const data = await supabaseCall(`properties?id=eq.${req.params.id}&select=*&limit=1`);
         
         if (!data || data.length === 0) {
             return res.status(404).json({ error: 'Property not found' });
@@ -92,7 +92,7 @@ app.get('/api/properties/:id', async (req, res) => {
         const property = data[0];
         
         // Increment views
-        await supabaseCall(`properties?id.eq.${req.params.id}`, 'PATCH', {
+        await supabaseCall(`properties?id=eq.${req.params.id}`, 'PATCH', {
             views: (property.views || 0) + 1
         });
         
@@ -105,16 +105,102 @@ app.get('/api/properties/:id', async (req, res) => {
 // Get all developers
 app.get('/api/developers', async (req, res) => {
     try {
-        const data = await supabaseCall('properties?select=developer&developer.not.is.null');
+        // 1. Try to fetch developer metadata from 'developers' table
+        let developerMetadata = [];
+        try {
+            developerMetadata = await supabaseCall('developers?select=*');
+        } catch (e) {
+            console.log('Developers table not found, using fallback metadata');
+            // Fallback metadata for major developers
+            developerMetadata = [
+                { name: 'Arada', name_ar: 'أراداء', logo: 'https://arada.com/assets/images/logo.svg', tagline: 'Building cities of the future', tagline_ar: 'بناء مدن المستقبل' },
+                { name: 'Alef Group', name_ar: 'مجموعة ألف', logo: 'https://www.alefgroup.ae/wp-content/themes/alef-group/assets/images/logo.svg', tagline: 'Premier lifestyle developer', tagline_ar: 'مطور نمط الحياة المميز' },
+                { name: 'Tiger Group', name_ar: 'مجموعة تايجر', logo: 'https://tigergroup.ae/wp-content/uploads/2024/05/logo-tiger.png', tagline: 'Excellence in construction', tagline_ar: 'التميز في الإنشاءات' },
+                { name: 'Eagle Hills', name_ar: 'إيجل هيلز', logo: 'https://www.eaglehills.com/wp-content/themes/eaglehills/assets/images/logo.svg', tagline: 'Global real estate excellence', tagline_ar: 'التميز العالمي في العقارات' },
+                { name: 'Shoumous', name_ar: 'شموس', logo: 'https://www.shoumous.com/wp-content/uploads/2022/12/logo-HD1.png', tagline: 'Luxury living in Sharjah', tagline_ar: 'حياة فاخرة في الشارقة' },
+                { name: 'Al Tay Hills', name_ar: 'تلال الطي', logo: 'https://static.tildacdn.one/tild3331-3630-4365-b834-663032323632/Al_Tay_Hills_Brochur.png', tagline: 'Premium suburban villas', tagline_ar: 'فلل سكنية فاخرة' },
+                { name: 'Manazil', name_ar: 'منازل', logo: 'https://images.seeklogo.com/logo-png/49/2/manazel-logo-png_seeklogo-492290.png', tagline: 'Quality community homes', tagline_ar: 'منازل مجتمعية عالية الجودة' },
+                { name: 'Al Marwan', name_ar: 'المروان', logo: 'https://www.palmera.realestate/wp-content/uploads/2025/06/Al-Marwan-Developments-Logo.png', tagline: 'Master-planned perfection', tagline_ar: 'إتقان في المخططات الشاملة' }
+            ];
+        }
+
+        // 2. Fetch all properties to group by developer
+        const properties = await supabaseCall('properties?select=id,title,title_ar,developer,project,location,location_ar,status,status_ar,description,description_ar,images,bedrooms,bathrooms,price');
         
-        const developers = [...new Set(data.map(p => p.developer))].map(d => ({
-            name: d,
-            description: `${d} - Leading UAE developer`,
-            projects_count: data.filter(p => p.developer === d).length
-        }));
+        // 3. Combine metadata with projects
+        const developers = developerMetadata.map(dev => {
+            const devProjects = properties
+                .filter(p => p.developer && p.developer.toLowerCase().includes(dev.name.toLowerCase()))
+                .map(p => ({
+                    id: p.id,
+                    name: p.title,
+                    name_ar: p.title_ar,
+                    location: p.location,
+                    location_ar: p.location_ar,
+                    status: p.status,
+                    status_ar: p.status_ar,
+                    image: (() => {
+                        try {
+                            const imgs = JSON.parse(p.images);
+                            return Array.isArray(imgs) ? imgs[0] : null;
+                        } catch(e) { return null; }
+                    })(),
+                    description: p.description,
+                    description_ar: p.description_ar,
+                    bedrooms: p.bedrooms,
+                    price: p.price
+                }));
+
+            return {
+                ...dev,
+                projects: devProjects,
+                projects_count: devProjects.length
+            };
+        });
+
+        // Add developers from properties that aren't in metadata
+        const metadataNames = developerMetadata.map(d => d.name.toLowerCase());
+        const otherDevNames = [...new Set(properties.map(p => p.developer))]
+            .filter(name => name && !metadataNames.some(m => name.toLowerCase().includes(m)));
+
+        otherDevNames.forEach(name => {
+            const devProjects = properties
+                .filter(p => p.developer === name)
+                .map(p => ({
+                    id: p.id,
+                    name: p.title,
+                    name_ar: p.title_ar,
+                    location: p.location,
+                    location_ar: p.location_ar,
+                    status: p.status,
+                    status_ar: p.status_ar,
+                    image: (() => {
+                        try {
+                            const imgs = JSON.parse(p.images);
+                            return Array.isArray(imgs) ? imgs[0] : null;
+                        } catch(e) { return null; }
+                    })(),
+                    description: p.description,
+                    description_ar: p.description_ar,
+                    bedrooms: p.bedrooms,
+                    price: p.price
+                }));
+
+            developers.push({
+                name: name,
+                name_ar: name, // Fallback
+                logo: null,
+                tagline: `${name} - Leading Developer`,
+                tagline_ar: `${name} - مطور رائد`,
+                projects: devProjects,
+                projects_count: devProjects.length
+            });
+        });
         
-        res.json(developers);
+        // Filter out developers with no projects if needed, or keep for list
+        res.json(developers.filter(d => d.projects_count > 0 || d.logo));
     } catch (err) {
+        console.error('Developers API error:', err);
         res.status(500).json({ error: err.message });
     }
 });

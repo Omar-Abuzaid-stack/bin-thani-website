@@ -41,6 +41,7 @@ const Properties = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+    const { t, language, getContent } = useLanguage();
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -59,8 +60,7 @@ const Properties = () => {
         developer: ''
     });
     const [showFilters, setShowFilters] = useState(false);
-    const { t } = useLanguage();
-
+ 
     useEffect(() => {
         fetchProperties();
     }, [filters, debouncedSearch]);
@@ -140,13 +140,11 @@ const Properties = () => {
         const term = searchTerm.toLowerCase().trim();
         if (!term) return properties;
 
-        // 1. Try Fuzzy Search first
         const fuse = new Fuse(properties, fuseOptions);
         const fuzzyResults = fuse.search(term).map(res => res.item);
 
         if (fuzzyResults.length > 0) return fuzzyResults;
 
-        // 2. Fallback to Translation-aware Substring Match (for specific area names)
         let translatedTerm = '';
         for (const [en, ar] of Object.entries(areaMap)) {
             if (term.includes(en.toLowerCase())) translatedTerm = ar;
@@ -186,133 +184,113 @@ const Properties = () => {
     return (
         <>
             <Helmet>
-                <title>Properties - Bin Thani Real Estate</title>
-                <meta name="description" content="Browse luxury properties across UAE" />
+                <title>{language === 'ar' ? 'العقارات | بن ثاني للعقارات' : 'Properties | Bin Thani Real Estate'}</title>
             </Helmet>
-            
-            <div className="properties-page">
-                {/* Hero Section */}
-                <section className="page-hero">
-                    <div className="page-hero-bg" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80)'}}></div>
-                    <div className="page-hero-overlay"></div>
-                    <div className="container">
-                        <motion.div 
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                        >
-                            <h1 className="page-title">
-                                {filters.status === 'Off-Plan' ? 'Off-Plan Projects' : 
-                                 filters.type === 'Rent' ? 'Properties for Rent' : 
-                                 filters.type === 'Buy' ? 'Properties for Sale' : 'Our Properties'}
-                            </h1>
-                            <p className="page-subtitle">
-                                {filters.status === 'Off-Plan' ? 'Exclusive Upcoming Developments' : 
-                                 filters.type === 'Rent' ? 'Long-term and Short-term Luxury Leases' : 
-                                 filters.type === 'Buy' ? 'Premium Homes Available for Purchase' : 'Discover Your Dream Home'}
-                            </p>
-                        </motion.div>
-                    </div>
-                </section>
 
-                {/* Filters */}
-                <section className="filters-section">
+            <div className={`properties-page ${language === 'ar' ? 'rtl' : ''}`}>
+                <div className="properties-hero">
                     <div className="container">
-                        <div className="filters-bar">
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            {t('findDreamProperty')}
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            {t('browseExclusive')}
+                        </motion.p>
+                    </div>
+                </div>
+
+                <div className="container">
+                    <div className="properties-content">
+                        {/* Search and Filter Bar */}
+                        <div className="search-filter-bar">
                             <div className="search-box">
                                 <Search size={20} />
                                 <input 
                                     type="text" 
-                                    placeholder="Search by area, project, or property name..."
+                                    placeholder={t('searchPlaceholder')}
                                     value={searchTerm}
                                     onChange={handleSearchChange}
                                 />
                             </div>
                             <button 
-                                className="filter-toggle"
+                                className={`filter-toggle ${showFilters ? 'active' : ''}`}
                                 onClick={() => setShowFilters(!showFilters)}
                             >
-                                <Filter size={18} />
-                                Filters
+                                <Filter size={20} />
+                                <span>{language === 'ar' ? 'تصفية' : 'Filters'}</span>
                             </button>
                         </div>
-                        
-                        {showFilters && (
-                            <motion.div 
-                                className="filters-panel"
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                            >
-                                <div className="filter-group">
-                                    <label>Property Type</label>
-                                    <select name="type" value={filters.type} onChange={handleFilterChange}>
-                                        <option value="">All Types</option>
-                                        <option value="Buy">Buy</option>
-                                        <option value="Rent">Rent</option>
-                                    </select>
-                                </div>
-                                <div className="filter-group">
-                                    <label>Bedrooms</label>
-                                    <select name="bedrooms" value={filters.bedrooms} onChange={handleFilterChange}>
-                                        <option value="">Any</option>
-                                        <option value="1">1 Bedroom</option>
-                                        <option value="2">2 Bedrooms</option>
-                                        <option value="3">3 Bedrooms</option>
-                                        <option value="4">4 Bedrooms</option>
-                                        <option value="5">5+ Bedrooms</option>
-                                    </select>
-                                </div>
-                                <div className="filter-group">
-                                    <label>Status</label>
-                                    <select name="status" value={filters.status} onChange={handleFilterChange}>
-                                        <option value="">All</option>
-                                        <option value="Off-Plan">Off-Plan</option>
-                                        <option value="Ready">Ready</option>
-                                    </select>
-                                </div>
-                                <div className="filter-group">
-                                    <label>Min Price (AED)</label>
-                                    <select name="minPrice" value={filters.minPrice} onChange={handleFilterChange}>
-                                        <option value="">Any</option>
-                                        <option value="500000">500,000</option>
-                                        <option value="1000000">1,000,000</option>
-                                        <option value="2000000">2,000,000</option>
-                                        <option value="5000000">5,000,000</option>
-                                    </select>
-                                </div>
-                                <div className="filter-group">
-                                    <label>Max Price (AED)</label>
-                                    <select name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange}>
-                                        <option value="">Any</option>
-                                        <option value="1000000">1,000,000</option>
-                                        <option value="2000000">2,000,000</option>
-                                        <option value="5000000">5,000,000</option>
-                                        <option value="10000000">10,000,000+</option>
-                                    </select>
-                                </div>
-                                <button className="clear-filters" onClick={clearFilters}>
-                                    <X size={16} /> Clear
-                                </button>
-                            </motion.div>
-                        )}
-                    </div>
-                </section>
 
-                {/* Properties Grid */}
-                <section className="properties-grid-section">
-                    <div className="container">
+                        {/* Expandable Filters */}
+                        <motion.div 
+                            className="filters-panel"
+                            initial={false}
+                            animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
+                            style={{ overflow: 'hidden' }}
+                        >
+                            <div className="filters-grid">
+                                <div className="filter-group">
+                                    <label>{language === 'ar' ? 'النوع' : 'Property Type'}</label>
+                                    <select name="type" value={filters.type} onChange={handleFilterChange}>
+                                        <option value="">{t('allTypes')}</option>
+                                        <option value="Buy">{language === 'ar' ? 'شراء' : 'Buy'}</option>
+                                        <option value="Rent">{language === 'ar' ? 'إيجار' : 'Rent'}</option>
+                                    </select>
+                                </div>
+                                <div className="filter-group">
+                                    <label>{language === 'ar' ? 'الحالة' : 'Status'}</label>
+                                    <select name="status" value={filters.status} onChange={handleFilterChange}>
+                                        <option value="">{t('allStatus')}</option>
+                                        <option value="Ready">{t('available')}</option>
+                                        <option value="Off-Plan">{t('offPlan')}</option>
+                                        <option value="Sold">{t('sold')}</option>
+                                    </select>
+                                </div>
+                                <div className="filter-group">
+                                    <label>{language === 'ar' ? 'غرف النوم' : 'Bedrooms'}</label>
+                                    <select name="bedrooms" value={filters.bedrooms} onChange={handleFilterChange}>
+                                        <option value="">{t('anyBedrooms')}</option>
+                                        {[1, 2, 3, 4, 5].map(num => (
+                                            <option key={num} value={num}>{num}+</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="filter-group">
+                                    <label>{t('minPrice')}</label>
+                                    <input type="number" name="minPrice" placeholder="0" value={filters.minPrice} onChange={handleFilterChange} />
+                                </div>
+                                <div className="filter-group">
+                                    <label>{t('maxPrice')}</label>
+                                    <input type="number" name="maxPrice" placeholder={language === 'ar' ? 'أي' : 'Any'} value={filters.maxPrice} onChange={handleFilterChange} />
+                                </div>
+                                <button className="clear-all" onClick={clearFilters}>
+                                    <X size={16} /> {t('clearAll')}
+                                </button>
+                            </div>
+                        </motion.div>
+
+                        <div className="results-header">
+                            <p>{filteredProperties.length} {t('propertiesFound')}</p>
+                        </div>
+
                         {loading ? (
                             <div className="loading-state">
                                 <div className="loading-spinner"></div>
-                                <p>Loading properties...</p>
+                                <p>{t('loadingProps')}</p>
                             </div>
                         ) : filteredProperties.length === 0 ? (
                             <div className="empty-state">
                                 <Search size={48} className="empty-icon" />
-                                <h3>No Properties Found</h3>
-                                <p>We couldn't find any properties matching "{searchTerm}". Try different keywords or adjust your filters.</p>
-                                <button className="btn-clear-search" onClick={() => setSearchTerm('')}>Clear Search</button>
+                                <h3>{t('noPropertiesFound')}</h3>
+                                <p>{t('noMatchFor')} "{searchTerm}". {t('adjustFilters')}</p>
+                                <button className="btn-clear-search" onClick={() => setSearchTerm('')}>{t('clearSearch')}</button>
                             </div>
                         ) : (
                             <div className="properties-grid">
@@ -320,49 +298,48 @@ const Properties = () => {
                                     <motion.div 
                                         key={property.id}
                                         className="property-card"
-                                        initial={{ opacity: 0, y: 30 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.05 }}
+                                        layout
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
                                     >
                                         <Link to={`/property/${property.id}`}>
                                             <div className="property-image">
-                                                <img 
-                                                    src={getPropertyImage(property, index)} 
-                                                    alt={property.title}
-                                                />
-                                                {property.status === 'Off-Plan' && (
-                                                    <span className="property-badge">Off-Plan</span>
-                                                )}
-                                                {property.status === 'Ready' && property.type === 'Buy' && (
-                                                    <span className="property-badge ready">For Sale</span>
-                                                )}
-                                                {property.type === 'Rent' && (
-                                                    <span className="property-badge rent">For Rent</span>
-                                                )}
+                                                <img src={getPropertyImage(property, index)} alt={getContent(property, 'title')} />
+                                                <span className={`property-badge ${property.status?.toLowerCase()}`}>
+                                                    {getContent(property, 'status')}
+                                                </span>
                                             </div>
                                             <div className="property-info">
-                                                <div className="property-price">{property.price}</div>
-                                                <h3 className="property-title">{property.title}</h3>
-                                                <div className="property-location">
-                                                    <MapPin size={14} />
-                                                    <span>{property.location}</span>
+                                                <div className="property-price">
+                                                    {property.price_numeric > 0 
+                                                        ? `${language === 'ar' ? 'د.إ ' : 'AED '} ${property.price_numeric.toLocaleString()}`
+                                                        : (language === 'ar' ? 'تواصل لمعرفة السعر' : 'Contact for Details')
+                                                    }
                                                 </div>
-                                                <div className="property-details">
+                                                <h3 className="property-title">{getContent(property, 'title')}</h3>
+                                                <div className="property-location">
+                                                    <MapPin size={16} />
+                                                    <span>{getContent(property, 'location')}</span>
+                                                </div>
+                                                <div className="property-features">
                                                     {property.bedrooms > 0 && (
-                                                        <span className="property-detail">
-                                                            <Bed size={14} /> {property.bedrooms} Beds
-                                                        </span>
+                                                        <div className="feature">
+                                                            <Bed size={16} />
+                                                            <span>{property.bedrooms} {t('beds')}</span>
+                                                        </div>
                                                     )}
                                                     {property.bathrooms > 0 && (
-                                                        <span className="property-detail">
-                                                            <Bath size={14} /> {property.bathrooms} Baths
-                                                        </span>
+                                                        <div className="feature">
+                                                            <Bath size={16} />
+                                                            <span>{property.bathrooms} {t('baths')}</span>
+                                                        </div>
                                                     )}
-                                                    <span className="property-detail">
-                                                        <Square size={14} /> {property.area}
-                                                    </span>
+                                                    <div className="feature">
+                                                        <Square size={16} />
+                                                        <span>{property.area ? property.area.replace(/sqft/i, t('sqft')) : ''}</span>
+                                                    </div>
                                                 </div>
+                                                <button className="view-btn">{t('viewDetails')}</button>
                                             </div>
                                         </Link>
                                     </motion.div>
@@ -370,342 +347,20 @@ const Properties = () => {
                             </div>
                         )}
                     </div>
-                </section>
+                </div>
             </div>
-
-            <style>{`
-                .properties-page {
-                    padding-top: 45px;
-                }
-                
-                /* Page Hero */
-                .page-hero {
-                    position: relative;
-                    height: 50vh;
-                    min-height: 400px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-align: center;
-                }
-                
-                .page-hero-bg {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-size: cover;
-                    background-position: center;
-                }
-                
-                .page-hero-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(180deg, rgba(8,8,8,0.7) 0%, rgba(8,8,8,0.9) 100%);
-                }
-                
-                .page-hero .container {
-                    position: relative;
-                    z-index: 10;
-                }
-                
-                .page-title {
-                    font-family: 'Cormorant Garamond', serif;
-                    font-size: 4.5rem;
-                    font-weight: 300;
-                    color: #fff;
-                    margin-bottom: 20px;
-                    letter-spacing: 0.05em;
-                }
-                
-                .page-subtitle {
-                    font-family: 'DM Sans', sans-serif;
-                    font-size: 1rem;
-                    color: #A8A8A8;
-                    letter-spacing: 0.3em;
-                    text-transform: uppercase;
-                }
-                
-                /* Filters */
-                .filters-section {
-                    background: #0a0a0a;
-                    padding: 30px 0;
-                    border-bottom: 1px solid rgba(255,255,255,0.05);
-                }
-                
-                .filters-bar {
-                    display: flex;
-                    gap: 15px;
-                }
-                
-                .search-box {
-                    flex: 1;
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    padding: 14px 20px;
-                    background: rgba(255,255,255,0.05);
-                    border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 8px;
-                }
-                
-                .search-box svg {
-                    color: #B8960C;
-                }
-                
-                .search-box input {
-                    flex: 1;
-                    background: none;
-                    border: none;
-                    outline: none;
-                    color: #fff;
-                    font-size: 1rem;
-                }
-                
-                .search-box input::placeholder {
-                    color: #666;
-                }
-                
-                .filter-toggle {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    padding: 14px 25px;
-                    background: rgba(255,255,255,0.05);
-                    border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 8px;
-                    color: #fff;
-                    font-size: 0.9rem;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-                
-                .filter-toggle:hover {
-                    border-color: #B8960C;
-                }
-                
-                .filters-panel {
-                    display: flex;
-                    gap: 20px;
-                    margin-top: 20px;
-                    padding: 25px;
-                    background: rgba(255,255,255,0.02);
-                    border-radius: 12px;
-                    flex-wrap: wrap;
-                }
-                
-                .filter-group {
-                    flex: 1;
-                    min-width: 150px;
-                }
-                
-                .filter-group label {
-                    display: block;
-                    font-size: 11px;
-                    color: #A8A8A8;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    margin-bottom: 8px;
-                }
-                
-                .filter-group select {
-                    width: 100%;
-                    padding: 12px 15px;
-                    background: rgba(255,255,255,0.05);
-                    border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 6px;
-                    color: #fff;
-                    font-size: 0.95rem;
-                    cursor: pointer;
-                }
-                
-                .filter-group select:focus {
-                    outline: none;
-                    border-color: #B8960C;
-                }
-                
-                .clear-filters {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 12px 20px;
-                    background: none;
-                    border: 1px solid rgba(255,255,255,0.2);
-                    border-radius: 6px;
-                    color: #A8A8A8;
-                    cursor: pointer;
-                    align-self: flex-end;
-                }
-                
-                .clear-filters:hover {
-                    color: #fff;
-                    border-color: #fff;
-                }
-                
-                /* Properties Grid */
-                .properties-grid-section {
-                    padding: 60px 0;
-                    background: #080808;
-                    min-height: 60vh;
-                }
-                
-                .properties-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 30px;
-                }
-                
-                .property-card {
-                    background: #111111;
-                    border: 1px solid transparent;
-                    overflow: hidden;
-                    transition: all 0.4s ease;
-                }
-                
-                .property-card:hover {
-                    border-color: #B8960C;
-                    transform: translateY(-10px);
-                }
-                
-                .property-image {
-                    position: relative;
-                    height: 260px;
-                    overflow: hidden;
-                }
-                
-                .property-image img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    transition: transform 0.6s ease;
-                }
-                
-                .property-card:hover .property-image img {
-                    transform: scale(1.08);
-                }
-                
-                .property-badge {
-                    position: absolute;
-                    top: 20px;
-                    left: 20px;
-                    background: #B8960C;
-                    color: #080808;
-                    padding: 6px 14px;
-                    font-size: 10px;
-                    font-weight: 600;
-                    letter-spacing: 1px;
-                    text-transform: uppercase;
-                }
-                
-                .property-badge.ready {
-                    background: #22c55e;
-                    color: #fff;
-                }
-
-                .property-badge.rent {
-                    background: #3b82f6;
-                    color: #fff;
-                }
-                
-                .property-info {
-                    padding: 28px;
-                }
-                
-                .property-price {
-                    font-family: 'Cormorant Garamond', serif;
-                    font-size: 1.6rem;
-                    font-weight: 500;
-                    color: #B8960C;
-                    margin-bottom: 8px;
-                }
-                
-                .property-title {
-                    font-family: 'Cormorant Garamond', serif;
-                    font-size: 1.2rem;
-                    font-weight: 400;
-                    color: #fff;
-                    margin-bottom: 10px;
-                    line-height: 1.4;
-                }
-                
-                .property-location {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    color: #888;
-                    font-size: 13px;
-                    margin-bottom: 18px;
-                }
-                
-                .property-details {
-                    display: flex;
-                    gap: 20px;
-                    padding-top: 18px;
-                    border-top: 1px solid rgba(255,255,255,0.08);
-                }
-                
-                .property-detail {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    color: #888;
-                    font-size: 12px;
-                }
-                
-                /* Loading */
-                .loading-state, .empty-state {
-                    text-align: center;
-                    padding: 80px 20px;
-                }
-                
-                .loading-spinner {
-                    width: 50px;
-                    height: 50px;
-                    border: 2px solid rgba(184,150,12,0.2);
-                    border-top-color: #B8960C;
-                    border-radius: 50%;
-                    margin: 0 auto 20px;
-                    animation: spin 1s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                
-                .loading-state p, .empty-state p {
-                    color: #888;
-                }
-                
-                .empty-state h3 {
-                    font-family: 'Cormorant Garamond', serif;
-                    font-size: 1.8rem;
-                    color: #fff;
-                    margin-bottom: 10px;
-                }
-                
-                @media (max-width: 1024px) {
-                    .properties-grid {
-                        grid-template-columns: repeat(2, 1fr);
-                    }
-                }
-                
-                @media (max-width: 600px) {
-                    .properties-grid {
-                        grid-template-columns: 1fr;
-                    }
-                    .page-title {
-                        font-size: 3rem;
-                    }
+            
+            <style dangerouslySetInnerHTML={{ __html: `
+                .properties-page.rtl {
+                    direction: rtl;
                 }
                 .empty-icon {
                     color: #444;
                     margin-bottom: 20px;
+                    display: block;
+                    margin-left: auto;
+                    margin-right: auto;
                 }
-                
                 .btn-clear-search {
                     margin-top: 20px;
                     background: none;
@@ -717,12 +372,53 @@ const Properties = () => {
                     font-size: 0.9rem;
                     transition: all 0.3s ease;
                 }
-                
                 .btn-clear-search:hover {
                     background: #B8960C;
                     color: #080808;
                 }
-            `}</style>
+                .filters-grid {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 20px;
+                    background: rgba(255,255,255,0.02);
+                    padding: 20px;
+                    border-radius: 12px;
+                    align-items: flex-end;
+                }
+                .filter-group {
+                    flex: 1;
+                    min-width: 150px;
+                }
+                .filter-group label {
+                    display: block;
+                    font-size: 12px;
+                    color: #888;
+                    margin-bottom: 8px;
+                }
+                .filter-group select, .filter-group input {
+                    width: 100%;
+                    padding: 10px;
+                    background: #222;
+                    border: 1px solid #333;
+                    color: #fff;
+                    border-radius: 6px;
+                }
+                .clear-all {
+                    padding: 10px 20px;
+                    background: none;
+                    border: 1px solid #444;
+                    color: #888;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .clear-all:hover {
+                    color: #fff;
+                    border-color: #666;
+                }
+            `}} />
         </>
     );
 };

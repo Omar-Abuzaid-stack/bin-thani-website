@@ -406,26 +406,6 @@
     font-size: 1.5rem;
 }
 
-@media (max-width: 1024px) {
-    .detail-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .detail-sidebar {
-        position: static;
-    }
-    
-    .calculator-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
-@media (max-width: 768px) {
-    .property-header {
-        flex-direction: column;
-    }
-    
-    .main-image {
-        height: 300px;
-    }
-}
+
+

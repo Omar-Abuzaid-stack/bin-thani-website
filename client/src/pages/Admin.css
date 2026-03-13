@@ -356,38 +356,4 @@
     color: #000;
 }
 
-@media (max-width: 768px) {
-    .category-buttons {
-        grid-template-columns: 1fr;
-    }
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    .form-group.full-width {
-        grid-column: span 1;
-    }
-    .inventory-header {
-        display: none;
-    }
-    .inventory-item {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 20px;
-    }
-    .inventory-item span {
-        display: block;
-        width: 100%;
-    }
-    .inventory-item span::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #888;
-        margin-right: 10px;
-        display: inline-block;
-        min-width: 100px;
-    }
-    .actions {
-        margin-top: 10px;
-        justify-content: flex-end;
-    }
-}
+
