@@ -46,6 +46,36 @@
     transform: translateY(-2px);
 }
 
+.admin-view-toggle {
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-btn {
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #888;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+    color: #fff;
+}
+
+.toggle-btn.active {
+    background: #B8960C;
+    color: #000;
+}
+
 /* Inventory List */
 .inventory-list {
     background: #111;

@@ -16,36 +16,43 @@ const Admin = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingProperty, setEditingProperty] = useState(null);
-    const [adminStep, setAdminStep] = useState(1);
-    const [category, setCategory] = useState('');
+    const [adminView, setAdminView] = useState('Properties'); // 'Properties' or 'Projects'
     
     const [formData, setFormData] = useState({
         title: '', title_ar: '',
         developer: '', developer_ar: '',
-        project: '', project_ar: '',
         location: '', location_ar: '',
         price: '', price_numeric: '',
-        type: 'Buy',
+        type: 'Apartment', // Default to Apartment for props
         bedrooms: '', bathrooms: '',
-        area: '', status: 'Ready',
+        area: '', status: 'Available',
         description: '', description_ar: '',
         amenities: '',
         images: '',
-        payment_plan: '', payment_plan_ar: '',
-        rent_period: 'Yearly'
     });
 
     useEffect(() => {
-        fetchProperties();
-    }, []);
+        fetchData();
+    }, [adminView]);
 
-    const fetchProperties = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(getApiUrl('properties'));
-            setProperties(res.data);
+            const typeParam = adminView === 'Projects' ? 'Off-Plan Project' : '';
+            const url = typeParam 
+                ? `${getApiUrl('properties')}?type=${encodeURIComponent(typeParam)}`
+                : getApiUrl('properties');
+            
+            const res = await axios.get(url);
+            
+            // If viewing properties, filter OUT projects
+            const filtered = adminView === 'Properties' 
+                ? res.data.filter(p => p.type !== 'Off-Plan Project')
+                : res.data;
+                
+            setProperties(filtered);
         } catch (err) {
-            console.error('Error fetching properties:', err);
+            console.error('Error fetching data:', err);
         }
         setLoading(false);
     };
@@ -58,57 +65,52 @@ const Admin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let priceVal = formData.price.replace('AED', '').replace('/', '').trim();
-            const formattedPrice = formData.type === 'Rent' ? `AED ${priceVal} / ${formData.rent_period}` : `AED ${priceVal}`;
-
             const dataToSubmit = {
                 ...formData,
-                price: formattedPrice,
-                price_numeric: parseInt(priceVal.replace(/[^0-9]/g, '')) || 0,
+                type: adminView === 'Projects' ? 'Off-Plan Project' : formData.type,
+                price_numeric: parseInt(String(formData.price_numeric).replace(/[^0-9]/g, '')) || 0,
                 amenities: typeof formData.amenities === 'string' ? JSON.stringify(formData.amenities.split(',').map(s => s.trim())) : formData.amenities,
                 images: typeof formData.images === 'string' ? JSON.stringify(formData.images.split('\n').filter(url => url.trim() !== '')) : formData.images
             };
 
             if (editingProperty) {
                 await axios.put(`${getApiUrl('property')}?id=${editingProperty.id}`, dataToSubmit);
-                alert(language === 'ar' ? 'تم تحديث العقار بنجاح!' : 'Property updated successfully!');
+                alert('Success: Updated!');
             } else {
                 await axios.post(getApiUrl('properties'), dataToSubmit);
-                alert(language === 'ar' ? 'تم إضافة العقار بنجاح!' : 'Property added successfully!');
+                alert('Success: Added!');
             }
             
             setShowForm(false);
             setEditingProperty(null);
-            fetchProperties();
+            fetchData();
         } catch (err) {
-            alert(language === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving property');
+            alert('Error: ' + err.message);
         }
     };
 
     const handleEdit = (property) => {
         let ams = '';
-        try { const a = JSON.parse(property.amenities); ams = Array.isArray(a) ? a.join(', ') : ''; } catch(e) { ams = property.amenities || ''; }
+        try { const a = typeof property.amenities === 'string' ? JSON.parse(property.amenities) : property.amenities; ams = Array.isArray(a) ? a.join(', ') : ''; } catch(e) { ams = ''; }
         let imgs = '';
-        try { const i = JSON.parse(property.images); imgs = Array.isArray(i) ? i.join('\n') : ''; } catch(e) { imgs = property.images || ''; }
+        try { const i = typeof property.images === 'string' ? JSON.parse(property.images) : property.images; imgs = Array.isArray(i) ? i.join('\n') : ''; } catch(e) { imgs = ''; }
 
         setFormData({
             ...property,
             amenities: ams,
-            images: imgs,
-            price: (property.price || '').replace('AED', '').split('/')[0].trim()
+            images: imgs
         });
         setEditingProperty(property);
-        setCategory(property.type);
         setShowForm(true);
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm(language === 'ar' ? 'هل أنت متأكد من حذف هذا العقار؟' : 'Are you sure you want to delete this property?')) {
+        if (window.confirm('Delete this item?')) {
             try {
                 await axios.delete(`${getApiUrl('property')}?id=${id}`);
-                fetchProperties();
+                fetchData();
             } catch (err) {
-                alert(language === 'ar' ? 'خطأ في الحذف' : 'Error deleting property');
+                alert('Delete failed');
             }
         }
     };
@@ -118,11 +120,35 @@ const Admin = () => {
             <div className="container">
                 <header className="admin-header">
                     <div>
-                        <h1>{language === 'ar' ? 'إدارة العقارات' : 'Property Management'}</h1>
-                        <p>{language === 'ar' ? 'إجمالي العقارات:' : 'Total Properties:'} {properties.length}</p>
+                        <h1>{language === 'ar' ? 'لوحة التحكم' : 'Bin Thani Admin'}</h1>
+                        <p>{adminView === 'Properties' ? 'Managing Listings' : 'Managing Developer Projects'}</p>
                     </div>
-                    <button className="btn-add" onClick={() => { setEditingProperty(null); setShowForm(true); }}>
-                        <Plus size={20} /> {language === 'ar' ? 'إضافة عقار' : 'Add Property'}
+                    <div className="admin-view-toggle">
+                        <button 
+                            className={`toggle-btn ${adminView === 'Properties' ? 'active' : ''}`}
+                            onClick={() => setAdminView('Properties')}
+                        >
+                            Properties
+                        </button>
+                        <button 
+                            className={`toggle-btn ${adminView === 'Projects' ? 'active' : ''}`}
+                            onClick={() => setAdminView('Projects')}
+                        >
+                            Developer Projects
+                        </button>
+                    </div>
+                    <button className="btn-add" onClick={() => { 
+                        setEditingProperty(null); 
+                        setFormData({
+                            title: '', title_ar: '', developer: '', developer_ar: '',
+                            location: '', location_ar: '', price: '', price_numeric: '',
+                            type: adminView === 'Properties' ? 'Apartment' : 'Off-Plan Project',
+                            bedrooms: '', bathrooms: '', area: '', status: 'Available',
+                            description: '', description_ar: '', amenities: '', images: '',
+                        });
+                        setShowForm(true); 
+                    }}>
+                        <Plus size={20} /> Add {adminView === 'Projects' ? 'Project' : 'Property'}
                     </button>
                 </header>
 
@@ -130,77 +156,115 @@ const Admin = () => {
                     <div className="form-modal">
                         <div className="form-container">
                             <div className="form-header">
-                                <h2>{editingProperty ? (language === 'ar' ? 'تعديل العقار' : 'Edit Property') : (language === 'ar' ? 'إضافة عقار جديد' : 'Add New Property')}</h2>
+                                <h2>{editingProperty ? 'Edit' : 'Add New'} {adminView === 'Projects' ? 'Project' : 'Property'}</h2>
                                 <button className="close-btn" onClick={() => setShowForm(false)}><X size={24} /></button>
                             </div>
                             
                             <form onSubmit={handleSubmit} className="property-form">
                                 <div className="form-grid">
                                     <div className="form-group">
-                                        <label>{language === 'ar' ? 'اسم العقار (EN)' : 'Property Name (EN)'}</label>
+                                        <label>Name (English)</label>
                                         <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <label>اسم العقار (AR)</label>
-                                        <input type="text" name="title_ar" value={formData.title_ar} onChange={handleInputChange} required />
+                                        <label>Name (Arabic)</label>
+                                        <input type="text" name="title_ar" value={formData.title_ar} onChange={handleInputChange} />
                                     </div>
+                                    
                                     <div className="form-group">
-                                        <label>{language === 'ar' ? 'المطور (EN)' : 'Developer (EN)'}</label>
+                                        <label>Developer (English)</label>
                                         <input type="text" name="developer" value={formData.developer} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <label>المطور (AR)</label>
+                                        <label>Developer (Arabic)</label>
                                         <input type="text" name="developer_ar" value={formData.developer_ar} onChange={handleInputChange} />
                                     </div>
+
                                     <div className="form-group">
-                                        <label>{language === 'ar' ? 'الموقع (EN)' : 'Location (EN)'}</label>
+                                        <label>Location (English)</label>
                                         <input type="text" name="location" value={formData.location} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <label>الموقع (AR)</label>
+                                        <label>Location (Arabic)</label>
                                         <input type="text" name="location_ar" value={formData.location_ar} onChange={handleInputChange} />
                                     </div>
+
                                     <div className="form-group">
-                                        <label>{language === 'ar' ? 'السعر (بالدرهم)' : 'Price (AED Numeric)'}</label>
-                                        <input type="text" name="price" value={formData.price} onChange={handleInputChange} required />
+                                        <label>Price Display (e.g. AED 1.2M)</label>
+                                        <input type="text" name="price" value={formData.price} onChange={handleInputChange} />
                                     </div>
                                     <div className="form-group">
-                                        <label>{language === 'ar' ? 'النوع' : 'Type'}</label>
-                                        <select name="type" value={formData.type} onChange={handleInputChange}>
-                                            <option value="Buy">{language === 'ar' ? 'للبيع' : 'Buy'}</option>
-                                            <option value="Rent">{language === 'ar' ? 'للايجار' : 'Rent'}</option>
-                                        </select>
+                                        <label>Price Numeric (e.g. 1200000)</label>
+                                        <input type="number" name="price_numeric" value={formData.price_numeric} onChange={handleInputChange} />
                                     </div>
+
+                                    {adminView === 'Properties' && (
+                                        <>
+                                            <div className="form-group">
+                                                <label>Property Type</label>
+                                                <select name="type" value={formData.type} onChange={handleInputChange}>
+                                                    <option value="Apartment">Apartment</option>
+                                                    <option value="Villa">Villa</option>
+                                                    <option value="Townhouse">Townhouse</option>
+                                                    <option value="Penthouse">Penthouse</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Status</label>
+                                                <select name="status" value={formData.status} onChange={handleInputChange}>
+                                                    <option value="Available">Available</option>
+                                                    <option value="Off-Plan">Off-Plan</option>
+                                                    <option value="New">New</option>
+                                                    <option value="Sold">Sold</option>
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {adminView === 'Projects' && (
+                                        <div className="form-group">
+                                            <label>Project Status</label>
+                                            <select name="status" value={formData.status} onChange={handleInputChange}>
+                                                <option value="Available">Available</option>
+                                                <option value="Off-Plan Project / Available">Off-Plan Project / Available</option>
+                                                <option value="Under Construction">Under Construction</option>
+                                                <option value="Upcoming">Upcoming</option>
+                                            </select>
+                                        </div>
+                                    )}
+
                                     <div className="form-group">
-                                        <label>{language === 'ar' ? 'الحالة' : 'Status'}</label>
-                                        <select name="status" value={formData.status} onChange={handleInputChange}>
-                                            <option value="Ready">{language === 'ar' ? 'جاهز' : 'Ready'}</option>
-                                            <option value="Off-Plan">{language === 'ar' ? 'على الخريطة' : 'Off-Plan'}</option>
-                                            <option value="Sold">{language === 'ar' ? 'مباع' : 'Sold'}</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{language === 'ar' ? 'غرف النوم' : 'Bedrooms'}</label>
+                                        <label>Bedrooms</label>
                                         <input type="number" name="bedrooms" value={formData.bedrooms} onChange={handleInputChange} />
                                     </div>
+                                    {adminView === 'Properties' && (
+                                        <div className="form-group">
+                                            <label>Bathrooms</label>
+                                            <input type="number" name="bathrooms" value={formData.bathrooms} onChange={handleInputChange} />
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 <div className="form-group full-width">
-                                    <label>{language === 'ar' ? 'الوصف (EN)' : 'Description (EN)'}</label>
+                                    <label>Description (English)</label>
                                     <textarea name="description" value={formData.description} onChange={handleInputChange} rows="3"></textarea>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>الوصف (AR)</label>
+                                    <label>Description (Arabic)</label>
                                     <textarea name="description_ar" value={formData.description_ar} onChange={handleInputChange} rows="3"></textarea>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>{language === 'ar' ? 'الصور (رابط واحد لكل سطر)' : 'Images (One URL per line)'}</label>
+                                    <label>Amenities (Comma separated)</label>
+                                    <textarea name="amenities" value={formData.amenities} onChange={handleInputChange} placeholder="Gym, Pool, Security" rows="2"></textarea>
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Images (One URL per line)</label>
                                     <textarea name="images" value={formData.images} onChange={handleInputChange} rows="3"></textarea>
                                 </div>
                                 
                                 <div className="form-actions">
-                                    <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>{language === 'ar' ? 'إلغاء' : 'Cancel'}</button>
-                                    <button type="submit" className="btn-submit">{editingProperty ? (language === 'ar' ? 'تحديث' : 'Update') : (language === 'ar' ? 'إضافة' : 'Add')}</button>
+                                    <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
+                                    <button type="submit" className="btn-submit">{editingProperty ? 'Update' : 'Save'}</button>
                                 </div>
                             </form>
                         </div>
@@ -209,22 +273,22 @@ const Admin = () => {
 
                 <div className="admin-content">
                     {loading ? (
-                        <div className="loading">{t('loadingProps')}</div>
+                        <div className="loading">Loading...</div>
                     ) : (
                         <div className="inventory-list">
                             <div className="inventory-header">
-                                <span>{language === 'ar' ? 'العنوان' : 'Title'}</span>
-                                <span>{language === 'ar' ? 'المطور' : 'Developer'}</span>
-                                <span>{language === 'ar' ? 'السعر' : 'Price'}</span>
-                                <span>{language === 'ar' ? 'الحالة' : 'Status'}</span>
-                                <span>{language === 'ar' ? 'إجراءات' : 'Actions'}</span>
+                                <span>Item</span>
+                                <span>Developer</span>
+                                <span>Price</span>
+                                <span>Status</span>
+                                <span>Actions</span>
                             </div>
                             {properties.map(prop => (
                                 <div key={prop.id} className="inventory-item">
-                                    <span className="prop-title">{language === 'ar' ? (prop.title_ar || prop.title) : prop.title}</span>
-                                    <span>{language === 'ar' ? (prop.developer_ar || prop.developer) : prop.developer}</span>
-                                    <span className="prop-price">{prop.price ? prop.price.replace('AED', language === 'ar' ? 'د.إ' : 'AED') : ''}</span>
-                                    <span><span className={`status-pill ${prop.status.toLowerCase()}`}>{language === 'ar' ? t(prop.status.toLowerCase()) || prop.status : prop.status}</span></span>
+                                    <span className="prop-title">{prop.title}</span>
+                                    <span>{prop.developer}</span>
+                                    <span className="prop-price">{prop.price}</span>
+                                    <span><span className={`status-pill ${prop.status.toLowerCase().split(' ')[0]}`}>{prop.status}</span></span>
                                     <div className="actions">
                                         <button className="edit-btn" onClick={() => handleEdit(prop)}><Edit2 size={16} /></button>
                                         <button className="delete-btn" onClick={() => handleDelete(prop.id)}><Trash2 size={16} /></button>

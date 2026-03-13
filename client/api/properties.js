@@ -88,9 +88,9 @@ export default async function handler(req, res) {
         let query = 'properties?select=*&order=created_at.desc';
         const filters = [];
         
-        if (type) filters.push(`type=eq.${type}`);
-        if (status) filters.push(`status=eq.${status}`);
-        if (developer) filters.push(`developer=eq.${developer}`);
+        if (type) filters.push(`type=eq.${encodeURIComponent(type)}`);
+        if (status) filters.push(`status=eq.${encodeURIComponent(status)}`);
+        if (developer) filters.push(`developer=eq.${encodeURIComponent(developer)}`);
         if (bedrooms) filters.push(`bedrooms=gte.${bedrooms}`);
         if (location) {
             const search = decodeURIComponent(location);

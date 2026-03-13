@@ -51,17 +51,20 @@ export default async function handler(req, res) {
         // Group projects by developer
         const grouped = data.reduce((acc, project) => {
             let devName = project.developer ? project.developer.trim() : 'Other';
+            
+            // Normalize Maryam Island
             if (devName.toLowerCase().includes('maryam island')) {
                 devName = 'Eagle Hills';
-                project.title = 'Maryam Island';
-                project.location = 'Al Khan, Sharjah';
             } else if (project.title && project.title.toLowerCase().includes('maryam island')) {
                 devName = 'Eagle Hills';
-                project.title = 'Maryam Island';
-                project.location = 'Al Khan, Sharjah';
             }
 
             if (!ALLOWED_DEVELOPERS.includes(devName)) return acc;
+
+            // CRITICAL: Separation Logic
+            // Only include in the Developers Section if it's explicitly an "Off-Plan Project"
+            // This prevents regular properties from cluttering the developer's project catalog.
+            if (project.type !== 'Off-Plan Project') return acc;
 
             if (!acc[devName]) acc[devName] = [];
             
@@ -100,15 +103,12 @@ export default async function handler(req, res) {
                 features: parsedAmenities
             };
             
-            // Deduplicate Maryam Island exactly
-            if (newProject.name === 'Maryam Island') {
-                const existing = acc[devName].find(p => p.name === 'Maryam Island');
-                if (!existing) {
-                    acc[devName].push(newProject);
-                }
-            } else {
+            // Deduplicate project titles under the same developer
+            const existing = acc[devName].find(p => p.name === newProject.name);
+            if (!existing) {
                 acc[devName].push(newProject);
             }
+            
             return acc;
         }, {});
 
