@@ -92,7 +92,9 @@ const Developers = () => {
                                         )}
                                         <div className="dev-tagline compact-tagline"><i>{getContent(dev, 'tagline')}</i></div>
                                         <button className="dev-expand-btn">
-                                            {isExpanded ? t('closeProjects', 'Close Projects') : t('viewDevProjects', 'View Projects')}
+                                            {isExpanded 
+                                              ? (language === 'ar' ? 'إغلاق المشاريع' : 'Close Projects') 
+                                              : (language === 'ar' ? 'عرض المشاريع' : 'View Projects')}
                                         </button>
                                     </div>
 
