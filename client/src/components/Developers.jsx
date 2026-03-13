@@ -6,29 +6,7 @@ import './Developers.css';
 
 const GOLD_GRADIENT_FALLBACK = (lang) => `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23c9a84c'/%3E%3Cstop offset='50%25' stop-color='%23f9d57d'/%3E%3Cstop offset='100%25' stop-color='%23a07c33'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='Arial, sans-serif' font-size='26'%3E${lang === 'ar' ? '%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9%20%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AA%D9%88%D9%81%D8%B1%D8%A9' : 'Image%20Unavailable'}%3C/text%3E%3C/svg%3E`;
 
-const PROJECT_IMAGE_OVERRIDES = {
-    'Alef Group': {
-        'Al Mamsha': 'https://www.alefgroup.ae/wp-content/uploads/2024/08/Al-Mamsha-web-banner.jpg',
-        'Al Mamsha Sharjah': 'https://www.alefgroup.ae/wp-content/uploads/2024/08/Al-Mamsha-web-banner.jpg',
-        'Hayyan Villas': 'https://www.alefgroup.ae/wp-content/uploads/2024/09/hayyan-by-alef.jpg'
-    },
-    'Arada': {
-        'Masaar': 'https://mybayutcdn.bayut.com/mybayut/wp-content/uploads/Cover-Aerial-view-of-Masaar-ar29082021.jpg',
-        'Aljada': 'https://www.arada.com/wp-content/uploads/2023/05/arada-completes-the-boulevard-a-600-home-residential-complex-at-sharjah-megaproject-aljada-3.jpg',
-        'Aljada Sharjah': 'https://www.arada.com/wp-content/uploads/2023/05/arada-completes-the-boulevard-a-600-home-residential-complex-at-sharjah-megaproject-aljada-3.jpg',
-        'Aljada Residences': 'https://www.arada.com/wp-content/uploads/2023/05/arada-completes-the-boulevard-a-600-home-residential-complex-at-sharjah-megaproject-aljada-3.jpg',
-        'Jouri Hills': 'https://aradawebcontent.blob.core.windows.net/arada-com/2022/06/jouri-hills-hero.jpg',
-        'Naseej District': 'https://aradawebcontent.blob.core.windows.net/arada-com/2021/10/hero-banner-new.jpg'
-    },
-    'Tiger Group': {
-        'Tiger Sky Tower': 'https://s3.amazonaws.com/attachments.website.tigergroup.ae/5c5d546c-a0f6-43ba-90de-7cb2409baec1',
-        'Joud Tower': 'https://keltandcorealty.com/wp-content/uploads/2025/11/Joud-Tower-at-Al-Mamzar-__Sharjah-Al-Batha-3-1.webp'
-    },
-    'Ajmal Makan': {
-        'Ajmal Makan': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg',
-        'City Hamriyah': 'https://ajmalmakan.com/wp-content/uploads/2024/11/resized_AJMAL-MAKAN-CITY-3D-111-scaled.jpg'
-    }
-};
+// Images are fetched dynamically from Supabase
 
 const Developers = () => {
     const { t, language, getContent } = useLanguage();
@@ -54,12 +32,6 @@ const Developers = () => {
     }, []);
 
     const resolveProjectImage = (developer, projectName = '', imageUrl, projectType = '') => {
-        const devSpec = PROJECT_IMAGE_OVERRIDES[developer];
-        if (devSpec) {
-            const match = Object.entries(devSpec).find(([key]) => (projectName || '').toLowerCase().includes(key.toLowerCase()));
-            if (match) return match[1];
-            return Object.values(devSpec)[0];
-        }
         return imageUrl || GOLD_GRADIENT_FALLBACK(language);
     };
 
