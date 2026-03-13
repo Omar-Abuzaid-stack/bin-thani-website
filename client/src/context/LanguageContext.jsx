@@ -449,7 +449,19 @@ export const LanguageProvider = ({ children }) => {
             'Alef Group': 'مجموعة ألف',
             'Tiger Group': 'مجموعة تايجر',
             'Tiger Sky Tower': 'تايجر سكاي تاور',
-            'Joud Tower': 'برج جود'
+            'Joud Tower': 'برج جود',
+            'Sharjah Garden City': 'مدينة الشارقة للحدائق',
+            'Al Tay Hills': 'تلال الطي',
+            'Qasba Mall & Towers': 'مول وأبراج القصبة',
+            'Hawa Residence': 'هاوا ريزيدنس',
+            'District 11': 'ديستريكت 11',
+            'Al Belaida, Sharjah': 'البليدة، الشارقة',
+            'Al Tay, Sharjah': 'الطي، الشارقة',
+            'Qasba Canal, Sharjah': 'قناة القصبة، الشارقة',
+            'Sheikh Mohammed bin Zayed Road, Sharjah': 'شارع الشيخ محمد بن زايد، الشارقة',
+            'Manazil': 'منازل',
+            'Al Marwan': 'المروان',
+            'Shoumous': 'شموس'
         };
         if (commonMap[val]) return commonMap[val];
     }

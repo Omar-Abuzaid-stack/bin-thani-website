@@ -12,11 +12,10 @@ const DEVELOPER_META = {
     "Tiger Group": { logo: "https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/l3fff94wkmjmzxrlvslh?ik-sanitizeSvg=true", tagline: "Iconic High-Rise Developments" },
     "BEEAH": { logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs8v9v-qdEmtWhcfCWFmylvhkrpuxpCH3Ngw&s", tagline: "Pioneering a Sustainable Quality of Life" },
     "Ajmal Makan": { logo: "https://manage.tanamiproperties.com/Developer/Developer_Logo/148/Thumb/148.png", tagline: "Masters of Waterfront Living" },
-    "Shoumous": { logo: "https://www.shoumous.com/wp-content/uploads/2022/12/logo-HD1.png", tagline: "Excellence in Community Living" },
-    "Altay Hills": { logo: "https://static.tildacdn.one/tild3331-3630-4365-b834-663032323632/Al_Tay_Hills_Brochur.png", tagline: "Luxury Forest Living" },
-    "Al Tay Hills": { logo: "https://static.tildacdn.one/tild3331-3630-4365-b834-663032323632/Al_Tay_Hills_Brochur.png", tagline: "Luxury Forest Living" },
-    "Manazil": { logo: "https://images.seeklogo.com/logo-png/49/2/manazel-logo-png_seeklogo-492290.png", tagline: "Elevating Urban Living" },
-    "Al Marwan": { logo: "https://www.palmera.realestate/wp-content/uploads/2025/06/Al-Marwan-Developments-Logo.png", tagline: "Pioneering Infrastructure & Development" },
+    "Shoumous": { logo: "https://www.shoumous.com/wp-content/uploads/2022/12/logo-HD1.png", tagline: "A Gated Luxury Villa Community" },
+    "Al Tay Hills": { logo: "https://static.tildacdn.one/tild3331-3630-4365-b834-663032323632/Al_Tay_Hills_Brochur.png", tagline: "UAE's Most Prestigious Hill Community" },
+    "Manazil": { logo: "https://images.seeklogo.com/logo-png/49/2/manazel-logo-png_seeklogo-492290.png", tagline: "Urban Living Along Sharjah's Iconic Canal" },
+    "Al Marwan": { logo: "https://www.palmera.realestate/wp-content/uploads/2025/06/Al-Marwan-Developments-Logo.png", tagline: "Elevated Living in the Heart of Tilal City" },
     "Tilal Properties": { logo: "https://tilaluae.com/wp-content/uploads/2021/04/Tilal-Logo.png", tagline: "Developing Sharjah's Vision" },
     "Emaar": { logo: "https://properties.emaar.com/wp-content/uploads/2018/11/emaar-logo.png", tagline: "Pioneering Global Lifestyles" },
     "Aldar": { logo: "https://www.aldar.com/assets/images/aldar-logo.svg", tagline: "Shape the Life You Want" },
@@ -25,7 +24,7 @@ const DEVELOPER_META = {
     "Nakheel": { logo: "https://www.nakheel.com/images/nakheel-logo.svg", tagline: "Building Icons" }
 };
 
-const ALLOWED_DEVELOPERS = ["Arada", "Eagle Hills", "Tiger Group", "Ajmal Makan", "Alef Group", "BEEAH", "Shoumous", "Al Tay Hills", "Altay Hills", "Manazil", "Al Marwan"];
+const ALLOWED_DEVELOPERS = ["Arada", "Eagle Hills", "Tiger Group", "Ajmal Makan", "Alef Group", "BEEAH", "Shoumous", "Al Tay Hills", "Manazil", "Al Marwan"];
 
 async function supabaseCall(endpoint) {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
