@@ -167,6 +167,13 @@ const Contact = () => {
                     .contact-grid { grid-template-columns: 1fr; gap: 50px; }
                     .contact-form-card { padding: 30px; }
                 }
+                @media (max-width: 768px) {
+                    .page-title { font-size: 2.5rem; }
+                    .contact-hero { height: auto; padding: 120px 0 60px; }
+                    .contact-section { padding: 60px 0; }
+                    .submit-btn { padding: 15px; font-size: 0.9rem; }
+                    .info-block { flex-direction: column; gap: 10px; text-align: center; align-items: center; }
+                }
             `}} />
         </>
     );

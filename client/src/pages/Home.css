@@ -722,3 +722,67 @@ section {
     color: var(--text-white);
     margin: 0;
 }
+
+/* ========================================
+   RESPONSIVE (MOBILE)
+   ======================================== */
+@media (max-width: 991px) {
+    .hero-title {
+        font-size: 3.5rem;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding-top: 60px;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .search-bar {
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .search-input-wrapper {
+        width: 100%;
+    }
+    
+    .search-btn {
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-card-luxury {
+        height: 350px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .properties-grid {
+        grid-template-columns: 1fr;
+    }
+}

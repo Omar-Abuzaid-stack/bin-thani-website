@@ -184,6 +184,16 @@ const About = () => {
                     .values-grid { grid-template-columns: 1fr; }
                     .page-title { font-size: 3rem; }
                 }
+                @media (max-width: 768px) {
+                    .page-title { font-size: 2.5rem; }
+                    .founder-text .name { font-size: 2.5rem; }
+                    .img-wrapper img { height: 400px; }
+                    .stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+                    .stat-num { font-size: 2.5rem; }
+                    .cta-card h2 { font-size: 2.22rem; }
+                    .btns { flex-direction: column; }
+                    .founder-contact { flex-direction: column; gap: 15px; }
+                }
             `}} />
         </>
     );

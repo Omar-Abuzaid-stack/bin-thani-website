@@ -512,3 +512,59 @@
 
 
 
+
+/* ========================================
+   RESPONSIVE (MOBILE)
+   ======================================== */
+@media (max-width: 991px) {
+    .proj-modal-body {
+        grid-template-columns: 1fr;
+    }
+    
+    .proj-modal-hero-text h2 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dev-section-title {
+        font-size: 2.2rem;
+    }
+    
+    .dev-card-glass {
+        padding: 20px;
+    }
+    
+    .developers-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dev-projects-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .proj-modal-content {
+        max-height: 95vh;
+    }
+    
+    .proj-modal-hero {
+        height: 250px;
+    }
+    
+    .proj-modal-hero-text {
+        left: 20px;
+        bottom: 20px;
+    }
+    
+    .proj-modal-hero-text h2 {
+        font-size: 1.8rem;
+    }
+    
+    .proj-modal-body {
+        padding: 25px 20px;
+    }
+    
+    .proj-features-list {
+        grid-template-columns: 1fr;
+    }
+}
