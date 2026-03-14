@@ -11,6 +11,45 @@ const PORT = process.env.PORT || 5001;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
+// Telegram Config
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8730614252:AAGuV_V_iHfdmVrfiol_6fCuHCrTEboYyjw';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+// Helper function to send Telegram notification
+async function sendTelegramNotification(lead) {
+    if (!TELEGRAM_CHAT_ID) {
+        console.log('⚠️ TELEGRAM_CHAT_ID not set, skipping notification');
+        return;
+    }
+
+    const message = `
+🏠 *New Lead Received!*
+👤 *Name:* ${lead.name || 'N/A'}
+📞 *Phone:* ${lead.phone || 'N/A'}
+📧 *Email:* ${lead.email || 'N/A'}
+🎯 *Interest:* ${lead.interest || 'N/A'}
+📍 *Area:* ${lead.area || 'N/A'}
+💰 *Budget:* ${lead.budget || 'N/A'}
+💬 *Message:* ${lead.message || 'N/A'}
+🌐 *Source:* ${lead.source || 'Website'}
+`.trim();
+
+    try {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        console.log('✅ Telegram notification sent');
+    } catch (err) {
+        console.error('❌ Failed to send Telegram notification:', err.message);
+    }
+}
+
 // Helper function for Supabase REST calls
 async function supabaseCall(endpoint, method = 'GET', body = null) {
     const options = {
@@ -211,21 +250,27 @@ app.get('/api/developers', async (req, res) => {
 
 // Post Lead
 app.post('/api/leads', async (req, res) => {
-    const { name, email, phone, interest, area, budget, requirements, source } = req.body;
+    // Robustly handle different field names (message vs requirements)
+    const { name, email, phone, interest, area, budget, message, requirements, source } = req.body;
+    const finalMessage = message || requirements || 'Not provided';
     
     try {
         const leadData = {
-            name,
-            email,
-            phone,
-            interest,
-            area,
-            budget,
-            message: requirements,
-            source: source || 'chatbot'
+            name: name || 'Not provided',
+            email: email || 'Not provided',
+            phone: phone || 'Not provided',
+            interest: interest || 'Not provided',
+            area: area || 'Not provided',
+            budget: budget || 'Not provided',
+            message: finalMessage,
+            source: source || 'Website'
         };
 
+        console.log('📤 Sending Lead to Supabase:', JSON.stringify(leadData, null, 2));
+
         const data = await supabaseCall('leads', 'POST', leadData);
+        
+        // Telegram notifications are now handled directly by Supabase triggers for 24/7 reliability.
         
         // Also try Google Sheets if configured
         try {
@@ -253,7 +298,7 @@ app.post('/api/leads', async (req, res) => {
                                 interest,
                                 area,
                                 budget,
-                                requirements || ''
+                                finalMessage
                             ]]
                         }
                     });
@@ -280,20 +325,45 @@ app.get('/api/admin/leads', async (req, res) => {
     }
 });
 
+// Get chat logs (for admin)
+app.get('/api/admin/chats', async (req, res) => {
+    try {
+        const data = await supabaseCall('chat_messages?select=*&order=created_at.desc');
+        res.json(data || []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get visitor logs (for admin)
+app.get('/api/admin/visitors', async (req, res) => {
+    try {
+        const data = await supabaseCall('visitor_logs?select=*&order=created_at.desc&limit=100');
+        res.json(data || []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Get stats for admin
 app.get('/api/admin/stats', async (req, res) => {
     try {
-        const leads = await supabaseCall('leads?select=id');
-        const properties = await supabaseCall('properties?select=views');
+        const [leads, properties, visitors] = await Promise.all([
+            supabaseCall('leads?select=id'),
+            supabaseCall('properties?select=views'),
+            supabaseCall('visitor_logs?select=id')
+        ]);
         
         const totalViews = properties?.reduce((sum, p) => sum + (p.views || 0), 0) || 0;
         
         res.json({
             totalLeads: leads?.length || 0,
             totalProperties: properties?.length || 0,
+            totalVisitors: visitors?.length || 0,
             totalViews
         });
     } catch (err) {
+        console.error('Stats error:', err.message);
         res.status(500).json({ error: err.message });
     }
 });
@@ -335,12 +405,16 @@ Help users find properties, answer questions about the UAE real estate market (S
         
         // Store chat message in database
         const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+        const { userName, userEmail, userPhone } = req.body;
         
         try {
             await supabaseCall('chat_messages', 'POST', {
                 session_id: sessionId || `session_${Date.now()}`,
                 user_message: lastUserMessage,
-                bot_response: botResponse.content
+                bot_response: botResponse.content,
+                user_name: userName || null,
+                user_email: userEmail || null,
+                user_phone: userPhone || null
             });
             console.log('Chat message saved to database');
         } catch (saveErr) {
@@ -438,8 +512,23 @@ app.delete('/api/developers', async (req, res) => {
 });
 
 // Track page view
-app.post('/api/track', (req, res) => {
-    res.json({ success: true });
+app.post('/api/track', async (req, res) => {
+    const { path, referrer } = req.body;
+    const userAgent = req.headers['user-agent'];
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+    try {
+        await supabaseCall('visitor_logs', 'POST', {
+            page_path: path || 'unknown',
+            user_agent: userAgent,
+            ip_address: ip,
+            referrer: referrer || 'direct'
+        });
+        res.json({ success: true });
+    } catch (err) {
+        console.log('Failed to track visitor:', err.message);
+        res.json({ success: false, error: err.message });
+    }
 });
 
 app.listen(PORT, () => {

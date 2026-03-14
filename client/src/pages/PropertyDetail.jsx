@@ -75,8 +75,8 @@ const PropertyDetail = () => {
                 name: enquiryForm.name,
                 email: enquiryForm.email,
                 phone: enquiryForm.phone,
-                requirements: enquiryForm.message,
-                interest: 'Buy',
+                message: enquiryForm.message,
+                interest: property?.title ? `Interest in: ${property.title}` : 'Buy',
                 area: property?.location,
                 budget: property?.price,
                 source: 'property_enquiry'

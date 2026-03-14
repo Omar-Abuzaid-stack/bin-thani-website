@@ -16,6 +16,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { LoadingScreen, CookieBanner } from './components/Extras';
 import './components/Layout.css';
 import './components/Extras.css';
+import PageTracker from './components/PageTracker';
 
 function App() {
   const handleDeveloperClick = (developerName) => {
@@ -27,6 +28,7 @@ function App() {
       <LanguageProvider>
         <Router>
           <ScrollToTop />
+          <PageTracker />
           <div className="app">
             <LoadingScreen />
             <Navbar />

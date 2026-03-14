@@ -27,7 +27,10 @@ const Chatbot = () => {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showLeadForm, setShowLeadForm] = useState(() => localStorage.getItem('chat_show_lead_form') === 'true');
-    const [leadInfo, setLeadInfo] = useState({ name: '', email: '', requirements: '' });
+    const [leadInfo, setLeadInfo] = useState(() => {
+        const saved = localStorage.getItem('chat_lead_info');
+        return saved ? JSON.parse(saved) : { name: '', email: '', phone: '' };
+    });
     const [userMessageCount, setUserMessageCount] = useState(() => parseInt(localStorage.getItem('chat_message_count') || '0', 10));
     
     const [sessionId] = useState(() => {
@@ -62,7 +65,10 @@ const Chatbot = () => {
             const res = await axios.post('/api/chat', { 
                 messages: newMessages.slice(-20), 
                 sessionId,
-                language // Pass language to backend if needed
+                language, // Pass language to backend if needed
+                userName: leadInfo.name,
+                userEmail: leadInfo.email,
+                userPhone: leadInfo.phone
             });
             setMessages(prev => [...prev, res.data]);
 
@@ -82,6 +88,9 @@ const Chatbot = () => {
         e.preventDefault();
         try {
             await axios.post('/api/leads', { ...leadInfo, source: 'chatbot' });
+            localStorage.setItem('chat_lead_info', JSON.stringify(leadInfo));
+            localStorage.setItem('chat_show_lead_form', 'false');
+            
             const successMsg = language === 'ar' 
                 ? `شكراً لك ${leadInfo.name}! لقد تم استلام بياناتك وسنتواصل معك قريباً.`
                 : `Thank you ${leadInfo.name}! I've saved your details and we will contact you shortly.`;
@@ -131,7 +140,7 @@ const Chatbot = () => {
                             <h4>{t('getInTouch')}</h4>
                             <input type="text" placeholder={t('yourName')} value={leadInfo.name} onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })} />
                             <input type="email" placeholder={t('emailAddress')} value={leadInfo.email} onChange={(e) => setLeadInfo({ ...leadInfo, email: e.target.value })} />
-                            <input type="tel" placeholder={t('phoneNumber')} value={leadInfo.requirements} onChange={(e) => setLeadInfo({ ...leadInfo, requirements: e.target.value })} />
+                            <input type="tel" placeholder={t('phoneNumber')} value={leadInfo.phone} onChange={(e) => setLeadInfo({ ...leadInfo, phone: e.target.value })} />
                             <button onClick={handleLeadSubmit} className="btn-primary">{t('submit')}</button>
                             <button className="skip-btn" onClick={() => setShowLeadForm(false)}>{t('skip')}</button>
                         </div>
