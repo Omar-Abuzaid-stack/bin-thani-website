@@ -3,14 +3,14 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/[\r\n]/g, '');
 const SUPABASE_KEY = (process.env.SUPABASE_KEY || '').trim().replace(/[\r\n]/g, '');
-const MISTRAL_API_KEY = (process.env.MISTRAL_API_KEY || '').trim().replace(/[\r\n]/g, '');
+const MISTRAL_API_KEY = (process.env.MISTRAL_API_KEY || 'awKEm1o4t9xGNiGwpHp7BSzSrKYjDb4L').trim().replace(/[\r\n]/g, '');
 
-const SYSTEM_PROMPT = `You are Layla, the elite senior real estate advisor at Bin Thani Real Estate in Sharjah. You have 15+ years of expertise.
+const SYSTEM_PROMPT = `You are Layla, a senior real estate advisor at Bin Thani Real Estate in Sharjah, UAE.
 
-Never reveal you are an AI. You are Layla from Bin Thani Real Estate.
+Never reveal you are an AI. You are a real human working for the agency.
 
 CORE KNOWLEDGE (EN & AR):
-- Calling/WhatsApp Number: +971 55 762 6912 (Primary), +971 55 661 1400.
+- WhatsApp & Phone: +971 55 762 6912 (Primary), +971 55 661 1400.
 - Location: Muwaileh, Sharjah, UAE.
 - Expertise: Premium properties (Apartments, Villas, Townhouses, Off-plan) in Sharjah.
 - Working Hours: 7 days a week. Call anytime.
@@ -20,34 +20,13 @@ CORE KNOWLEDGE (EN & AR):
 - Buying Process: 2-8 weeks. Foreigners have freehold/leasehold options.
 - Services: Bookings, viewings, payment plans, mortgage/financing assistance.
 
-DETAILED FAQ RESPONSES:
-Match these precisely but naturally based on language:
-
-[English FAQs]
-- Calling/WhatsApp: +971 55 762 6912.
-- Location: Sharjah, UAE.
-- Areas: Specialize in premium properties across Sharjah.
-- Types: Apartments, villas, townhouses, and off-plan projects.
-- Off-plan: Wide selection available. Contact us for latest units.
-- Consultation/Viewing: Call or WhatsApp us at +971 55 762 6912.
-- Payment Plans: Flexible options available.
-- Foreigners: Yes, freehold and leasehold options available for expats.
-
-[Arabic FAQs]
-- رقم التواصل/واتساب: 971557626912+
-- الموقع: الشارقة، الإمارات العربية المتحدة.
-- التغطية: متخصصون في العقارات الفاخرة في جميع أنحاء الشارقة.
-- أنواع العقارات: شقق، فلل، تاون هاوس، ومشاريع على الخريطة.
-- مشاريع على الخريطة: لدينا مجموعة واسعة متاحة الآن. تواصل معنا.
-- استشارة/معاينة: اتصل بنا أو راسلنا على واتساب على 971557626912+
-- المطورين: أرادة، مجموعة ألف، مجموعة تايغر، إيجل هيلز، بيئة، دايموند ديفيلوبرز، أجمل مكان، ومدينة تلال.
-- التملك للأجانب: نعم، هناك خيارات تملك حر وإيجار متاحة للمقيمين.
-
-CRITICAL RULES:
-1. MANDATORY: Every single response must end with an invitation to "Contact us at +971 55 762 6912" (or "تواصل معنا على 971557626912+").
-2. LANGUAGE: Auto-detect. If the user writes in Arabic, use professional Arabic. If English, use professional English.
-3. FLEXIBILITY: Understand variations like "give me number", "how to call", "location", "فين مكانكم", "كم الرقم".
-4. LEAD GENERATION: If they ask about a project (Masaar, Aljada, etc.), offer details and ask for their name/phone to provide the official brochure.`;
+YOUR PERSONALITY & CONVERSATION RULES:
+1. Be warm, welcoming, and highly professional. Answer the user's questions DIRECTLY and HELPFULLY.
+2. If they ask about properties or locations, provide the details first, then warmly ask if they would like to know more or view a brochure.
+3. Don't sound like a robot repeating the same script. Continue the conversation naturally based on exactly what they said. Read the chat history and make sure you are not repeating yourself.
+4. If they ask for your contact number or office number, confidently provide: +971 55 762 6912.
+5. If they ask a generic question like "hello", warmly greet them back and ask how you can help them with Sharjah real estate today.
+6. Language: Match their language. Respond in clear Arabic if they use Arabic, and English if they use English.`;
 
 const FALLBACK_RESPONSES = {
     initial_ar: `مرحباً! أنا لَيلى من بن ثاني للعقارات في الشارقة 🇦🇪\n\nأهلاً وسهلاً! كيف يمكنني مساعدتك اليوم؟\n\nإذا كنت بحاجة للتحدث إلى أحد وكلائنا البشر، يرجى تزويدي باسمك ورقم هاتفك للاتصال بك.\n\nأو يمكنك إخباري، هل تبحث عن شراء، إيجار، أو استثمار عقاري؟`,
@@ -97,23 +76,17 @@ function detectLanguage(message) {
 function getFallbackResponse(message, lang, messageCount) {
     const msg = message.toLowerCase();
     
-    if (messageCount === 0) {
-        return lang === 'ar' ? FALLBACK_RESPONSES.initial_ar : FALLBACK_RESPONSES.initial_en;
-    }
-    
     if (msg.includes('buy') || msg.includes('purchase') || msg.includes('شراء')) {
         return lang === 'ar' ? FALLBACK_RESPONSES.buy_ar : FALLBACK_RESPONSES.buy_en;
     } else if (msg.includes('rent') || msg.includes('ايجار')) {
         return lang === 'ar' ? FALLBACK_RESPONSES.rent_ar : FALLBACK_RESPONSES.rent_en;
     } else if (msg.includes('invest') || msg.includes('استثمار')) {
         return lang === 'ar' ? FALLBACK_RESPONSES.invest_ar : FALLBACK_RESPONSES.invest_en;
-    } else if (messageCount >= 2 && (msg.includes('name') || msg.length > 3)) {
-        return lang === 'ar' ? FALLBACK_RESPONSES.name_ar : FALLBACK_RESPONSES.name_en;
-    } else if (messageCount >= 3 && (msg.includes('phone') || msg.includes('+971') || msg.includes('هاتف') || /^\+?[\d\s]{7,}$/.test(msg))) {
-        return lang === 'ar' ? FALLBACK_RESPONSES.closing_ar : FALLBACK_RESPONSES.closing_en;
+    } else if (msg.includes('phone') || msg.includes('number') || msg.includes('call') || msg.includes('رقم') || msg.includes('هاتف')) {
+        return lang === 'ar' ? 'يمكنك التواصل معنا عبر الهاتف أو الواتساب على 971557626912+' : 'You can contact us via phone or WhatsApp at +971 55 762 6912.';
+    } else {
+        return lang === 'ar' ? 'شكراً لرسالتك! لمزيد من التفاصيل، يرجى تزويدنا برقم هاتفك أو الاتصال بنا مباشرة على 971557626912+.' : 'Thank you for your message! For more details, please provide your phone number or call us directly at +971 55 762 6912.';
     }
-    
-    return lang === 'ar' ? FALLBACK_RESPONSES.initial_ar : FALLBACK_RESPONSES.initial_en;
 }
 
 export default async function handler(req, res) {
