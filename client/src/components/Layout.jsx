@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Phone, Mail, Instagram, Facebook, Twitter, MessageCircle, Globe } from 'lucide-react';
+import { Menu, X, Phone, Mail, Instagram, Facebook, Twitter, MessageCircle, Globe, MapPin } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -87,7 +87,7 @@ export const Footer = () => {
                     <p><Phone size={16} /> <a href="tel:+971557626912" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 762 6912</a></p>
                     <p><Phone size={16} /> <a href="tel:+971556611400" style={{ color: 'inherit', textDecoration: 'none' }}>+971 55 661 1400</a></p>
                     <p><Mail size={16} /> <a href="mailto:info@binthanirealestate.ae" style={{ color: 'inherit', textDecoration: 'none' }}>info@binthanirealestate.ae</a></p>
-                    <p>{language === 'ar' ? 'مويلحة الشارقة، الإمارات العربية المتحدة' : 'Muwaileh Sharjah, United Arab Emirates'}</p>
+                    <p><MapPin size={16} /> <a href="https://maps.app.goo.gl/SugwwCEYqJiPKSoA9?g_st=iw" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>{language === 'ar' ? 'مويلحة الشارقة، الإمارات العربية المتحدة' : 'Muwaileh Sharjah, United Arab Emirates'}</a></p>
                 </div>
                 <div className="footer-newsletter">
                     <h4>{t('newsletter')}</h4>

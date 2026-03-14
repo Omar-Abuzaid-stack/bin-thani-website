@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit2, Trash2, X, Check, Search, MapPin, Building, Home, Layout, List, Key, MoreHorizontal, Globe, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Check, Search, MapPin, Building, Home, Layout, List, Key, MoreHorizontal, Globe, Eye, EyeOff, LogOut, Users, Activity, MessageSquare, Mail, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import './Admin.css';
 
@@ -12,14 +12,23 @@ const getApiUrl = (endpoint) => {
 
 const Admin = () => {
     const { t, language } = useLanguage();
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('adminAuth') === 'true');
+    const [passwordInput, setPasswordInput] = useState('');
+    const [loginError, setLoginError] = useState('');
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingProperty, setEditingProperty] = useState(null);
-    const [adminView, setAdminView] = useState('Properties'); // 'Properties', 'Projects', or 'Developers'
+    const [adminView, setAdminView] = useState('Properties'); // 'Properties', 'Projects', 'Developers', 'Leads', 'Chats', 'Visitors'
     const [propertyTab, setPropertyTab] = useState('buy'); // 'buy' or 'rent'
     const [developers, setDevelopers] = useState([]);
     const [schemaError, setSchemaError] = useState(null);
+    
+    // New Features
+    const [leads, setLeads] = useState([]);
+    const [chats, setChats] = useState([]);
+    const [visitors, setVisitors] = useState([]);
+    const [stats, setStats] = useState({ totalLeads: 0, totalProperties: 0, totalVisitors: 0, totalViews: 0 });
     
     const [formData, setFormData] = useState({
         title: '', title_ar: '',
@@ -45,13 +54,54 @@ const Admin = () => {
     const [editingDeveloper, setEditingDeveloper] = useState(null);
 
     useEffect(() => {
+        fetchStats();
         if (adminView === 'Developers') {
             fetchDevelopers();
+        } else if (adminView === 'Leads') {
+            fetchLeads();
+        } else if (adminView === 'Chats') {
+            fetchChats();
+        } else if (adminView === 'Visitors') {
+            fetchVisitors();
         } else {
             fetchData();
             fetchDevelopers(); // Also fetch devs for dropdowns
         }
     }, [adminView, propertyTab]);
+
+    const fetchStats = async () => {
+        try {
+            const res = await axios.get(getApiUrl('admin/stats'));
+            setStats(res.data);
+        } catch (err) { }
+    };
+
+    const fetchLeads = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(getApiUrl('admin/leads'));
+            setLeads(res.data);
+        } catch (err) { }
+        setLoading(false);
+    };
+
+    const fetchChats = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(getApiUrl('admin/chats'));
+            setChats(res.data);
+        } catch (err) { }
+        setLoading(false);
+    };
+
+    const fetchVisitors = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(getApiUrl('admin/visitors'));
+            setVisitors(res.data);
+        } catch (err) { }
+        setLoading(false);
+    };
 
     const fetchDevelopers = async () => {
         try {
@@ -203,9 +253,81 @@ const Admin = () => {
         }
     };
 
+    const handleLogin = (e) => {
+        e.preventDefault();
+        if (passwordInput === 'BinThani2024') {
+            localStorage.setItem('adminAuth', 'true');
+            setIsAuthenticated(true);
+            setLoginError('');
+            setPasswordInput('');
+        } else {
+            setLoginError('Invalid password');
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('adminAuth');
+        setIsAuthenticated(false);
+    };
+
+    if (!isAuthenticated) {
+        return (
+            <div className={`admin-page login-page ${language === 'ar' ? 'rtl' : ''}`}>
+                <div className="login-container">
+                    <h1>Admin Login</h1>
+                    <form onSubmit={handleLogin} className="login-form">
+                        <div className="form-group">
+                            <label>Password</label>
+                            <input 
+                                type="password" 
+                                value={passwordInput} 
+                                onChange={(e) => setPasswordInput(e.target.value)} 
+                                required 
+                                autoFocus
+                            />
+                        </div>
+                        {loginError && <div className="error-message">{loginError}</div>}
+                        <button type="submit" className="btn-submit">Login</button>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={`admin-page ${language === 'ar' ? 'rtl' : ''}`}>
             <div className="container">
+                <div className="admin-stats-overview">
+                    <div className="stat-card">
+                        <Users size={20} />
+                        <div className="stat-info">
+                            <span className="stat-value">{stats.totalLeads}</span>
+                            <span className="stat-label">Leads</span>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <Home size={20} />
+                        <div className="stat-info">
+                            <span className="stat-value">{stats.totalProperties}</span>
+                            <span className="stat-label">Properties</span>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <Activity size={20} />
+                        <div className="stat-info">
+                            <span className="stat-value">{stats.totalVisitors}</span>
+                            <span className="stat-label">Visitors</span>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <Eye size={20} />
+                        <div className="stat-info">
+                            <span className="stat-value">{stats.totalViews}</span>
+                            <span className="stat-label">Views</span>
+                        </div>
+                    </div>
+                </div>
+
                 {schemaError && (
                     <div className="schema-warning">
                         <div className="warning-content">
@@ -220,11 +342,17 @@ const Admin = () => {
                 <header className="admin-header">
                     <div>
                         <h1>{language === 'ar' ? 'لوحة التحكم' : 'Bin Thani Admin'}</h1>
-                        <p>
-                            {adminView === 'Properties' ? 'Managing Property Listings' : 
-                             adminView === 'Projects' ? 'Managing Off-Plan Projects' : 
-                             'Managing Developer Partners'}
-                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <p style={{ margin: 0 }}>
+                                {adminView === 'Properties' ? 'Managing Property Listings' : 
+                                 adminView === 'Projects' ? 'Managing Off-Plan Projects' : 
+                                 adminView === 'Developers' ? 'Managing Developer Partners' :
+                                 adminView + ' Management'}
+                            </p>
+                            <button onClick={handleLogout} className="btn-logout" title="Logout">
+                                <LogOut size={16} /> Logout
+                            </button>
+                        </div>
                     </div>
                     <div className="admin-view-toggle">
                         <button 
@@ -244,6 +372,24 @@ const Admin = () => {
                             onClick={() => setAdminView('Developers')}
                         >
                             Developers
+                        </button>
+                        <button 
+                            className={`toggle-btn ${adminView === 'Leads' ? 'active' : ''}`}
+                            onClick={() => setAdminView('Leads')}
+                        >
+                            Leads
+                        </button>
+                        <button 
+                            className={`toggle-btn ${adminView === 'Chats' ? 'active' : ''}`}
+                            onClick={() => setAdminView('Chats')}
+                        >
+                            Chats
+                        </button>
+                        <button 
+                            className={`toggle-btn ${adminView === 'Visitors' ? 'active' : ''}`}
+                            onClick={() => setAdminView('Visitors')}
+                        >
+                            Activity
                         </button>
                     </div>
 
@@ -270,8 +416,9 @@ const Admin = () => {
                         </div>
                     )}
 
-                    <button className="btn-add" onClick={() => { 
-                        if (adminView === 'Developers') {
+                    {(adminView === 'Properties' || adminView === 'Projects' || adminView === 'Developers') && (
+                        <button className="btn-add" onClick={() => { 
+                            if (adminView === 'Developers') {
                             setEditingDeveloper(null);
                             setDevFormData({ name: '', name_ar: '', logo: '', tagline: '', tagline_ar: '', visible: true });
                             setShowForm(true);
@@ -292,6 +439,7 @@ const Admin = () => {
                     }}>
                         <Plus size={20} /> Add {adminView === 'Projects' ? 'Project' : adminView === 'Properties' ? 'Property' : 'Developer'}
                     </button>
+                    )}
                 </header>
 
                 {showForm && (
@@ -532,11 +680,67 @@ const Admin = () => {
                 )}
 
                 <div className="admin-content">
-                    {loading && adminView !== 'Developers' ? (
+                    {loading && adminView !== 'Developers' && adminView !== 'Leads' && adminView !== 'Chats' && adminView !== 'Visitors' ? (
                         <div className="loading">Loading...</div>
                     ) : (
                         <div className="inventory-list">
-                            {adminView === 'Developers' ? (
+                            {adminView === 'Leads' ? (
+                                <>
+                                    <div className="inventory-header" style={{ gridTemplateColumns: '1.5fr 1.5fr 1.5fr 1fr 1fr' }}>
+                                        <span>Name</span>
+                                        <span>Contact Info</span>
+                                        <span>Interest</span>
+                                        <span>Source</span>
+                                        <span>Date</span>
+                                    </div>
+                                    {leads.map(lead => (
+                                        <div key={lead.id} className="inventory-item" style={{ gridTemplateColumns: '1.5fr 1.5fr 1.5fr 1fr 1fr' }}>
+                                            <span className="prop-title">{lead.name}</span>
+                                            <span className="contact-info-cell">
+                                                <div><Mail size={12} style={{marginRight: 5}} />{lead.email}</div>
+                                                <div style={{ opacity: 0.7 }}><Phone size={12} style={{marginRight: 5}} />{lead.phone}</div>
+                                            </span>
+                                            <span style={{ fontSize: '0.9rem' }}>{lead.interest || lead.message}</span>
+                                            <span className="source-badge">{lead.source}</span>
+                                            <span>{new Date(lead.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : adminView === 'Chats' ? (
+                                <>
+                                    <div className="inventory-header" style={{ gridTemplateColumns: '1fr 2fr 2fr 1fr' }}>
+                                        <span>Session</span>
+                                        <span>User Message</span>
+                                        <span>Bot Response</span>
+                                        <span>Time</span>
+                                    </div>
+                                    {chats.map(chat => (
+                                        <div key={chat.id} className="inventory-item" style={{ gridTemplateColumns: '1fr 2fr 2fr 1fr' }}>
+                                            <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{chat.session_id?.substring(0, 8)}...</span>
+                                            <span className="user-msg">{chat.user_message}</span>
+                                            <span className="bot-msg">{chat.bot_response}</span>
+                                            <span>{new Date(chat.created_at).toLocaleTimeString()}</span>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : adminView === 'Visitors' ? (
+                                <>
+                                    <div className="inventory-header" style={{ gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr' }}>
+                                        <span>Page Path</span>
+                                        <span>IP Address</span>
+                                        <span>Referrer</span>
+                                        <span>Time</span>
+                                    </div>
+                                    {visitors.map(v => (
+                                        <div key={v.id} className="inventory-item" style={{ gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr' }}>
+                                            <span className="prop-title" style={{ fontSize: '0.9rem' }}>{v.page_path}</span>
+                                            <span>{v.ip_address}</span>
+                                            <span style={{ opacity: 0.6 }}>{v.referrer}</span>
+                                            <span>{new Date(v.created_at).toLocaleString()}</span>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : adminView === 'Developers' ? (
                                 <>
                                     <div className="inventory-header" style={{ gridTemplateColumns: '80px 2fr 2fr 1fr 120px' }}>
                                         <span>Logo</span>

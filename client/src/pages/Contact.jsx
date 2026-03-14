@@ -59,7 +59,7 @@ const Contact = () => {
                                     <div className="icon"><MapPin size={24} /></div>
                                     <div className="content">
                                         <h3>{t('visitUs')}</h3>
-                                        <p>{t('sharjahOffice')}</p>
+                                        <p><a href="https://maps.app.goo.gl/SugwwCEYqJiPKSoA9?g_st=iw" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>{t('sharjahOffice')}</a></p>
                                     </div>
                                 </div>
                                 <div className="info-block">
@@ -120,7 +120,7 @@ const Contact = () => {
                     </div>
                 </section>
 
-                <div className="map-embed-section">
+                <div className="map-embed-section" style={{ position: 'relative' }}>
                     <iframe 
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14434.78635798485!2d55.456381!3d25.2976527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f5f33f66f917b%3A0xffef002f2323cc9a!2sMuwaileh%2C%20Sharjah%2C%20UAE!5e0!3m2!1sen!2sae!4v1709214567890!5m2!1sen!2sae" 
                         width="100%" 
@@ -129,6 +129,12 @@ const Contact = () => {
                         allowFullScreen="" 
                         loading="lazy"
                     ></iframe>
+                    <div style={{ position: 'absolute', bottom: '20px', left: language === 'ar' ? '20px' : 'auto', right: language === 'ar' ? 'auto' : '20px', zIndex: 10 }}>
+                        <a href="https://maps.app.goo.gl/SugwwCEYqJiPKSoA9?g_st=iw" target="_blank" rel="noopener noreferrer" style={{ padding: '12px 24px', background: '#B8960C', color: '#000', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+                            <MapPin size={18} />
+                            {language === 'ar' ? 'افتح في خرائط جوجل' : 'Open in Google Maps'}
+                        </a>
+                    </div>
                 </div>
             </div>
 
