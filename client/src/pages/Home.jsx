@@ -30,7 +30,6 @@ const heroImages = [
 // Services and Stats data are defined dynamically inside the component to support translation.
 
 const Home = () => {
-    const [featuredProperties, setFeaturedProperties] = useState([]);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const { t, language, getContent } = useLanguage();
@@ -82,17 +81,7 @@ const Home = () => {
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        const fetchFeatured = async () => {
-            try {
-                const res = await axios.get(getApiUrl('featured'));
-                setFeaturedProperties(res.data);
-            } catch (err) {
-                console.error('Error fetching featured properties:', err);
-            }
-        };
-        fetchFeatured();
-    }, []);
+
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -222,95 +211,7 @@ const Home = () => {
             {/* DEVELOPERS SECTION */}
             <Developers />
 
-            {/* FEATURED PROPERTIES */}
-            <section className="featured-properties">
-                <div className="container">
-                    <motion.div 
-                        className="section-header"
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <span className="section-label">{t('handpicked')}</span>
-                        <h2 className="section-title">{t('featuredProperties')}</h2>
-                        <div className="section-line"></div>
-                    </motion.div>
-                    
-                    <div className="properties-grid">
-                        {featuredProperties.slice(0, 6).map((property, index) => {
-                            let images = [];
-                            try {
-                                images = typeof property.images === 'string' ? JSON.parse(property.images) : property.images;
-                            } catch (e) {
-                                console.error('Error parsing property images:', e);
-                                images = ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'];
-                            }
-                            
-                            return (
-                                <motion.div 
-                                    key={property.id || index}
-                                    className="property-card"
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
-                                    <Link to={`/property/${property.id}`}>
-                                        <div className="property-image">
-                                            <img 
-                                                src={images && images.length > 0 ? images[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'} 
-                                                alt={getContent(property, 'title')}
-                                            />
-                                            {property.status === 'Off-Plan' && (
-                                                <span className="property-badge">{t('offPlan')}</span>
-                                            )}
-                                        </div>
-                                        <div className="property-info">
-                                            <div className="property-price">
-                                                {property.price_numeric > 0 
-                                                    ? `${language === 'ar' ? 'د.إ ' : 'AED '} ${property.price_numeric.toLocaleString()}`
-                                                    : (language === 'ar' ? 'تواصل لمعرفة السعر' : 'Contact for Details')
-                                                }
-                                            </div>
-                                            <h3 className="property-title">{getContent(property, 'title')}</h3>
-                                            <div className="property-location">
-                                                <MapPin size={14} />
-                                                <span>{getContent(property, 'location')}</span>
-                                            </div>
-                                            <div className="property-details">
-                                                {property.bedrooms > 0 && (
-                                                    <span className="property-detail">
-                                                        <Bed size={14} /> {property.bedrooms} {t('beds')}
-                                                    </span>
-                                                )}
-                                                {property.bathrooms > 0 && (
-                                                    <span className="property-detail">
-                                                        <Bath size={14} /> {property.bathrooms} {t('baths')}
-                                                    </span>
-                                                )}
-                                                <span className="property-detail">
-                                                    <Square size={14} /> {property.area ? property.area.replace(/sqft/i, t('sqft')) : ''}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                    
-                    <motion.div 
-                        className="view-all-wrapper"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                    >
-                        <Link to="/properties" className="btn btn-outline">
-                            {t('viewAllProperties')}
-                        </Link>
-                    </motion.div>
-                </div>
-            </section>
+
 
 
             {/* STATS */}

@@ -84,7 +84,7 @@ const Properties = () => {
 
     const [filters, setFilters] = useState({
         type: '', location: '', bedrooms: '',
-        minPrice: '', maxPrice: '', status: '', developer: ''
+        minPrice: '', maxPrice: '', developer: ''
     });
 
     // Re-fetch whenever filters, search, or tab change
@@ -96,7 +96,6 @@ const Properties = () => {
         setFilters(prev => ({
             ...prev,
             type:      p.get('type')      || '',
-            status:    p.get('status')    || '',
             developer: p.get('developer') || ''
         }));
         setSearchTerm(p.get('location') || p.get('search') || '');
@@ -135,7 +134,7 @@ const Properties = () => {
     const handleSearchChange = (e) => setSearchTerm(e.target.value);
     const clearFilters = () => {
         setSearchTerm('');
-        setFilters({ type: '', location: '', bedrooms: '', minPrice: '', maxPrice: '', status: '', developer: '' });
+        setFilters({ type: '', location: '', bedrooms: '', minPrice: '', maxPrice: '', developer: '' });
     };
 
     // Bilingual area map for fuzzy search
