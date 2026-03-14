@@ -4,6 +4,12 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import './Chatbot.css';
 
+const getApiUrl = (endpoint) => {
+    if (import.meta.env.PROD) return `/api/${endpoint}`;
+    const baseUrl = import.meta.env.VITE_API_URL;
+    return baseUrl ? `${baseUrl}/api/${endpoint}` : `/api/${endpoint}`;
+};
+
 const Chatbot = () => {
     const { t, language } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
@@ -13,14 +19,14 @@ const Chatbot = () => {
         : 'Marhaba! I am Layla from Bin Thani Real Estate. How can I assist you with your luxury property search in UAE today?';
 
     useEffect(() => {
-        const saved = localStorage.getItem('chat_messages');
+        const saved = localStorage.getItem('chat_msgs_v2');
         if (!saved) {
             setMessages([{ role: 'assistant', content: initialMessage }]);
         }
     }, [language, initialMessage]);
 
     const [messages, setMessages] = useState(() => {
-        const saved = localStorage.getItem('chat_messages');
+        const saved = localStorage.getItem('chat_msgs_v2');
         return saved ? JSON.parse(saved) : [{ role: 'assistant', content: initialMessage }];
     });
     
@@ -34,17 +40,17 @@ const Chatbot = () => {
     const [userMessageCount, setUserMessageCount] = useState(() => parseInt(localStorage.getItem('chat_message_count') || '0', 10));
     
     const [sessionId] = useState(() => {
-        const saved = localStorage.getItem('chat_session_id');
+        const saved = localStorage.getItem('chat_session_v2');
         if (saved) return saved;
-        const newId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem('chat_session_id', newId);
+        const newId = `session_v2_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('chat_session_v2', newId);
         return newId;
     });
 
     const scrollRef = useRef(null);
 
     useEffect(() => {
-        localStorage.setItem('chat_messages', JSON.stringify(messages));
+        localStorage.setItem('chat_msgs_v2', JSON.stringify(messages));
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
@@ -62,7 +68,7 @@ const Chatbot = () => {
         setUserMessageCount(prev => prev + 1);
 
         try {
-            const res = await axios.post('/api/chat', { 
+            const res = await axios.post(getApiUrl('chat'), { 
                 messages: newMessages.slice(-20), 
                 sessionId,
                 language, // Pass language to backend if needed
@@ -87,7 +93,7 @@ const Chatbot = () => {
     const handleLeadSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/leads', { ...leadInfo, source: 'chatbot' });
+            await axios.post(getApiUrl('leads'), { ...leadInfo, source: 'chatbot' });
             localStorage.setItem('chat_lead_info', JSON.stringify(leadInfo));
             localStorage.setItem('chat_show_lead_form', 'false');
             
