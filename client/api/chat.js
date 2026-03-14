@@ -62,43 +62,47 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { messages, sessionId } = req.body;
+        const { messages, sessionId, isPreset, botResponseText } = req.body;
         const lastMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
         
         let botResponse;
 
-        const conversationMessages = [
-            { role: 'system', content: SYSTEM_PROMPT },
-            ...messages
-        ];
-
-        console.log('Sending request to Mistral...');
-        const mistralRes = await fetch('https://api.mistral.ai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${MISTRAL_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: 'mistral-large-latest',
-                messages: conversationMessages,
-                temperature: 0.7,
-                max_tokens: 500
-            })
-        });
-
-        if (!mistralRes.ok) {
-            const errorText = await mistralRes.text();
-            console.error('Mistral API Failed:', mistralRes.status, errorText);
-            throw new Error(`Mistral API Error: ${mistralRes.status} ${errorText}`);
-        }
-
-        const data = await mistralRes.json();
-        console.log('Mistral response OK');
-        if (data.choices && data.choices[0]) {
-            botResponse = { content: data.choices[0].message.content };
+        if (isPreset) {
+            botResponse = { content: botResponseText };
         } else {
-            throw new Error('Invalid response format from Mistral');
+            const conversationMessages = [
+                { role: 'system', content: SYSTEM_PROMPT },
+                ...messages
+            ];
+
+            console.log('Sending request to Mistral...');
+            const mistralRes = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MISTRAL_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'mistral-large-latest',
+                    messages: conversationMessages,
+                    temperature: 0.7,
+                    max_tokens: 500
+                })
+            });
+
+            if (!mistralRes.ok) {
+                const errorText = await mistralRes.text();
+                console.error('Mistral API Failed:', mistralRes.status, errorText);
+                throw new Error(`Mistral API Error: ${mistralRes.status} ${errorText}`);
+            }
+
+            const data = await mistralRes.json();
+            console.log('Mistral response OK');
+            if (data.choices && data.choices[0]) {
+                botResponse = { content: data.choices[0].message.content };
+            } else {
+                throw new Error('Invalid response format from Mistral');
+            }
         }
 
         try {
