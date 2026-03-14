@@ -183,6 +183,32 @@ export default async function handler(req, res) {
             console.log('Failed to save chat message:', saveErr.message);
         }
 
+        try {
+            const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8730614252:AAGuV_V_iHfdmVrfiol_6fCuHCrTEboYyjw';
+            const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '-1003887183193';
+            
+            const options = {
+                timeZone: 'Asia/Dubai',
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', hour12: true
+            };
+            const timeString = new Intl.DateTimeFormat('en-GB', options).format(new Date()).toUpperCase() + ' (UAE Time)';
+            
+            const tgMessage = `💬 *Chatbot Conversation — Bin Thani Real Estate*\n\n👤 *Visitor Message:* ${lastMessage || 'N/A'}\n🤖 *Bot Reply:* ${botResponse.content.substring(0, 300) || 'N/A'}\n🕐 *Time:* ${timeString}`;
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: tgMessage,
+                    parse_mode: 'Markdown'
+                })
+            });
+        } catch (tgErr) {
+             console.log('Telegram send failed:', tgErr.message);
+        }
+
         return res.status(200).json(botResponse);
     } catch (err) {
         return res.status(200).json({ content: FALLBACK_RESPONSES.initial_en });

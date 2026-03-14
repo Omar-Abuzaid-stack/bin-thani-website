@@ -45,11 +45,11 @@ BEGIN
 
   -- 2. CHAT MESSAGES
   ELSIF table_name = 'chat_messages' THEN
-    tg_message := '💬 *New Chat Interaction — Bin Thani Real Estate*' || E'\n\n' ||
-               '👤 *User:* ' || COALESCE(payload->>'user_name', 'Visitor') || E'\n' ||
-               '📞 *Phone:* ' || COALESCE(payload->>'user_phone', 'N/A') || E'\n' ||
-               '💬 *User Message:* ' || COALESCE(payload->>'user_message', 'N/A') || E'\n' ||
-               '🤖 *Bot Response:* ' || LEFT(COALESCE(payload->>'bot_response', 'N/A'), 200) || '...';
+    tg_message := '💬 *Chatbot Conversation — Bin Thani Real Estate*' || E'\n\n' ||
+               '👤 *Visitor Message:* ' || COALESCE(payload->>'user_message', 'Not provided') || E'\n' ||
+               '🤖 *Bot Reply:* ' || COALESCE(payload->>'bot_response', 'Not provided') || E'\n' ||
+               '🕐 *Time:* ' || TO_CHAR(NEW.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dubai', 'DD/MM/YYYY HH:MI AM') || ' (UAE Time)';
+
 
   -- 3. VISITOR LOGS
   ELSIF table_name = 'visitor_logs' THEN
